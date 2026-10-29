@@ -66,7 +66,7 @@
                             <div class="switch-card">
                                 <div class="switch-card-head">
                                     <span class="switch-card-title">{{ settingsTxt.fontSizeTitleValue(fontSizeModel) }}</span>
-                                    <el-radio-group v-model="fontSizeModel" class="switch-card-radio-group" @change="$emit('updateFontSize')">
+                                    <el-radio-group v-model="fontSizeModel" class="switch-card-radio-group" :aria-label="settingsTxt.fontSizeLabel" @change="$emit('updateFontSize')">
                                         <el-radio :value="12" border>12</el-radio>
                                         <el-radio :value="13" border>13</el-radio>
                                         <el-radio :value="14" border>14</el-radio>
@@ -78,8 +78,8 @@
                             <!-- 缩进空格 -->
                             <div class="switch-card">
                                 <div class="switch-card-head">
-                                    <span class="switch-card-title">{{ settingsTxt.indentTitleValue(indentSizeModel) }}</span>
-                                    <el-radio-group v-model="indentSizeModel" class="switch-card-radio-group">
+                                    <span :id="`${settingsLabelId}-indent`" class="switch-card-title">{{ settingsTxt.indentTitleValue(indentSizeModel) }}</span>
+                                    <el-radio-group v-model="indentSizeModel" class="switch-card-radio-group" :aria-labelledby="`${settingsLabelId}-indent`">
                                         <el-radio :value="2" border>2</el-radio>
                                         <el-radio :value="4" border>4</el-radio>
                                         <el-radio :value="8" border>8</el-radio>
@@ -141,6 +141,8 @@
                                 </div>
                                 <span class="switch-card-desc">{{ settingsTxt.stickyScrollStaticDesc }}</span>
                             </div>
+
+                            <JsonResponseCaptureSwitch v-if="visible && activeName === 'settings'" :locale="locale" />
 
                             <!-- 缩略图（仅普通模式） -->
                             <div v-if="!isDiffMode" class="switch-card">
@@ -248,8 +250,8 @@
                             <!-- 排序方向（与普通模式共用） -->
                             <div class="switch-card switch-card--wide">
                                 <div class="switch-card-head">
-                                    <span class="switch-card-title">{{ settingsTxt.sortOrderLabel }}</span>
-                                    <el-radio-group v-model="sortOrderModel" class="switch-card-radio-group">
+                                    <span :id="`${settingsLabelId}-sort-order`" class="switch-card-title">{{ settingsTxt.sortOrderLabel }}</span>
+                                    <el-radio-group v-model="sortOrderModel" class="switch-card-radio-group" :aria-labelledby="`${settingsLabelId}-sort-order`">
                                         <el-radio value="asc" border>{{ settingsTxt.sortOrderAsc }}</el-radio>
                                         <el-radio value="desc" border>{{ settingsTxt.sortOrderDesc }}</el-radio>
                                     </el-radio-group>
@@ -274,8 +276,8 @@
                             <!-- 排序方向 -->
                             <div class="switch-card switch-card--wide">
                                 <div class="switch-card-head">
-                                    <span class="switch-card-title">{{ settingsTxt.sortOrderLabel }}</span>
-                                    <el-radio-group v-model="sortOrderModel" class="switch-card-radio-group">
+                                    <span :id="`${settingsLabelId}-sort-order`" class="switch-card-title">{{ settingsTxt.sortOrderLabel }}</span>
+                                    <el-radio-group v-model="sortOrderModel" class="switch-card-radio-group" :aria-labelledby="`${settingsLabelId}-sort-order`">
                                         <el-radio value="asc" border>{{ settingsTxt.sortOrderAsc }}</el-radio>
                                         <el-radio value="desc" border>{{ settingsTxt.sortOrderDesc }}</el-radio>
                                     </el-radio-group>
@@ -335,12 +337,14 @@ import 'element-plus/es/components/radio-group/style/css';
 import 'element-plus/es/components/select/style/css';
 import 'element-plus/es/components/switch/style/css';
 
-import { computed } from 'vue';
+import { computed, useId } from 'vue';
 import { Document, Edit, Refresh, Setting, Sort } from '@element-plus/icons-vue';
 import type { SettingsTxt } from './utils/i18n';
+import JsonResponseCaptureSwitch from './JsonResponseCaptureSwitch.vue';
 import type { ButtonVisibility, SortMethod, SortOrder } from './composables/useToolSettings';
 
 interface Props {
+    locale?: 'zh' | 'en';
     visible: boolean;
     activeName: string | number;
     settingsTxt: SettingsTxt;
@@ -364,9 +368,10 @@ interface Props {
     customArchiveName: boolean;
 }
 
-type ModelKey = Exclude<keyof Props, 'settingsTxt' | 'isDiffMode' | 'wordWrapLocked'>;
+type ModelKey = Exclude<keyof Props, 'locale' | 'settingsTxt' | 'isDiffMode' | 'wordWrapLocked'>;
 
 const props = defineProps<Props>();
+const settingsLabelId = useId();
 const emit = defineEmits<{
     'update:visible': [value: boolean];
     'update:activeName': [value: string | number];
@@ -789,7 +794,7 @@ const sortMethodDynamicDesc = computed(() => {
 
 .switch-card-desc {
     font-size: 12px;
-    color: #909399;
+    color: var(--json-tool-text-muted, #606266);
     line-height: 1.55;
     display: block;
     white-space: normal;
@@ -841,9 +846,24 @@ const sortMethodDynamicDesc = computed(() => {
     color: #cccccc !important;
 }
 
-/* 隐藏 radio 左侧圆点：选中状态由整颗胶囊的边框/底色高亮表达，避免视觉冗余 */
+/* 只在视觉上隐藏圆点，保留原生 radio 的 Tab、方向键和空格键行为。 */
 .switch-card-radio-group :deep(.el-radio__input) {
-    display: none;
+    display: inline-flex;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.switch-card-radio-group :deep(.el-radio:has(input:focus-visible)) {
+    outline: 2px solid #337ecc;
+    outline-offset: 2px;
+}
+
+:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio:has(input:focus-visible)) {
+    outline-color: #79bbff;
 }
 
 .switch-card-radio-group :deep(.el-radio__label) {

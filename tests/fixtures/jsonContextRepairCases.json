@@ -1,0 +1,394 @@
+[
+  {
+    "id": "missing-object-comma",
+    "category": "separators",
+    "outcome": "repair",
+    "input": "{\"a\":1 \"b\":2}",
+    "expected": "{\"a\":1,\"b\":2}"
+  },
+  {
+    "id": "missing-object-colon",
+    "category": "separators",
+    "outcome": "repair",
+    "input": "{\"a\" 1,\"b\":2}",
+    "expected": "{\"a\":1,\"b\":2}"
+  },
+  {
+    "id": "missing-array-commas",
+    "category": "separators",
+    "outcome": "repair",
+    "input": "[1 2 true null {\"a\":3}]",
+    "expected": "[1,2,true,null,{\"a\":3}]"
+  },
+  {
+    "id": "missing-container-closers",
+    "category": "containers",
+    "outcome": "repair",
+    "input": "{\"rows\":[{\"id\":1},{\"id\":2}",
+    "expected": "{\"rows\":[{\"id\":1},{\"id\":2}]}"
+  },
+  {
+    "id": "extra-container-closer",
+    "category": "containers",
+    "outcome": "repair",
+    "input": "{\"ok\":true}}",
+    "expected": "{\"ok\":true}"
+  },
+  {
+    "id": "embedded-json-missing-escapes",
+    "category": "embedded-strings",
+    "outcome": "repair",
+    "input": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\"user\":\"Alice\",\"message\":\"hello\",\"active\":true}\",\"stats\":{\"ok\":true}}",
+    "expected": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\\\"user\\\":\\\"Alice\\\",\\\"message\\\":\\\"hello\\\",\\\"active\\\":true}\",\"stats\":{\"ok\":true}}"
+  },
+  {
+    "id": "embedded-json-and-missing-outer-comma",
+    "category": "embedded-combinations",
+    "outcome": "repair",
+    "input": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\"user\":\"Alice\",\"message\":\"hello\",\"active\":true}\" \"stats\":{\"ok\":true}}",
+    "expected": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\\\"user\\\":\\\"Alice\\\",\\\"message\\\":\\\"hello\\\",\\\"active\\\":true}\",\"stats\":{\"ok\":true}}"
+  },
+  {
+    "id": "embedded-json-and-missing-outer-colon",
+    "category": "embedded-combinations",
+    "outcome": "repair",
+    "input": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\"user\":\"Alice\",\"message\":\"hello\",\"active\":true}\",\"stats\" {\"ok\":true}}",
+    "expected": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\\\"user\\\":\\\"Alice\\\",\\\"message\\\":\\\"hello\\\",\\\"active\\\":true}\",\"stats\":{\"ok\":true}}"
+  },
+  {
+    "id": "embedded-json-and-missing-outer-closer",
+    "category": "embedded-combinations",
+    "outcome": "repair",
+    "input": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\"user\":\"Alice\",\"message\":\"hello\",\"active\":true}\",\"stats\":{\"ok\":true}",
+    "expected": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\\\"user\\\":\\\"Alice\\\",\\\"message\\\":\\\"hello\\\",\\\"active\\\":true}\",\"stats\":{\"ok\":true}}"
+  },
+  {
+    "id": "embedded-json-and-json5-wrapper",
+    "category": "embedded-combinations",
+    "outcome": "repair",
+    "input": "{requestId:'REQ-ESCAPE', payload:\"{\"user\":\"Alice\",\"message\":\"hello\",\"active\":true}\", stats:{ok:true,},}",
+    "expected": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\\\"user\\\":\\\"Alice\\\",\\\"message\\\":\\\"hello\\\",\\\"active\\\":true}\",\"stats\":{\"ok\":true}}"
+  },
+  {
+    "id": "embedded-json-and-markdown",
+    "category": "embedded-combinations",
+    "outcome": "repair",
+    "input": "```json\n{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\"user\":\"Alice\",\"message\":\"hello\",\"active\":true}\" \"stats\":{\"ok\":true}}\n```",
+    "expected": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\\\"user\\\":\\\"Alice\\\",\\\"message\\\":\\\"hello\\\",\\\"active\\\":true}\",\"stats\":{\"ok\":true}}"
+  },
+  {
+    "id": "embedded-json-and-prose",
+    "category": "embedded-combinations",
+    "outcome": "repair",
+    "input": "接口返回：\n{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\"user\":\"Alice\",\"message\":\"hello\",\"active\":true}\" \"stats\":{\"ok\":true}}\n以上是返回结果。",
+    "expected": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\\\"user\\\":\\\"Alice\\\",\\\"message\\\":\\\"hello\\\",\\\"active\\\":true}\",\"stats\":{\"ok\":true}}"
+  },
+  {
+    "id": "embedded-json-three-errors",
+    "category": "embedded-combinations",
+    "outcome": "repair",
+    "input": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\"user\":\"Alice\",\"message\":\"hello\",\"active\":true}\" \"stats\" {\"ok\":true}",
+    "expected": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\\\"user\\\":\\\"Alice\\\",\\\"message\\\":\\\"hello\\\",\\\"active\\\":true}\",\"stats\":{\"ok\":true}}"
+  },
+  {
+    "id": "body-bare-quotes-before-comma",
+    "category": "string-boundaries",
+    "outcome": "repair",
+    "input": "{\"text\":\"他说\"你好\",然后离开\",\"n\":1}",
+    "expected": "{\"text\":\"他说\\\"你好\\\",然后离开\",\"n\":1}"
+  },
+  {
+    "id": "body-bare-quotes-and-missing-comma",
+    "category": "string-boundaries",
+    "outcome": "repair",
+    "input": "{\"text\":\"he said \"hello\", then left\" \"n\":1}",
+    "expected": "{\"text\":\"he said \\\"hello\\\", then left\",\"n\":1}"
+  },
+  {
+    "id": "body-quoted-brackets-before-comma",
+    "category": "string-boundaries",
+    "outcome": "repair",
+    "input": "{\"text\":\"say \"}\" now\" \"n\":1}",
+    "expected": "{\"text\":\"say \\\"}\\\" now\",\"n\":1}"
+  },
+  {
+    "id": "missing-category-quote-keeps-hierarchy",
+    "category": "missing-end-quotes",
+    "outcome": "repair",
+    "input": "{\n  \"orders\": [\n    {\n      \"orderId\": \"O0\",\n      \"items\": [\n        {\n          \"title\": \"JM键盘\",\n          \"qty\": 1,\n          \"category\": \"数码\n        }\n      ],\n      \"amount\": {\"goods\": 1, \"payable\": -1},\n      \"remark\": \"工作日送\",\n      \"tags\": [\"首单\"]\n    }\n  ]\n}",
+    "expected": "{\n  \"orders\": [\n    {\n      \"orderId\": \"O0\",\n      \"items\": [\n        {\n          \"title\": \"JM键盘\",\n          \"qty\": 1,\n          \"category\": \"数码\"\n        }\n      ],\n      \"amount\": {\"goods\": 1, \"payable\": -1},\n      \"remark\": \"工作日送\",\n      \"tags\": [\"首单\"]\n    }\n  ]\n}"
+  },
+  {
+    "id": "category-quote-and-many-missing-commas",
+    "category": "missing-end-quotes",
+    "outcome": "repair",
+    "input": "{\n  \"orders\": [\n    {\n      \"orderId\": \"O0\",\n      \"items\": [\n        {\n          \"title\": \"JM键盘\"\n          \"qty\": 1\n          \"category\": \"数码\n        }\n      ]\n      \"amount\": {\"goods\": 1, \"payable\": -1},\n      \"remark\": \"工作日送\",\n      \"tags\": [\"首单\"]\n    }\n  ]\n}",
+    "expected": "{\n  \"orders\": [\n    {\n      \"orderId\": \"O0\",\n      \"items\": [\n        {\n          \"title\": \"JM键盘\",\n          \"qty\": 1,\n          \"category\": \"数码\"\n        }\n      ],\n      \"amount\": {\"goods\": 1, \"payable\": -1},\n      \"remark\": \"工作日送\",\n      \"tags\": [\"首单\"]\n    }\n  ]\n}"
+  },
+  {
+    "id": "two-missing-end-quotes",
+    "category": "missing-end-quotes",
+    "outcome": "repair",
+    "input": "{\n  \"rows\": [\n    {\n      \"name\": \"first\n    },\n    {\n      \"name\": \"second\n    }\n  ],\n  \"stats\": {\"count\": 2}\n}",
+    "expected": "{\n  \"rows\": [\n    {\n      \"name\": \"first\"\n    },\n    {\n      \"name\": \"second\"\n    }\n  ],\n  \"stats\": {\"count\": 2}\n}"
+  },
+  {
+    "id": "fullwidth-separators-preserve-business-text",
+    "category": "fullwidth-punctuation",
+    "outcome": "repair",
+    "input": "{\"text\":\"正文，冒号：括号｛｝不变\"，\"n\"：1}",
+    "expected": "{\"text\":\"正文，冒号：括号｛｝不变\",\"n\":1}"
+  },
+  {
+    "id": "fullwidth-containers-preserve-business-text",
+    "category": "fullwidth-punctuation",
+    "outcome": "repair",
+    "input": "｛\"text\"：\"数组［］对象｛｝逗号，冒号：\"，\"rows\"：［1，2］｝",
+    "expected": "{\"text\":\"数组［］对象｛｝逗号，冒号：\",\"rows\":[1,2]}"
+  },
+  {
+    "id": "smart-quotes-with-business-curly-quote",
+    "category": "fullwidth-punctuation",
+    "outcome": "repair",
+    "input": "{“text”:“他说‘你好’”，“n”:1}",
+    "expected": "{\"text\":\"他说‘你好’\",\"n\":1}"
+  },
+  {
+    "id": "exact-number-literals",
+    "category": "precision",
+    "outcome": "repair",
+    "input": "{\"id\":900719925474099312345 \"amount\":99999999999999999.9900 \"sci\":1.2300e+20}",
+    "expected": "{\"id\":900719925474099312345,\"amount\":99999999999999999.9900,\"sci\":1.2300e+20}"
+  },
+  {
+    "id": "duplicate-keys-remain-in-repaired-source",
+    "category": "duplicate-keys",
+    "outcome": "repair",
+    "input": "{\"id\":1 \"id\":2,\"tail\":true}",
+    "expected": "{\"id\":1,\"id\":2,\"tail\":true}"
+  },
+  {
+    "id": "embedded-lexical-whitespace-and-duplicate-keys",
+    "category": "string-fidelity",
+    "outcome": "repair",
+    "input": "{\"payload\":\"{ \"id\" : 900719925474099312345, \"id\":2, \"text\" : \"数码  \", \"rows\" : [1, 2] }\" \"stats\":1}",
+    "expected": "{\"payload\":\"{ \\\"id\\\" : 900719925474099312345, \\\"id\\\":2, \\\"text\\\" : \\\"数码  \\\", \\\"rows\\\" : [1, 2] }\",\"stats\":1}"
+  },
+  {
+    "id": "nested-encoded-string-stays-a-string",
+    "category": "string-fidelity",
+    "outcome": "repair",
+    "input": "{\"payload\":\"{\"child\":\"{\\\"ok\\\":true}\",\"n\":1}\" \"stats\":1}",
+    "expected": "{\"payload\":\"{\\\"child\\\":\\\"{\\\\\\\"ok\\\\\\\":true}\\\",\\\"n\\\":1}\",\"stats\":1}"
+  },
+  {
+    "id": "valid-complex-json",
+    "category": "valid-input",
+    "outcome": "unchanged",
+    "input": "{\"payload\":\"{\\\"text\\\":\\\"\\\\\\\" } ] : , // #\\\",\\\"child\\\":\\\"{\\\\\\\"ok\\\\\\\":true}\\\"}\",\"literal\":\"\\\\u0041\\\\n\",\"path\":\"C:\\\\logs\\\\\",\"rows\":[\"[\",true,\"]\"]}",
+    "expected": "{\"payload\":\"{\\\"text\\\":\\\"\\\\\\\" } ] : , // #\\\",\\\"child\\\":\\\"{\\\\\\\"ok\\\\\\\":true}\\\"}\",\"literal\":\"\\\\u0041\\\\n\",\"path\":\"C:\\\\logs\\\\\",\"rows\":[\"[\",true,\"]\"]}"
+  },
+  {
+    "id": "valid-json5-wrapper",
+    "category": "valid-input",
+    "outcome": "unchanged",
+    "input": "{payload:'{\"a\":1}', stats:{ok:true,}, missing:undefined, invalid:NaN, hex:0xFF,}",
+    "expected": "{payload:'{\"a\":1}', stats:{ok:true,}, missing:undefined, invalid:NaN, hex:0xFF,}"
+  },
+  {
+    "id": "valid-json5-comments-and-number-literals",
+    "category": "valid-input",
+    "outcome": "unchanged",
+    "input": "/* {\"fake\":\"broken} */\n{\n# compatible comment\nraw:\"\\uXX\", n:+1.2300e+20, value:undefined,\n}",
+    "expected": "/* {\"fake\":\"broken} */\n{\n# compatible comment\nraw:\"\\uXX\", n:+1.2300e+20, value:undefined,\n}"
+  },
+  {
+    "id": "valid-complex-root-string",
+    "category": "valid-input",
+    "outcome": "unchanged",
+    "input": "\"{\\\"id\\\":1,\\\"text\\\":\\\"\\\\\\\" {} []\\\"}\"",
+    "expected": "\"{\\\"id\\\":1,\\\"text\\\":\\\"\\\\\\\" {} []\\\"}\""
+  },
+  {
+    "id": "array-hole",
+    "category": "unsafe",
+    "outcome": "unsafe",
+    "input": "[1,,3]"
+  },
+  {
+    "id": "array-hole-with-space",
+    "category": "unsafe",
+    "outcome": "unsafe",
+    "input": "[1, ,3]"
+  },
+  {
+    "id": "nested-array-hole",
+    "category": "unsafe",
+    "outcome": "unsafe",
+    "input": "{\"rows\":[true,,false],\"stats\":1}"
+  },
+  {
+    "id": "missing-object-value",
+    "category": "unsafe",
+    "outcome": "unsafe",
+    "input": "{\"amount\":}"
+  },
+  {
+    "id": "missing-object-value-before-sibling",
+    "category": "unsafe",
+    "outcome": "unsafe",
+    "input": "{\"amount\":,\"stats\":1}"
+  },
+  {
+    "id": "truncated-exponent-before-closer",
+    "category": "unsafe",
+    "outcome": "unsafe",
+    "input": "{\"amount\":1e+}"
+  },
+  {
+    "id": "truncated-exponent-at-end",
+    "category": "unsafe",
+    "outcome": "unsafe",
+    "input": "{\"amount\":1e+"
+  },
+  {
+    "id": "truncated-exponent-no-sign",
+    "category": "unsafe",
+    "outcome": "unsafe",
+    "input": "{\"amount\":1e"
+  },
+  {
+    "id": "truncated-string-at-end",
+    "category": "ambiguous-or-unsupported",
+    "outcome": "reject",
+    "input": "{\"name\":\"bi"
+  },
+  {
+    "id": "truncated-embedded-json",
+    "category": "ambiguous-or-unsupported",
+    "outcome": "reject",
+    "input": "{\"payload\":\"{\"a\":1\",\"stats\":1}"
+  },
+  {
+    "id": "ordinary-prose",
+    "category": "ambiguous-or-unsupported",
+    "outcome": "reject",
+    "input": "this is not JSON"
+  },
+  {
+    "id": "html-error-page",
+    "category": "ambiguous-or-unsupported",
+    "outcome": "reject",
+    "input": "<html><body>Error</body></html>"
+  },
+  {
+    "id": "prose-category-quote-and-missing-comma",
+    "category": "missing-end-quotes",
+    "outcome": "repair",
+    "input": "test\n{\n  \"orders\": [\n    {\n      \"orderId\": \"O0\",\n      \"createdAt\": \"2024-01-01\",\n      \"status\": \"pending\",\n      \"items\": [\n        {\n          \"sku\": \"S0\",\n          \"title\": \"JM键盘\"\n          \"qty\": 1,\n          \"price\": 1,\n          \"category\": \"数码\n        }\n      ],\n      \"amount\": {\n        \"goods\": 1,\n        \"freight\": 0,\n        \"discount\": 2,\n        \"payable\": -1\n      },\n      \"remark\": \"工作日送\",\n      \"tags\": [\n        \"首单\"\n      ]\n    }\n  ]\n}\n\nend",
+    "expected": "{\n  \"orders\": [\n    {\n      \"orderId\": \"O0\",\n      \"createdAt\": \"2024-01-01\",\n      \"status\": \"pending\",\n      \"items\": [\n        {\n          \"sku\": \"S0\",\n          \"title\": \"JM键盘\",\n          \"qty\": 1,\n          \"price\": 1,\n          \"category\": \"数码\"\n        }\n      ],\n      \"amount\": {\n        \"goods\": 1,\n        \"freight\": 0,\n        \"discount\": 2,\n        \"payable\": -1\n      },\n      \"remark\": \"工作日送\",\n      \"tags\": [\n        \"首单\"\n      ]\n    }\n  ]\n}\n"
+  },
+  {
+    "id": "prose-body-quoted-brackets-before-comma",
+    "category": "string-boundaries",
+    "outcome": "repair",
+    "input": "test\n{\"text\":\"say \"}\" now\" \"n\":1}\nend",
+    "expected": "{\"text\":\"say \\\"}\\\" now\",\"n\":1}"
+  },
+  {
+    "id": "bare-multiword-before-missing-value",
+    "category": "unsafe-extension-combinations",
+    "outcome": "reject",
+    "input": "{name:John Doe,amount:}"
+  },
+  {
+    "id": "regex-before-missing-value",
+    "category": "unsafe-extension-combinations",
+    "outcome": "reject",
+    "input": "{pattern:/a{2}/,amount:}"
+  },
+  {
+    "id": "url-before-missing-value",
+    "category": "unsafe-extension-combinations",
+    "outcome": "reject",
+    "input": "{url:https://example.com/a,amount:}"
+  },
+  {
+    "id": "concatenation-before-missing-value",
+    "category": "unsafe-extension-combinations",
+    "outcome": "reject",
+    "input": "{\"text\":\"hello \" + \"world\",\"amount\":}"
+  },
+  {
+    "id": "early-root-closer-keeps-following-field",
+    "category": "containers",
+    "outcome": "repair",
+    "input": "{\"a\":{\"b\":1}}},\"c\":2}",
+    "expected": "{\"a\":{\"b\":1},\"c\":2}"
+  },
+  {
+    "id": "orphaned-key-after-root-is-not-prose",
+    "category": "root-fidelity",
+    "outcome": "unsafe",
+    "input": "{\"a\":1} \"b\":2"
+  },
+  {
+    "id": "prose-orphaned-key-after-root-is-not-discarded",
+    "category": "root-fidelity",
+    "outcome": "reject",
+    "input": "note\n{\"a\":1} \"b\":2\nend"
+  },
+  {
+    "id": "unsupported-key-cannot-bypass-missing-value",
+    "category": "extension-safety",
+    "outcome": "reject",
+    "input": "{0:1,amount:}"
+  },
+  {
+    "id": "unsupported-value-boundary-cannot-bypass-missing-value",
+    "category": "extension-safety",
+    "outcome": "reject",
+    "input": "{\"url\":https://example.com/a/{id},\"amount\":}"
+  },
+  {
+    "id": "quote-recovery-with-mongo-wrapper-keeps-context-edits",
+    "category": "extension-combinations",
+    "outcome": "repair",
+    "input": "{\"leaf\":{\"category\":\"数码\n},\"date\":ISODate(\"2024-01-01\")}",
+    "expected": "{\"leaf\":{\"category\":\"数码\"},\"date\":\"2024-01-01\"}"
+  },
+  {
+    "id": "last-inner-quote-escape-with-missing-outer-comma",
+    "category": "embedded-combinations",
+    "outcome": "repair",
+    "input": "{\"payload\":\"{\\\"a\\\":\\\"b\"}\" \"stats\":1}",
+    "expected": "{\"payload\":\"{\\\"a\\\":\\\"b\\\"}\",\"stats\":1}"
+  },
+  {
+    "id": "encoded-html-business-text-stays-literal",
+    "category": "string-fidelity",
+    "outcome": "repair",
+    "input": "{\"text\":\"&quot; unchanged\" \"n\":1}",
+    "expected": "{\"text\":\"&quot; unchanged\",\"n\":1}"
+  },
+  {
+    "id": "html-encoded-quotes-cannot-bypass-missing-value",
+    "category": "extension-safety",
+    "outcome": "reject",
+    "input": "{&quot;a&quot;:1,&quot;amount&quot;:}"
+  },
+  {
+    "id": "html-quote-delimiters-ignore-quotes-in-comments",
+    "category": "html-compatibility",
+    "outcome": "repair",
+    "input": "/* a \"comment */\n{&quot;a&quot;:1 &quot;b&quot;:2}",
+    "expected": "{\"a\":1,\"b\":2}"
+  },
+  {
+    "id": "last-inner-array-quote-with-four-outer-errors",
+    "category": "embedded-combinations",
+    "outcome": "repair",
+    "input": "{\n  \"requestId\": \"REQ-ESCAPE\",\n  \"payload\": \"{\\\"user\\\":\\\"Alice\\\",\\\"tags\\\":[\\\"首单\\\",\\\"JSON\"]}\"\n  \"stats\" {\"ok\":true}",
+    "expected": "{\"requestId\":\"REQ-ESCAPE\",\"payload\":\"{\\\"user\\\":\\\"Alice\\\",\\\"tags\\\":[\\\"首单\\\",\\\"JSON\\\"]}\",\"stats\":{\"ok\":true}}"
+  }
+]

@@ -4,6 +4,16 @@ const STORE = 'snapshots';
 const TTL = 24 * 60 * 60 * 1000;
 interface Snapshot { id: string; createdAt: number; original: Blob; repaired: Blob; formatted: Blob }
 
+function createSnapshotId(): string {
+    if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+    // HTTP LAN origins lack randomUUID, but still expose cryptographic random bytes.
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6]! & 0x0f) | 0x40;
+    bytes[8] = (bytes[8]! & 0x3f) | 0x80;
+    const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
 function openDb(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
         const req = indexedDB.open(DB_NAME, 1);
@@ -14,8 +24,8 @@ function openDb(): Promise<IDBDatabase> {
     });
 }
 export async function saveRepairSnapshot(original: string, repaired: string, formatted: string): Promise<string> {
+    const id = createSnapshotId();
     const db = await openDb();
-    const id = crypto.randomUUID();
     try {
         await new Promise<void>((resolve, reject) => {
             const tx = db.transaction(STORE, 'readwrite');

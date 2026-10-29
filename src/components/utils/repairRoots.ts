@@ -1,3 +1,9 @@
+import { selectRepairRootCandidates, type RepairRootCandidate } from './repairRootPriority';
+
+// A raw date-time in brackets is a log marker, not a repairable JSON array.
+// Only probe a short root-level slice; quoted strings and nested containers are skipped first.
+const logTimestamp = /^\[[ \t]*\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])[ T](?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,9})?(?:Z|[+-](?:[01]\d|2[0-3]):?[0-5]\d)?[ \t]*\]/;
+
 const primitiveValue = /^(?:true|false|null|undefined|[+-]?(?:NaN|Infinity|0[xX][\da-fA-F]+|(?:(?:0|[1-9]\d*)(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?))$/;
 
 const quoteEnd = (char: string): string | undefined =>
@@ -65,21 +71,55 @@ const containerEnd = (input: string, start: number): number => {
     return input.length;
 };
 
-/** Keep root JSON values in source order; discard root text only when a container exists. */
-export function selectRepairRoots(input: string): string {
-    const values: string[] = [];
-    let hasContainer = false, index = 0;
+/** Recognize only an explicit raw date-time log marker at the beginning of the input. */
+export function hasLeadingLogTimestamp(input: string): boolean {
+    const start = input.search(/\S/);
+    return start >= 0 && logTimestamp.test(input.slice(start, start + 64));
+}
+
+export interface RepairRootBoundary { end: number; profileText?: string }
+
+/** Preserve peer records in order; a clear main document may exclude shallow auxiliary roots. */
+export function selectRepairRoots(
+    input: string,
+    readContainerEnd?: (input: string, start: number) => number | RepairRootBoundary | undefined,
+): string {
+    const values: RepairRootCandidate[] = [];
+    let hasContainer = false, ignoredLogTimestamp = false, index = 0;
     while (index < input.length) {
         const char = input[index];
         if (/\s/.test(char) || char === ',' || char === ';') { index++; continue; }
         const commentEnd = skipComment(input, index);
         if (commentEnd !== index) { index = commentEnd; continue; }
-        if (quoteEnd(char)) { index = skipString(input, index); continue; }
+        if (quoteEnd(char)) {
+            const end = skipString(input, index);
+            // Root selection must not turn a following orphaned field into prose.
+            if (hasContainer || ignoredLogTimestamp) {
+                let next = end;
+                while (next < input.length) {
+                    if (/\s/.test(input[next])) { next++; continue; }
+                    const afterComment = skipComment(input, next);
+                    if (afterComment === next) break;
+                    next = afterComment;
+                }
+                if (input[next] === ':' || input[next] === '：') return input;
+            }
+            index = end;
+            continue;
+        }
         const regexEnd = skipRegex(input, index);
         if (regexEnd !== index) { index = regexEnd; continue; }
-        if (char === '{' || char === '[') {
-            const end = containerEnd(input, index);
-            values.push(input.slice(index, end));
+        const timestamp = char === '[' ? logTimestamp.exec(input.slice(index, index + 64))?.[0] : undefined;
+        if (timestamp) {
+            index += timestamp.length;
+            ignoredLogTimestamp = true;
+            continue;
+        }
+        if (char === '{' || char === '[' || (readContainerEnd && (char === '｛' || char === '［'))) {
+            const boundary = readContainerEnd?.(input, index);
+            const end = typeof boundary === 'number' ? boundary : boundary?.end ?? containerEnd(input, index);
+            values.push({ text: input.slice(index, end), start: index,
+                end, profileText: typeof boundary === 'object' ? boundary.profileText : undefined });
             hasContainer = true;
             index = end;
             continue;
@@ -87,7 +127,7 @@ export function selectRepairRoots(input: string): string {
         const start = index++;
         while (index < input.length) {
             const char = input[index];
-            if (char === '\n' || char === '\r' || char === ',' || char === ';' || char === '{' || char === '[') break;
+            if (char === '\n' || char === '\r' || char === ',' || char === ';' || char === '{' || char === '[' || (readContainerEnd && (char === '｛' || char === '［'))) break;
             if (skipComment(input, index) !== index) break;
             if (skipRegex(input, index) !== index) break;
             // An apostrophe inside a word (don't / it's) is part of the surrounding prose.
@@ -98,11 +138,30 @@ export function selectRepairRoots(input: string): string {
         // A stray closer may be caused by an unescaped quote inside the container.
         // Let the repair parser handle the entire input instead of silently cutting off fields.
         if (/[}\]]/.test(text)) return input;
-        const tokens = text.trim().split(/\s+/);
-        if (tokens.every(token => primitiveValue.test(token))) {
-            for (const token of tokens) values.push(token);
+        // Unquoted keys and incomplete values outside a root also stay reviewable.
+        if (hasContainer || ignoredLogTimestamp) {
+            const identifier = /^[$_\p{ID_Start}][$_\u200c\u200d\p{ID_Continue}]*/u.exec(text.trim())?.[0];
+            if (identifier) {
+                const rest = text.trim().slice(identifier.length);
+                if (/^\s*[:：]/.test(rest)) return input;
+                if (!rest.trim()) {
+                    let next = index;
+                    while (next < input.length) {
+                        if (/\s/.test(input[next])) { next++; continue; }
+                        const afterComment = skipComment(input, next);
+                        if (afterComment === next) break;
+                        next = afterComment;
+                    }
+                    if (input[next] === ':' || input[next] === '：') return input;
+                }
+            }
+        }
+        const tokens = [...text.matchAll(/\S+/g)];
+        if (tokens.every(token => primitiveValue.test(token[0]))) {
+            for (const token of tokens) values.push({ text: token[0], start: start + token.index, end: start + token.index + token[0].length });
         }
     }
     if (!hasContainer) return input;
-    return values.length === 1 ? values[0] : '[\n' + values.join(',\n') + '\n]';
+    const selected = selectRepairRootCandidates(input, values).roots;
+    return selected.length === 1 ? selected[0].text : '[\n' + selected.map(value => value.text).join(',\n') + '\n]';
 }

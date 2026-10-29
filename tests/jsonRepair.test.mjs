@@ -9,9 +9,7 @@ async function bundle(path) {
 const { formatWithOptionalRepair, normalizeRepairValues } = await bundle('src/components/utils/jsonRepair.ts');
 const { formatJsonInput } = await bundle('src/components/utils/jsonEngine/service.ts');
 const { findStringBoundaryRepair, insertMissingObjectCommas } = await bundle('src/components/utils/repairStringBoundaries.ts');
-const { selectRepairRoots } = await bundle('src/components/utils/repairRoots.ts');
-const { JsonPlusFormatter } = await bundle('src/components/utils/jsonEngine/formatter.ts');
-const { jsonrepair } = await import('jsonrepair');
+const { repairJsonWithContext } = await bundle('src/components/utils/contextualRepair/parser.ts');
 const { startFormatTask } = await bundle('src/components/utils/formatWorkerClient.ts');
 const opts = { indentSize: 2, arrayNewLine: true, preserveNumberLiterals: true, encodingMode: false };
 const fixtures = JSON.parse(await readFile(new URL('./fixtures/jsonRepairCases.json', import.meta.url)));
@@ -45,9 +43,10 @@ test('valid root strings and strings inside valid arrays retain normal formattin
         assert(!stages.includes('repairing'));
     }
 });
-test('malformed quotes cannot silently cut off subsequent fields as surrounding text', async () => {
+test('contextual quote repair retains quoted bracket text and every subsequent field', async () => {
     for (const input of ['{"text":"say "}" now" "n":1}', 'test\n{"text":"say "}" now" "n":1}\nend']) {
-        await assert.rejects(formatWithOptionalRepair(input, opts, true));
+        const result = await formatWithOptionalRepair(input, opts, true);
+        assert.deepEqual(JSON.parse(result.formatted), { text: 'say "}" now', n: 1 });
     }
 });
 test('missing category closing quote preserves the original order hierarchy and every field', async () => {
@@ -117,19 +116,14 @@ test('field-like lines inside a real multiline string retain the entire text whe
     assert.deepEqual(JSON.parse(result.formatted), expected);
     assert.equal(result.formatted, formatJsonInput(JSON.stringify(expected), opts).formatted);
 });
-test('surrounding bare text keeps combined quote and comma defects on the existing repair fallback', async () => {
+test('surrounding prose cannot change the hierarchy of combined quote and comma recovery', async () => {
     const fixture = await readFile(new URL('./fixtures/jsonRepairMissingCategoryQuote.json', import.meta.url), 'utf8');
     const input = 'test\n' + fixture.replace('"title": "JM键盘",', '"title": "JM键盘"') + '\nend';
-    const candidate = findStringBoundaryRepair(input);
-    assert.notEqual(candidate, undefined);
-    assert.throws(() => formatJsonInput(candidate, opts), { name: 'JsonInputParseError' });
-    // A candidate that still contains surrounding prose cannot bypass full-input validation.
-    const protector = new JsonPlusFormatter(false, opts.indentSize, opts.arrayNewLine, true);
-    const protectedInput = protector.prepareRepairInput(normalizeRepairValues(selectRepairRoots(input)));
-    const expectedRepair = protector.restoreRepairEscapes(jsonrepair(protectedInput.text), protectedInput.escapeMap);
+    const expected = fixture.replace('"category": "数码\n', '"category": "数码"\n');
     const result = await formatWithOptionalRepair(input, opts, true);
-    assert.equal(result.repaired, expectedRepair);
-    assert.equal(result.formatted, formatJsonInput(expectedRepair, opts).formatted);
+    assert.equal(result.formatted, formatJsonInput(expected, opts).formatted);
+    assert.deepEqual(JSON.parse(result.formatted), JSON.parse(expected));
+    assert.equal(result.repairEngine, 'contextual');
 });
 test('missing value quote before standalone matching nested closers preserves objects and array items', async () => {
     for (const { name, input, expected } of [
@@ -232,7 +226,8 @@ test('combined quote and comma repair preserves complete JSON5 values, keys and 
             const input = prefix + tail;
             const expected = (prefix + ',' + tail).replace('"数码\n', '"数码"\n');
             const result = await formatWithOptionalRepair(input, opts, true);
-            assert.equal(result.repaired, expected, `${value} followed by ${key}`);
+            assert.equal(repairJsonWithContext(input).text, expected, `${value} followed by ${key}: original source edits`);
+            assert.doesNotThrow(() => JSON.parse(result.repaired));
             assert.equal(result.formatted, formatJsonInput(expected, opts).formatted, `${value} followed by ${key}`);
         }
     }
@@ -261,7 +256,8 @@ test('combined quote and comma repair accepts line comments immediately after a 
         const expected = input.replace('"title": "JM键盘"', '"title": "JM键盘",')
             .replace('"category": "数码\n', '"category": "数码"\n');
         const result = await formatWithOptionalRepair(input, opts, true);
-        assert.equal(result.repaired, expected);
+        assert.equal(repairJsonWithContext(input).text, expected, 'minimal parser edits retain comments');
+        assert.doesNotThrow(() => JSON.parse(result.repaired));
         assert.equal(result.formatted, formatJsonInput(expected, opts).formatted);
     }
 });
@@ -483,4 +479,18 @@ test('superseded input terminates the task and cannot lock or publish over the n
     assert(ui.busy.value); assert(!ui.repairing.value); assert(!ui.showLoading.value);
     tasks[1].resolve({ formatted: 'new' }); assert.deepEqual(await second, { formatted: 'new' });
     assert.equal(ui.comparisonId.value, '');
+});
+
+
+test('repair formatting retains negative zero after restoring a missing outer comma', async () => {
+    const input='{"negative":-0 "positive":0,"decimal":2.0,"stats":{"ok":true}}';
+    const result=await formatWithOptionalRepair(input,opts,true);
+    assert.notEqual(result.repaired,undefined);
+    assert.match(result.formatted,/"negative": -0,/);
+    assert.match(result.formatted,/"positive": 0,/);
+    assert.match(result.formatted,/"decimal": 2\.0,/);
+    const value=JSON.parse(result.formatted);
+    assert.equal(Object.is(value.negative,-0),true);
+    assert.equal(Object.is(value.positive,0),true);
+    assert.deepEqual(value.stats,{ok:true});
 });

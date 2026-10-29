@@ -24,6 +24,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { type Ref, ref } from 'vue';
 
 import { calculateByteSize } from '../utils/byteUtils';
+import { getJsonToolEditorTypography } from '../utils/editorTypography';
 import type { DiffLineChange } from '../utils/diffEngine';
 import type { DiffLocaleState } from '../utils/jsonToolLocaleTransition';
 import { IDB_STORE_DIFF_DRAFTS, MAX_DIFF_SIDE_SIZE, MAX_DIFF_TAB_COUNT, idbCount, idbGet, idbPut } from '../utils/idb';
@@ -876,8 +877,7 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
                 ignoreHorizontalScrollbarInContentHeight: true,
                 useShadows: false,
             },
-            fontSize: fontSize.value,
-            lineHeight: 16,
+            ...getJsonToolEditorTypography(fontSize.value),
             tabSize: initialIndentSize,
             // 注意：设置对话框里的 switch 做了值反转（active=false, inactive=true），
             // 所以 wordWrap.value === true 代表"用户要不换行"。

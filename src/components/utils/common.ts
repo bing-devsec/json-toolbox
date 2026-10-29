@@ -19,6 +19,25 @@ export const debounce = <T extends (...args: any[]) => any>(fn: T, delay: number
     };
 };
 
+// 只在语言采样内跳过前导注释，不解析全文，也不改写编辑器内容。
+const skipLeadingLanguageComments = (sample: string): number => {
+    let index = 0;
+    while (index < sample.length) {
+        if (/\s/.test(sample[index]!)) {
+            index++;
+        } else if (sample.startsWith('//', index) || sample[index] === '#') {
+            const end = sample.indexOf('\n', index);
+            index = end < 0 ? sample.length : end + 1;
+        } else if (sample.startsWith('/*', index)) {
+            const end = sample.indexOf('*/', index + 2);
+            index = end < 0 ? sample.length : end + 2;
+        } else {
+            break;
+        }
+    }
+    return index;
+};
+
 // 根据输入内容识别语言类型
 export const detectInputLanguage = (value: string): EditorContentLanguage => {
     const trimmed = value.trim();
@@ -30,6 +49,23 @@ export const detectInputLanguage = (value: string): EditorContentLanguage => {
     }
 
     const sample = trimmed.slice(0, 20000);
+    const contentStart = skipLeadingLanguageComments(sample);
+    if (contentStart > 0 && contentStart < sample.length) {
+        const body = sample.slice(contentStart);
+        // 注释后的 TOML 表头、带引号的 YAML/TOML 键仍交给原有格式识别。
+        const tableHeader = /^\[\[?([^\]\r\n]+)\]?\][ \t]*(?:#[^\r\n]*)?(?:\r?\n|$)/.exec(body);
+        const tableName = tableHeader?.[1]?.trim() ?? '';
+        const bareTableName = /^[A-Za-z_][A-Za-z0-9_.-]*$/.test(tableName)
+            && !/^(true|false|null|NaN|Infinity|undefined)$/.test(tableName);
+        const tomlTable = tableHeader && (bareTableName
+            || body.split('\n').slice(1, 80).some((line) => /^\s*(?:[A-Za-z0-9_-]+|"(?:[^"\\]|\\.)*"|'[^']*')(?:\s*\.\s*(?:[A-Za-z0-9_-]+|"(?:[^"\\]|\\.)*"|'[^']*'))*\s*=/.test(line)));
+        const quotedKey = /^"(?:[^"\\]|\\.)*"\s*[:=]/.test(body);
+        const jsonPrimitive = /^(?:true|false|null|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)(?=\s|$|\/|#)(?!\s*[:=])/.test(body);
+        if (body[0] === '{' || (body[0] === '[' && !tomlTable)
+            || (body[0] === '"' && !quotedKey) || jsonPrimitive) {
+            return 'json';
+        }
+    }
     const sampleLines = sample.split('\n').slice(0, 80);
     const joinedSample = sampleLines.join('\n');
 

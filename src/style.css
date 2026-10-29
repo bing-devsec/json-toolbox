@@ -21,6 +21,19 @@ body, th, td, button, input, select, textarea {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+/* JSON 工具使用本机字体，代码字体与 editorTypography.ts 保持一致。 */
+:root {
+    --json-tool-font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+    --json-tool-font-code: Menlo, Monaco, Consolas, 'Droid Sans Mono', 'Liberation Mono', 'Courier New', 'PingFang SC', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace;
+}
+/* body 上的作用域也覆盖传送到 body 的设置弹窗、下拉菜单和提示框。 */
+body {
+    --el-font-family: var(--json-tool-font-ui);
+    font-family: var(--json-tool-font-ui);
+}
+body :where(button, input, select, textarea) {
+    font-family: var(--json-tool-font-ui);
+}
 /* 沿用原网站的标题和段落默认排版，组件样式可覆盖这些默认值。 */
 h1, h2, h3, h4, h5, h6, p {
     margin: 0;

@@ -1,5 +1,6 @@
 import {
     parseJsonInput,
+    getNextSignificantChar,
     stringifyJsonValue,
     tryParseHighPrecisionWrapper,
     tryReadHighPrecisionWrapperObject,
@@ -121,7 +122,7 @@ const replaceEscapePlaceholdersInValue = (value: any, placeholderMap: Map<string
         return value.map((item) => replaceEscapePlaceholdersInValue(item, placeholderMap));
     }
     if (value && typeof value === 'object') {
-        const output: Record<string, any> = {};
+        const output: Record<string, any> = Object.create(null);
         for (const key of Object.keys(value)) {
             output[replaceEscapePlaceholdersInString(key, placeholderMap)] = replaceEscapePlaceholdersInValue(value[key], placeholderMap);
         }
@@ -152,7 +153,7 @@ const registerParsedEscapes = (ctx: JsonUnescapeContext, value: any, sourceEscap
 };
 
 const parseJsonLayer = (ctx: JsonUnescapeContext, source: string, rejectIllegalEscapes: boolean): ParseLayerResult => {
-    if (rejectIllegalEscapes && detectIllegalEscapes(source).hasIllegal) {
+    if (rejectIllegalEscapes && detectIllegalEscapes(source, 'json').hasIllegal) {
         return { ok: false, reason: 'illegal-escape' };
     }
 
@@ -179,22 +180,11 @@ const decodeJsonStringLiteral = (ctx: JsonUnescapeContext, source: string): Pars
     return parsed;
 };
 
-const isJsonContainerDocument = (value: string): boolean => {
-    const trimmed = value.trim();
-    return trimmed.length >= 2 && ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']')));
-};
-
-const isJsonValueDocument = (value: string): boolean => {
-    const trimmed = value.trim();
-    if (!trimmed) return false;
-    return (
-        isJsonContainerDocument(trimmed) ||
-        trimmed.startsWith('"') ||
-        trimmed === 'true' ||
-        trimmed === 'false' ||
-        trimmed === 'null' ||
-        /^[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/.test(trimmed)
-    );
+// Match the compatibility parser's comment handling without rewriting input.
+// Bare scalar text such as "123", "true" and "null" must remain text.
+const isExpandableJsonDocument = (value: string): boolean => {
+    const first = getNextSignificantChar(value, 0);
+    return first === '{' || first === '[' || first === '"';
 };
 
 const looksLikeEscapedJsonContainer = (value: string): boolean => value.includes('\\"');
@@ -206,15 +196,13 @@ const isHighPrecisionValue = (value: any): boolean => {
     return tryReadHighPrecisionWrapperObject(value) !== null;
 };
 
-const tryExpandStringOnce = (ctx: JsonUnescapeContext, source: string, mode: 'top-level' | 'nested'): StringExpandResult => {
+const tryExpandStringOnce = (ctx: JsonUnescapeContext, source: string, maxTransportDecodes: number): StringExpandResult => {
     if (!source.trim() || isHighPrecisionValue(source)) {
         return { expanded: false };
     }
 
     const trimmed = source.trim();
-    const allowDirectParse = mode === 'top-level' ? isJsonValueDocument(trimmed) : isJsonContainerDocument(trimmed);
-
-    if (allowDirectParse) {
+    if (isExpandableJsonDocument(trimmed)) {
         const direct = parseJsonLayer(ctx, trimmed, true);
         if (direct.ok) {
             return { expanded: true, value: direct.value, layers: 1 };
@@ -224,30 +212,22 @@ const tryExpandStringOnce = (ctx: JsonUnescapeContext, source: string, mode: 'to
         }
     }
 
-    if (!looksLikeEscapedJsonContainer(trimmed)) {
-        return { expanded: false };
-    }
+    // Transport text can remain escaped after one pass. Keep intermediate
+    // candidates local and publish nothing until a complete JSON value parses.
+    let candidate = trimmed;
+    for (let decodedLayers = 1; decodedLayers <= maxTransportDecodes; decodedLayers++) {
+        if (!looksLikeEscapedJsonContainer(candidate)) break;
 
-    const decoded = decodeJsonStringLiteral(ctx, trimmed);
-    if (!decoded.ok) {
-        return { expanded: false };
-    }
-    if (typeof decoded.value !== 'string' || decoded.value === source) {
-        return { expanded: false };
-    }
+        const decoded = decodeJsonStringLiteral(ctx, candidate);
+        if (!decoded.ok || decoded.value === candidate) break;
+        candidate = decoded.value.trim();
+        if (!isExpandableJsonDocument(candidate)) continue;
 
-    const decodedTrimmed = decoded.value.trim();
-    if (mode === 'nested' && !isJsonContainerDocument(decodedTrimmed)) {
-        return { expanded: false };
-    }
-
-    const parsedDecoded = parseJsonLayer(ctx, decodedTrimmed, true);
-    if (parsedDecoded.ok) {
-        return { expanded: true, value: parsedDecoded.value, layers: 2 };
-    }
-
-    if (mode === 'top-level') {
-        return { expanded: true, value: decoded.value, layers: 1 };
+        const parsedDecoded = parseJsonLayer(ctx, candidate, true);
+        if (parsedDecoded.ok) {
+            return { expanded: true, value: parsedDecoded.value, layers: decodedLayers + 1 };
+        }
+        if (parsedDecoded.reason === 'illegal-escape') break;
     }
 
     return { expanded: false };
@@ -256,14 +236,15 @@ const tryExpandStringOnce = (ctx: JsonUnescapeContext, source: string, mode: 'to
 const expandTopLevelString = (ctx: JsonUnescapeContext, source: string, recursive: boolean): { value: any; layers: number } => {
     let current: any = source;
     let layers = 0;
-    const maxIterations = recursive ? ctx.maxParseIterations : 1;
+    let remainingIterations = recursive ? ctx.maxParseIterations : 1;
 
-    for (let i = 0; i < maxIterations; i++) {
-        if (typeof current !== 'string') break;
-        const expanded = tryExpandStringOnce(ctx, current, 'top-level');
+    while (remainingIterations > 0 && typeof current === 'string') {
+        const expanded = tryExpandStringOnce(ctx, current, remainingIterations);
         if (!expanded.expanded || expanded.value === current) break;
         current = expanded.value;
         layers += expanded.layers;
+        // Charge speculative transport passes to this same per-string budget.
+        remainingIterations -= Math.max(1, expanded.layers - 1);
     }
 
     return { value: current, layers };
@@ -272,14 +253,15 @@ const expandTopLevelString = (ctx: JsonUnescapeContext, source: string, recursiv
 const expandNestedString = (ctx: JsonUnescapeContext, source: string, recursive: boolean, depth: number): { value: any; layers: number } => {
     let current: any = source;
     let layers = 0;
-    const maxIterations = recursive ? ctx.maxParseIterations : 1;
+    let remainingIterations = recursive ? ctx.maxParseIterations : 1;
 
-    for (let i = 0; i < maxIterations; i++) {
-        if (typeof current !== 'string') break;
-        const expanded = tryExpandStringOnce(ctx, current, 'nested');
+    while (remainingIterations > 0 && typeof current === 'string') {
+        const expanded = tryExpandStringOnce(ctx, current, remainingIterations);
         if (!expanded.expanded || expanded.value === current) break;
         current = expanded.value;
         layers += expanded.layers;
+        // Charge speculative transport passes to this same per-string budget.
+        remainingIterations -= Math.max(1, expanded.layers - 1);
 
         if (!recursive) break;
         if (current && typeof current === 'object') {
@@ -305,7 +287,7 @@ const processValue = (ctx: JsonUnescapeContext, value: any, recursive: boolean, 
     }
 
     if (typeof value === 'object') {
-        const output: Record<string, any> = {};
+        const output: Record<string, any> = Object.create(null);
         for (const key of Object.keys(value)) {
             output[key] = processValue(ctx, value[key], recursive, depth + 1);
         }
@@ -324,7 +306,7 @@ const resolveMessageKind = (recursive: boolean, topLevelLayers: number): JsonUne
 export const unescapeJsonText = (input: string, options: JsonUnescapeOptions): JsonUnescapeResult => {
     const hasInconsistentEscape = detectInconsistentEscapeLevels(input);
 
-    if (detectIllegalEscapes(input).hasIllegal) {
+    if (detectIllegalEscapes(input, 'json').hasIllegal) {
         return {
             ok: false,
             code: 'illegal-escape',

@@ -23,7 +23,7 @@
 
                 <!-- Diff 模式工具栏 -->
                 <div v-if="diffMode.isDiffMode.value" class="tool-bar diff-tool-bar">
-                    <el-button type="info" class="settings-tool-button" :disabled="repair.repairing.value" @click="openSettingsDialog">
+                    <el-button type="info" class="settings-tool-button" :aria-label="settingsTxt.dialogTitle" :disabled="repair.repairing.value" @click="openSettingsDialog">
                         <el-icon><Setting /></el-icon>
                     </el-button>
                     <div class="diff-nav-group">
@@ -56,7 +56,7 @@
 
                 <!-- 普通模式工具栏 -->
                 <div v-else class="tool-bar" ref="toolBarRef" @scroll="handleToolBarScroll">
-                    <el-button type="info" class="settings-tool-button" :disabled="repair.repairing.value" @click="openSettingsDialog">
+                    <el-button type="info" class="settings-tool-button" :aria-label="settingsTxt.dialogTitle" :disabled="repair.repairing.value" @click="openSettingsDialog">
                         <el-icon>
                             <Setting />
                         </el-icon>
@@ -113,8 +113,9 @@
                                 v-model="selectedLevel"
                                 fit-input-width
                                 :placeholder="settingsTxt.levelPlaceholder"
-                                :class="['level-select', { 'level-select-en': props.locale === 'en' }]"
-                                :popper-class="props.locale === 'en' ? 'level-select-dropdown level-select-dropdown-en' : 'level-select-dropdown'"
+                                :aria-label="settingsTxt.levelAriaLabel"
+                                class="level-select"
+                                popper-class="level-select-dropdown"
                                 :disabled="repair.repairing.value || maxLevel === 0">
                                 <el-option v-if="maxLevel === 0" :label="settingsTxt.levelLabel(0)" :value="0" :disabled="true" />
                                 <el-option v-for="n in maxLevel" :key="n" :label="getFoldLevelOptionLabel(n)" :value="n" :disabled="isFoldLevelDisabled(n)" />
@@ -438,6 +439,7 @@
             v-model:diff-sort-arrays="diffSortArrays"
             v-model:custom-archive-name="customArchiveName"
             :settings-txt="settingsTxt"
+            :locale="props.locale"
             :is-diff-mode="diffMode.isDiffMode.value"
             :word-wrap-locked="isLongLineWrapLocked"
             @update-font-size="updateFontSize"
@@ -510,6 +512,7 @@ import { showMessageError, showMessageSuccess, showMessageWarning } from '@/util
 
 // Monaco Editor
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { getJsonToolEditorTypography } from './utils/editorTypography';
 import 'monaco-editor/esm/vs/editor/contrib/bracketMatching/browser/bracketMatching';
 import 'monaco-editor/esm/vs/editor/contrib/clipboard/browser/clipboard';
 import 'monaco-editor/esm/vs/editor/contrib/comment/browser/comment';
@@ -566,7 +569,7 @@ import {
 } from './utils/editorWordWrap';
 import { scheduleIdleTask } from './utils/idleTask';
 import { sortJsonForDiff } from './utils/jsonDiffSort';
-import { normalizeJsonNumberLiteral, restoreHighPrecisionInOutput, tryParseHighPrecisionWrapper, tryReadHighPrecisionWrapperObject, unwrapHighPrecisionForConvert } from './utils/jsonEngine';
+import { normalizeJsonNumberLiteral, prepareHighPrecisionConversion, tryParseHighPrecisionWrapper, tryReadHighPrecisionWrapperObject } from './utils/jsonEngine';
 import { calculateMaxLevel, detectIllegalEscapes } from './utils/jsonStructure';
 import { unescapeJsonText, type JsonUnescapeMessageKind } from './utils/jsonUnescape';
 import { getJsonToolThemeForLanguage } from './utils/monacoThemes';
@@ -576,8 +579,16 @@ import { clearEditorContent } from './utils/clearEditorContent';
 import { getChangedLineRanges } from './utils/changedLineRanges';
 import type { JsonToolOutputType } from './utils/jsonToolLocaleTransition';
 
-const props = defineProps<{ locale?: 'zh' | 'en' }>();
-const emit = defineEmits<{ switchLocale: [] }>();
+import { createExternalImportGate, type ExternalJsonImport } from '../extension/externalImport';
+import { createFormattedImportController } from '../extension/formatImportedResponse';
+import type { ImportFormatWarning } from '../extension/importSession';
+import type { ReviewUsageKind } from '../extension/reviewClient';
+
+const props = defineProps<{ locale?: 'zh' | 'en'; externalImport?: ExternalJsonImport | null }>();
+const emit = defineEmits<{ switchLocale: []; 'external-imported': [id: string, warning?: ImportFormatWarning]; 'external-import-failed': [id: string, reason: string]; 'successful-use': [kind: ReviewUsageKind]; 'review-blocked': [blocked: boolean] }>();
+const externalEditorReady = ref(false);
+const reviewConversionBusy = ref(0);
+const externalImportGate = createExternalImportGate();
 
 const settingsTxt = computed<SettingsTxt>(() => (props.locale === 'en' ? SETTINGS_TXT_EN : SETTINGS_TXT_ZH));
 const appendErrorDetail = (base: string, detail?: string): string => (detail ? `${base}: ${detail}` : base);
@@ -631,7 +642,7 @@ const localizeConvertError = (error: unknown): string => {
 };
 
 // ==================== 常量与全局状态 ====================
-const MAX_FILE_SIZE = 30 * 1024 * 1024; // 文件大小限制：30MB
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 文件导入上限，涵盖三百万行订单测试数据。
 const LARGE_EDITOR_LINE_THRESHOLD = 300000;
 const LARGE_EDITOR_CHAR_THRESHOLD = 8 * 1024 * 1024;
 const JSON_PREVIEW_TOKENIZATION_MAX_LINES = 50000;
@@ -741,6 +752,7 @@ const {
     ensureMonacoLanguageRegistered,
     loadMonacoLanguageContribution,
     initializeMonacoEnvironment,
+    configureJsonLanguageFeatures,
 } = useMonacoLanguageRegistry(themeMode);
 
 const isLongLineWrapLocked = ref(false);
@@ -1194,6 +1206,17 @@ const jsonToolSettingsDialog = useJsonToolSettingsDialog({
 
 const { settingsDialogVisible, settingsCollapseActiveNames, updateWordWrap, updateFontSize, updateMinimap, updateStickyScroll, openSettingsDialog } =
     jsonToolSettingsDialog;
+
+// Review invitations follow actual completed work, and wait outside editing/processing dialogs.
+const recordReviewUse = (kind: ReviewUsageKind) => {
+    if (!isTabPageClosing.value) emit('successful-use', kind);
+};
+const reviewUiBlocked = computed(() => !externalEditorReady.value || isTabPageClosing.value
+    || repair.busy.value || reviewConversionBusy.value > 0 || comparisonMode.value || comparisonLoading.value
+    || diffMode.isDiffMode.value || diffMode.comparisonBusy.value || isResizing.value || isInputDragActive.value
+    || settingsDialogVisible.value || dataMaskingDialogVisible.value || archiveNameDialogVisible.value
+    || affixDialogVisible.value || fieldSortDialogVisible.value || demoGuideVisible.value);
+watch(reviewUiBlocked, blocked => emit('review-blocked', blocked), { immediate: true, flush: 'sync' });
 
 provide(DIFF_MODE_INJECTION_KEY, diffMode);
 
@@ -1801,8 +1824,7 @@ const getEditorOptions = (
         tabSize: size, //  使用传入的大小作为Tab宽度
         indentSize: size, // 使用传入的大小作为缩进宽度
         ...getJsonToolLongLineViewOptions(effectiveWordWrap.value),
-        fontSize: fontSize.value, // 字体大小设置
-        lineHeight: 16, // 设置行高为16px，与光标高度保持一致
+        ...getJsonToolEditorTypography(fontSize.value),
         autoClosingBrackets: 'languageDefined' as const, // 根据语言自动闭合括号
         autoClosingQuotes: 'languageDefined' as const, // 根据语言自动闭合引号
         formatOnPaste: false, // 启用粘贴时自动格式化
@@ -2816,6 +2838,47 @@ const setInputEditorValue = (content: string, language: EditorContentLanguage = 
     return true;
 };
 
+// Format captured responses independently; preserve edits made while the worker runs.
+const externalImportController = createFormattedImportController({
+    readEditor: () => {
+        const model = inputEditor?.getModel() ?? null;
+        return {
+            model, version: model?.getVersionId() ?? 0,
+            ready: externalEditorReady.value && Boolean(inputEditor && outputEditor)
+                && !diffMode.isDiffMode.value && !isTabPageClosing.value,
+            hasContent: Boolean(model?.getValueLength()),
+        };
+    },
+    settings: () => ({ indentSize: indentSize.value, arrayNewLine: arrayNewLine.value,
+        preserveNumberLiterals: true, encodingMode: encodingMode.value }),
+    write: request => {
+        const result = externalImportGate.apply(request, {
+            ready: Boolean(inputEditor && outputEditor) && !diffMode.isDiffMode.value,
+            hasContent: () => Boolean(inputEditor?.getModel()?.getValueLength()),
+            setText: text => setInputEditorValue(text, 'json'),
+        });
+        if (result === 'applied') {
+            try {
+                clearOutputFoldingInfo();
+                setOutputEditorValue('', 'json', true);
+                inputEditor?.setPosition({ lineNumber: 1, column: 1 });
+                inputEditor?.revealLine(1);
+            } catch {
+                // The input write succeeded; presentation cleanup must not strand its acknowledgement.
+            }
+        }
+        return result;
+    },
+    imported: (id, warning) => emit('external-imported', id, warning),
+    failed: (id, reason) => emit('external-import-failed', id, reason),
+});
+watch([() => props.externalImport, externalEditorReady, diffMode.isDiffMode, isTabPageClosing],
+    () => {
+        if (diffMode.isDiffMode.value || isTabPageClosing.value) externalImportController.cancel();
+        else void externalImportController.apply(props.externalImport);
+    }, { flush: 'post' });
+onBeforeUnmount(() => externalImportController.dispose());
+
 const goToPrevError = () => {
     const errors = inputEditorErrors.value;
     if (!errors.length || !inputEditor) return;
@@ -2897,19 +2960,8 @@ const configureJsonSchemaSupport = () => {
         currentErrorIndex.value = -1;
     }
 
-    // 配置JSON语言服务，提供更好的自动补全
-    monaco.languages.json.jsonDefaults.setModeConfiguration({
-        documentFormattingEdits: false,
-        documentRangeFormattingEdits: false,
-        completionItems: true, // 保留自动补全功能
-        hovers: true,
-        documentSymbols: true,
-        tokens: true,
-        colors: true,
-        foldingRanges: true,
-        diagnostics: enableDiagnostics.value, // 启用/关闭JSON语法检查和错误提示
-        selectionRanges: true,
-    });
+    // 空白页面保留高亮与手动补全；有 JSON 内容后再启用自动语言服务。
+    configureJsonLanguageFeatures(enableDiagnostics.value);
 };
 
 // 配置输入编辑器
@@ -2946,6 +2998,7 @@ const configureInputEditor: () => void = () => {
     // 监听输入变化
     let prevInputLineCount = getEditorLineCount(inputEditor);
     inputEditor.onDidChangeModel(() => {
+        externalImportController.editorChanged();
         cancelPendingLevelAnalysis();
         if (repair.busy.value) {
             const wasRepairing = repair.repairing.value;
@@ -2961,6 +3014,7 @@ const configureInputEditor: () => void = () => {
         debouncedUpdateInputLineNumberWidth();
     });
     inputEditor.onDidChangeModelContent((e) => {
+        externalImportController.editorChanged();
         if (repair.busy.value) {
             const wasRepairing = repair.repairing.value;
             repair.cancel();
@@ -3236,7 +3290,6 @@ const setupResizeObservers = () => {
 
 // ==================== onMounted 辅助函数结束 ====================
 
-let editorInitTimer: ReturnType<typeof setTimeout> | null = null;
 let toolbarScrollTimer: ReturnType<typeof setTimeout> | null = null;
 const pendingAnimationFrames = new Set<number>();
 
@@ -3276,6 +3329,7 @@ const initializeNormalEditors = async () => {
 
         initializeEditorLayout();
         setupResizeObservers();
+        externalEditorReady.value = true;
 
     } catch (error: any) {
         showMessageError('Monaco编辑器初始化失败: ' + error.message);
@@ -3301,9 +3355,10 @@ onMounted(async () => {
 
     // DOM 和样式就绪后的下一帧创建编辑器，避免固定等待时间。
     await nextTick();
-    editorInitTimer = setTimeout(() => {
+    if (isTabPageClosing.value) return;
+    requestTrackedAnimationFrame(() => {
         void initializeNormalEditors();
-    }, 120);
+    });
 
     // 设置监听器
     setupWindowResizeListener();
@@ -3335,10 +3390,6 @@ onBeforeUnmount(() => {
     destroyLevelAnalysisWorker();
     cancelFoldingInfoWorker();
     stopResize();
-    if (editorInitTimer) {
-        clearTimeout(editorInitTimer);
-        editorInitTimer = null;
-    }
     if (toolbarScrollTimer) {
         clearTimeout(toolbarScrollTimer);
         toolbarScrollTimer = null;
@@ -3398,6 +3449,7 @@ onUnmounted(() => {
 
 // 处理转换
 const handleConvert = async (command: string) => {
+    reviewConversionBusy.value++;
     try {
         const value = inputEditor?.getValue() || '';
         if (!value.trim()) {
@@ -3411,6 +3463,7 @@ const handleConvert = async (command: string) => {
             const jsonStr = cookieToJSON(value);
             outputType.value = 'json';
             setOutputEditorValue(jsonStr, 'json', true);
+            recordReviewUse('convert');
             showMessageSuccess(settingsTxt.value.msgConvertCookieSuccess);
             return;
         }
@@ -3419,9 +3472,12 @@ const handleConvert = async (command: string) => {
         // 注意：转换到 YAML/TOML/XML/Go 是“语义转换”，需要按 JSON 规范解码字符串中的 \uXXXX。
         // 否则 preprocessJSON 会用私有区占位符保护 \uXXXX，导致结果里出现 ... 这类占位符字符。
         let parsed;
+        let numberConversion: ReturnType<typeof prepareHighPrecisionConversion> | undefined;
         try {
             const result = preprocessJSON(value, { preserveNumberLiterals: true, encodingMode: true });
-            parsed = unwrapHighPrecisionForConvert(result.data);
+            // Go infers types from authenticated number literals, rather than output sentinels.
+            numberConversion = command === 'go' ? undefined : prepareHighPrecisionConversion(result.data);
+            parsed = numberConversion?.data ?? result.data;
         } catch (error) {
             showMessageError(settingsTxt.value.msgInvalidJson);
             return;
@@ -3468,8 +3524,8 @@ const handleConvert = async (command: string) => {
                 throw new Error(settingsTxt.value.msgConvertUnsupported);
         }
 
-        // 还原数字精度哨兵：把 __HPN_START_xxx__...__HPN_END_xxx__ 以及可能被库加上的引号替换为原始数字字面量
-        result = restoreHighPrecisionInOutput(result);
+        // 只还原本次转换生成的数字标记；用户原始字符串和其他转换的标记保持原样。
+        if (numberConversion) result = numberConversion.restoreOutput(result);
 
         if (outputEditor) {
             // 更新编辑器内容
@@ -3479,10 +3535,13 @@ const handleConvert = async (command: string) => {
             await loadMonacoLanguageContribution(editorLanguage);
             setOutputEditorValue(result, editorLanguage, enableLargeFile, customIndentSize);
 
+            recordReviewUse('convert');
             showMessageSuccess(settingsTxt.value.msgConvertSuccess(convertSuccessLabelMap[command] || command.toUpperCase()));
         }
     } catch (error: any) {
         showMessageError(settingsTxt.value.msgConvertFail(localizeConvertError(error)));
+    } finally {
+        reviewConversionBusy.value--;
     }
 };
 
@@ -3519,6 +3578,7 @@ const formatJSON = async () => {
         outputType.value = 'json';
         applyingFormatResult = true;
         try { setOutputEditorValue(result.formatted, 'json', true); } finally { applyingFormatResult = false; }
+        recordReviewUse('format');
         if (result.comparisonId) {
             const comparisonId = result.comparisonId;
             void ElMessageBox.confirm(settingsTxt.value.repairSuccessPrompt, settingsTxt.value.repairSuccessTitle, {
@@ -3571,6 +3631,7 @@ const compressJSON = () => {
         }
         setOutputEditorValue(compressed, 'json', true);
 
+        recordReviewUse('compress');
         showMessageSuccess(settingsTxt.value.msgCompressSuccess);
     } catch (error: any) {
         showMessageError(settingsTxt.value.msgCompressFail(error.message));
@@ -3610,6 +3671,7 @@ const unescapeJSON = (recursive: boolean = true) => {
         }
 
         if (!writeProcessingResultToOutput(result.text, 'json')) return;
+        if (result.messageKind !== 'not-detected') recordReviewUse('unescape');
 
         const successMessageMap: Record<JsonUnescapeMessageKind, string> = {
             success: settingsTxt.value.msgUnescapeSuccess,
@@ -3664,6 +3726,7 @@ const compressAndEscapeJSON = () => {
         const escapedString = JSON.stringify(compressed);
         setOutputEditorValue(escapedString, 'json', true);
 
+        recordReviewUse('escape');
         showMessageSuccess(settingsTxt.value.msgEscapeSuccess);
     } catch (error: any) {
         showMessageError(settingsTxt.value.msgEscapeFail(error.message));
@@ -5132,14 +5195,12 @@ const transferToInput = (e: MouseEvent) => {
 }
 
 .collapse-control .level-select {
-    width: 84px;
+    /* 为“第 99 层”预留完整文字、箭头和边距，所有层级及语言保持同宽。 */
+    width: 88px;
+    flex-shrink: 0;
     --json-tool-level-select-border: var(--el-color-success, #67c23a);
     --json-tool-level-select-hover-border: var(--el-color-success-dark-2, #529b2e);
     --json-tool-level-select-disabled-border: var(--el-color-success-light-5, #b3e19d);
-}
-
-.collapse-control .level-select.level-select-en {
-    width: 98px;
 }
 
 .json-tool-root.theme-dark .collapse-control .level-select {
@@ -5162,14 +5223,6 @@ const transferToInput = (e: MouseEvent) => {
     padding: 0 20px !important;
 }
 
-:global(.level-select-dropdown) {
-    min-width: 84px !important;
-}
-
-:global(.level-select-dropdown.level-select-dropdown-en) {
-    min-width: 98px !important;
-}
-
 :global(.level-select-dropdown .el-select-dropdown__wrap),
 :global(.level-select-dropdown .el-scrollbar__wrap) {
     scrollbar-width: none;
@@ -5188,8 +5241,9 @@ const transferToInput = (e: MouseEvent) => {
 }
 
 :global(.level-select-dropdown .el-select-dropdown__item) {
+    text-align: center;
     overflow: visible;
-    padding: 0 20px !important;
+    padding: 0 12px !important;
     text-overflow: clip;
     white-space: nowrap;
 }
@@ -6303,7 +6357,7 @@ const transferToInput = (e: MouseEvent) => {
     text-overflow: ellipsis;
     user-select: none;
     white-space: nowrap;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-family: var(--json-tool-font-code);
 }
 
 .editor-status-bar--output {
@@ -6450,7 +6504,7 @@ const transferToInput = (e: MouseEvent) => {
 }
 
 :deep(.level-select .el-select__suffix) {
-    margin-left: 4px;
+    margin-left: 2px;
 }
 
 :deep(.level-select .el-input__inner) {
@@ -6652,12 +6706,7 @@ const transferToInput = (e: MouseEvent) => {
 .demo-close-btn {
     background: none;
     border: none;
-    font-family:
-        system-ui,
-        -apple-system,
-        'Segoe UI',
-        Arial,
-        sans-serif;
+    font-family: var(--json-tool-font-ui);
     font-size: 14px;
     font-weight: 600;
     line-height: 1;

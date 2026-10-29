@@ -1,0 +1,82 @@
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "math/big"
+    "os"
+    "reflect"
+    "sort"
+)
+
+func decode(data []byte) (any, error) {
+    decoder := json.NewDecoder(bytes.NewReader(data))
+    decoder.UseNumber()
+    var value any
+    err := decoder.Decode(&value)
+    return value, err
+}
+
+func differences(left, right any, path string, out *[]string) {
+    if len(*out) >= 20 { return }
+    if a, ok := left.(json.Number); ok {
+        if b, ok := right.(json.Number); ok {
+            ar, aok := new(big.Rat).SetString(string(a))
+            br, bok := new(big.Rat).SetString(string(b))
+            if aok && bok && ar.Cmp(br) == 0 { return }
+        }
+    }
+    if a, ok := left.(map[string]any); ok {
+        if b, ok := right.(map[string]any); ok {
+            keys := make([]string, 0, len(a)+len(b))
+            for key := range a { keys = append(keys, key) }
+            for key := range b { if _, exists := a[key]; !exists { keys = append(keys, key) } }
+            sort.Strings(keys)
+            for _, key := range keys {
+                av, ae := a[key]; bv, be := b[key]
+                switch {
+                case !ae: *out = append(*out, fmt.Sprintf("%s[%q]: added %v", path, key, bv))
+                case !be: *out = append(*out, fmt.Sprintf("%s[%q]: missing (was %v)", path, key, av))
+                default: differences(av, bv, fmt.Sprintf("%s[%q]", path, key), out)
+                }
+                if len(*out) >= 20 { return }
+            }
+            return
+        }
+    }
+    if a, ok := left.([]any); ok {
+        if b, ok := right.([]any); ok && len(a) == len(b) {
+            for i := range a { differences(a[i], b[i], fmt.Sprintf("%s[%d]", path, i), out) }
+            return
+        }
+    }
+    if !reflect.DeepEqual(left, right) {
+        *out = append(*out, fmt.Sprintf("%s: %v (%T) -> %v (%T)", path, left, left, right, right))
+    }
+}
+
+func main() {
+    result := map[string]any{}
+    input, err := os.ReadFile("input.json")
+    if err != nil { panic(err) }
+    var root Root
+    err = json.Unmarshal(input, &root)
+    if err != nil {
+        result["unmarshalError"] = err.Error()
+    } else {
+        output, err := json.Marshal(root)
+        if err != nil {
+            result["marshalError"] = err.Error()
+        } else {
+            before, err := decode(input); if err != nil { panic(err) }
+            after, err := decode(output); if err != nil { panic(err) }
+            diffs := []string{}
+            differences(before, after, "$", &diffs)
+            result["roundTripDifferences"] = diffs
+            if len(diffs) > 0 { result["roundTripOutput"] = string(output) }
+        }
+    }
+    data, err := json.Marshal(result); if err != nil { panic(err) }
+    fmt.Println(string(data))
+}

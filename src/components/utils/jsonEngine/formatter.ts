@@ -4,6 +4,7 @@ import { JsonInputParseError } from './types';
 import { smartDecode } from '../decode';
 import { createHighPrecisionNumberWrapper, normalizeJsonNumberLiteral, tryParseHighPrecisionWrapper, tryReadHighPrecisionWrapperObject } from './numberLiteral';
 import { preprocessSpecialJsonValues } from './preprocess';
+import { ChunkedStringBuilder } from './stringBuilder';
 
 interface PendingHexByte {
     value: number;
@@ -375,7 +376,13 @@ export class JsonPlusFormatter {
         if (value && typeof value === 'object') {
             const result: Record<string, any> = {};
             for (const key of Object.keys(value)) {
-                result[key] = this.decodeParsedData(value[key]);
+                // JSON keys such as __proto__ must remain ordinary own data properties.
+                Object.defineProperty(result, key, {
+                    value: this.decodeParsedData(value[key]),
+                    enumerable: true,
+                    configurable: true,
+                    writable: true,
+                });
             }
             return result;
         }
@@ -395,7 +402,8 @@ export class JsonPlusFormatter {
     }
 
     private preprocessHighPrecisionNumbers(input: string): string {
-        let result = '';
+        const result = new ChunkedStringBuilder();
+        let unchangedStart = 0;
         let i = 0;
         let inString = false;
         let stringChar = '';
@@ -409,7 +417,6 @@ export class JsonPlusFormatter {
             const next = input[i + 1] || '';
 
             if (inLineComment) {
-                result += char;
                 if (char === '\n') {
                     inLineComment = false;
                 }
@@ -418,9 +425,7 @@ export class JsonPlusFormatter {
             }
 
             if (inBlockComment) {
-                result += char;
                 if (char === '*' && next === '/') {
-                    result += next;
                     i += 2;
                     inBlockComment = false;
                     continue;
@@ -430,9 +435,7 @@ export class JsonPlusFormatter {
             }
 
             if (inString) {
-                result += char;
                 if (char === '\\' && next) {
-                    result += next;
                     i += 2;
                     continue;
                 }
@@ -445,14 +448,12 @@ export class JsonPlusFormatter {
             }
 
             if (char === '/' && next === '/') {
-                result += char + next;
                 i += 2;
                 inLineComment = true;
                 continue;
             }
 
             if (char === '/' && next === '*') {
-                result += char + next;
                 i += 2;
                 inBlockComment = true;
                 continue;
@@ -461,7 +462,6 @@ export class JsonPlusFormatter {
             if (char === '"' || char === "'") {
                 inString = true;
                 stringChar = char;
-                result += char;
                 i++;
                 continue;
             }
@@ -486,19 +486,24 @@ export class JsonPlusFormatter {
                         }
                         if (needsProtection) {
                             const wrapped = JSON.stringify(createHighPrecisionNumberWrapper(token));
-                            result += wrapped;
+                            // Copy untouched spans only when a number actually needs protection.
+                            // A single decimal at the end must not create a node for every input character.
+                            result.append(input.slice(unchangedStart, i));
+                            result.append(wrapped);
                             i += token.length;
+                            unchangedStart = i;
                             continue;
                         }
                     }
                 }
             }
 
-            result += char;
             i++;
         }
 
-        return result;
+        if (unchangedStart === 0) return input;
+        result.append(input.slice(unchangedStart));
+        return result.toString();
     }
 
     // 生成转义占位符
@@ -511,7 +516,7 @@ export class JsonPlusFormatter {
 
     // 预处理字符串，处理非法转义和注释
     private preprocessString(input: string, escapeMap: Map<string, string>, forRepair = false): string {
-        let result = '';
+        const result = new ChunkedStringBuilder();
         let i = 0;
 
         while (i < input.length) {
@@ -526,7 +531,7 @@ export class JsonPlusFormatter {
                 while (i < input.length && input[i] !== '\n') {
                     i++;
                 }
-                if (forRepair) result += input.slice(start, i);
+                if (forRepair) result.append(input.slice(start, i));
                 continue;
             } else if (char === '/' && nextChar === '*') {
                 // 多行注释 /* */
@@ -539,7 +544,7 @@ export class JsonPlusFormatter {
                     }
                     i++;
                 }
-                if (forRepair) result += input.slice(start, i);
+                if (forRepair) result.append(input.slice(start, i));
                 continue;
             } else if (char === '#') {
                 // # 单行注释（扩展支持）
@@ -548,17 +553,16 @@ export class JsonPlusFormatter {
                 while (i < input.length && input[i] !== '\n') {
                     i++;
                 }
-                if (forRepair) result += '//' + input.slice(start + 1, i);
+                if (forRepair) result.append('//' + input.slice(start + 1, i));
                 continue;
             }
 
             if (char === '"' || char === "'") {
                 // 处理字符串
                 const quote = char;
-                result += quote;
+                result.append(quote);
                 i++;
 
-                let stringContent = '';
                 const pendingBytes: PendingHexByte[] = []; // 用于收集连续的\xHH字节
 
                 while (i < input.length && input[i] !== quote) {
@@ -581,7 +585,7 @@ export class JsonPlusFormatter {
                                 }
                                 const ch = input[j] || '';
                                 if (ch === '\r' || ch === '\n' || ch === '\u2028' || ch === '\u2029') {
-                                    stringContent += this.flushPendingHexBytes(pendingBytes, escapeMap);
+                                    result.append(this.flushPendingHexBytes(pendingBytes, escapeMap));
 
                                     if (ch === '\r' && input[j + 1] === '\n') {
                                         i = j + 2;
@@ -593,7 +597,7 @@ export class JsonPlusFormatter {
                             }
 
                             if (forRepair && quote === "'" && nextChar === "'") {
-                                stringContent += "\\'";
+                                result.append("\\'");
                                 i += 2;
                                 continue;
                             }
@@ -602,66 +606,75 @@ export class JsonPlusFormatter {
                             if (!['"', '\\', '/', 'b', 'f', 'n', 'r', 't'].includes(nextChar)) {
                                 // 特殊处理 \u转义（包括非法格式）
                                 if (nextChar === 'u') {
-                                    stringContent += this.flushPendingHexBytes(pendingBytes, escapeMap);
+                                    result.append(this.flushPendingHexBytes(pendingBytes, escapeMap));
 
                                     const res = this.handleUnicodeEscape(input, i, quote, escapeMap);
-                                    stringContent += res.append;
+                                    result.append(res.append);
                                     i += res.consumed;
                                     continue;
                                 }
                                 // 特殊处理 \xHH（包括非法格式）
                                 if (nextChar === 'x') {
                                     const res = this.handleHexEscape(input, i, quote, escapeMap, pendingBytes);
-                                    stringContent += res.append;
+                                    result.append(res.append);
                                     i += res.consumed;
                                     continue;
                                 } else {
-                                    stringContent += this.flushPendingHexBytes(pendingBytes, escapeMap);
+                                    result.append(this.flushPendingHexBytes(pendingBytes, escapeMap));
 
                                     // 其他非法转义
                                     const escapeSeq = '\\' + nextChar;
                                     const placeholder = this.createEscapePlaceholder();
                                     escapeMap.set(placeholder, escapeSeq);
-                                    stringContent += placeholder;
+                                    result.append(placeholder);
                                     i += 2; // 跳过转义序列
                                 }
                             } else {
-                                stringContent += this.flushPendingHexBytes(pendingBytes, escapeMap);
+                                result.append(this.flushPendingHexBytes(pendingBytes, escapeMap));
 
                                 // 标准转义序列直接保留，不需要占位符
                                 // JSON5 能正确解析这些标准转义序列（如 \n \t \r 等）
                                 // 这样可以避免占位符恢复时产生实际的控制字符破坏 JSON 结构
-                                stringContent += '\\' + nextChar;
+                                result.append('\\' + nextChar);
                                 i += 2; // 跳过转义序列
                             }
                         } else {
-                            stringContent += this.flushPendingHexBytes(pendingBytes, escapeMap);
+                            result.append(this.flushPendingHexBytes(pendingBytes, escapeMap));
 
-                            stringContent += '\\';
+                            result.append('\\');
                             i++;
                         }
                     } else {
-                        stringContent += this.flushPendingHexBytes(pendingBytes, escapeMap);
+                        result.append(this.flushPendingHexBytes(pendingBytes, escapeMap));
 
-                        stringContent += input[i];
-                        i++;
+                        const start = i;
+                        do {
+                            i++;
+                        } while (i < input.length && input[i] !== quote && input[i] !== '\\');
+                        result.append(input.slice(start, i));
                     }
                 }
 
-                stringContent += this.flushPendingHexBytes(pendingBytes, escapeMap);
-
-                result += stringContent;
+                result.append(this.flushPendingHexBytes(pendingBytes, escapeMap));
 
                 if (i < input.length) {
-                    result += quote;
+                    result.append(quote);
                 }
             } else {
-                result += char;
+                const start = i;
+                do {
+                    i++;
+                } while (
+                    i < input.length && input[i] !== '"' && input[i] !== "'" &&
+                    input[i] !== '/' && input[i] !== '#'
+                );
+                result.append(input.slice(start, i));
+                continue;
             }
             i++;
         }
 
-        return result;
+        return result.toString();
     }
 
     // Repair uses the same escape policy as normal formatting, but leaves comments for the repair parser.
@@ -748,7 +761,8 @@ export class JsonPlusFormatter {
 
     // 格式化数字
     private formatNumber(num: number): string {
-        return num.toString();
+        // Parsing keeps the sign of -0, but Number#toString would discard it.
+        return Object.is(num, -0) ? '-0' : num.toString();
     }
 
     // 自定义字符串化函数

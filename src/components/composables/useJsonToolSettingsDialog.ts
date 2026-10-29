@@ -3,6 +3,7 @@ import { nextTick, ref, watch, type Ref } from 'vue';
 
 import { JSON_TOOL_EDITOR_HORIZONTAL_SCROLLBAR_THICKNESS } from '../utils/editorScrollbar';
 import { getJsonToolLongLineViewOptions } from '../utils/editorWordWrap';
+import { getJsonToolEditorTypography } from '../utils/editorTypography';
 import type { ButtonVisibility } from './useToolSettings';
 
 export interface UseJsonToolSettingsDialogCtx {
@@ -58,15 +59,14 @@ export const useJsonToolSettingsDialog = (ctx: UseJsonToolSettingsDialogCtx) => 
     };
 
     const updateFontSize = () => {
-        const options = {
-            fontSize: ctx.fontSize.value,
-        };
+        const options = getJsonToolEditorTypography(ctx.fontSize.value);
 
         ctx.getInputEditor()?.updateOptions(options);
         ctx.getOutputEditor()?.updateOptions(options);
         ctx.updateDiffEditorOptions(options);
 
         nextTick(() => {
+            ctx.updateEditorLayout();
             ctx.scheduleDiffEditorLayout();
             ctx.scheduleDiffRecompute();
         });

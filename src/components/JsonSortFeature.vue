@@ -303,7 +303,7 @@ const sortFieldNameModel = computed({
 
 .form-hint {
     margin-top: 6px;
-    color: #909399;
+    color: var(--json-tool-text-muted, #606266);
     font-size: 12px;
     line-height: 1.5;
 }
@@ -323,7 +323,7 @@ const sortFieldNameModel = computed({
 
 .path-type {
     flex-shrink: 0;
-    color: #909399;
+    color: var(--json-tool-text-muted, #606266);
     font-size: 12px;
 }
 
@@ -444,7 +444,7 @@ const sortFieldNameModel = computed({
 
 .demo-settings-label {
     flex-shrink: 0;
-    color: #909399;
+    color: var(--json-tool-text-muted, #606266);
     min-width: 68px;
 }
 
@@ -455,7 +455,7 @@ const sortFieldNameModel = computed({
 .demo-current-settings code {
     padding: 1px 5px;
     border-radius: 3px;
-    font-family: 'Monaco', 'Menlo', monospace;
+    font-family: var(--json-tool-font-code);
     font-size: 12px;
     color: #d73a49;
 }

@@ -38,14 +38,14 @@ async function withSettings(saved, action) {
     }
 }
 
-test('extension update preserves older preferences and starts with repair disabled', async () => {
+test('extension update preserves valid older preferences and starts with repair disabled', async () => {
     await withSettings({
-        fontSize: 15, indentSize: 4, wordWrap: false, themeMode: 'dark', sortMethod: 'length',
+        fontSize: 14, indentSize: 4, wordWrap: false, themeMode: 'dark', sortMethod: 'length',
         buttonVisibility: { compress: false, fetchJson: true, share: true, fullscreen: true },
         defaultFullscreen: true,
     }, async (settings, values) => {
         assert.equal(settings.repairOnFormat.value, false);
-        assert.equal(settings.fontSize.value, 15);
+        assert.equal(settings.fontSize.value, 14);
         assert.equal(settings.indentSize.value, 4);
         assert.equal(settings.wordWrap.value, false);
         assert.equal(settings.themeMode.value, 'dark');
@@ -56,7 +56,7 @@ test('extension update preserves older preferences and starts with repair disabl
         await nextTick();
         const persisted = JSON.parse(values.get('json-tool-settings'));
         assert.equal(persisted.repairOnFormat, true);
-        assert.equal(persisted.fontSize, 15);
+        assert.equal(persisted.fontSize, 14);
         assert.equal(persisted.indentSize, 4);
         assert.equal(persisted.themeMode, 'dark');
         assert.equal(persisted.buttonVisibility.compress, false);
@@ -78,4 +78,21 @@ test('extension restores a saved repair preference without altering unrelated se
         assert.equal(persisted.fontSize, 13);
         assert.equal(persisted.arrayNewLine, false);
     });
+});
+
+
+test('extension update falls back for unsupported or damaged font sizes while preserving other preferences', async () => {
+    for (const fontSize of [15, '14', -1]) {
+        await withSettings({ fontSize, indentSize: 4, themeMode: 'dark' }, async (settings, values) => {
+            assert.equal(settings.fontSize.value, 12);
+            assert.equal(settings.indentSize.value, 4);
+            assert.equal(settings.themeMode.value, 'dark');
+            settings.markInitialized();
+            settings.saveSettings();
+            const persisted = JSON.parse(values.get('json-tool-settings'));
+            assert.equal(persisted.fontSize, 12);
+            assert.equal(persisted.indentSize, 4);
+            assert.equal(persisted.themeMode, 'dark');
+        });
+    }
 });

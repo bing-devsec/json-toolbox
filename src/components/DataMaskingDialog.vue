@@ -53,7 +53,7 @@
                                                 /
                                                 <code style="background: #fff; padding: 2px 6px; border-radius: 2px">company.name</code>
                                             </p>
-                                            <p style="margin: 0; padding-left: 12px; color: #909399; font-size: 11px">
+                                            <p style="margin: 0; padding-left: 12px; color: var(--json-tool-text-muted, #606266); font-size: 11px">
                                                 {{ maskTxt.exactExamplePrefix }}
                                                 <code style="background: #fff; padding: 2px 6px; border-radius: 2px">name</code>
                                                 {{ maskTxt.exactExampleMiddle }}
@@ -72,7 +72,7 @@
                                                 {{ maskTxt.wildcardDescMiddle }}
                                                 <code style="background: #fff; padding: 2px 6px; border-radius: 2px">*.password</code>
                                             </p>
-                                            <p style="margin: 0; padding-left: 12px; color: #909399; font-size: 11px">
+                                            <p style="margin: 0; padding-left: 12px; color: var(--json-tool-text-muted, #606266); font-size: 11px">
                                                 {{ maskTxt.wildcardExamplePrefix }}
                                                 <code style="background: #fff; padding: 2px 6px; border-radius: 2px">*.password</code>
                                                 {{ maskTxt.wildcardExampleMiddle }}
@@ -91,7 +91,7 @@
                                                 {{ maskTxt.arrayWildcardDescMiddle }}
                                                 <code style="background: #fff; padding: 2px 6px; border-radius: 2px">users[*].email</code>
                                             </p>
-                                            <p style="margin: 0; padding-left: 12px; color: #909399; font-size: 11px">
+                                            <p style="margin: 0; padding-left: 12px; color: var(--json-tool-text-muted, #606266); font-size: 11px">
                                                 {{ maskTxt.wildcardExamplePrefix }}
                                                 <code style="background: #fff; padding: 2px 6px; border-radius: 2px">
                                                     company.employees[*].personalInfo.phone
@@ -107,7 +107,7 @@
                                                 <code style="background: #fff; padding: 2px 6px; border-radius: 2px">|</code>
                                                 {{ maskTxt.orDesc }}
                                             </p>
-                                            <p style="margin: 0; padding-left: 12px; color: #909399; font-size: 11px">
+                                            <p style="margin: 0; padding-left: 12px; color: var(--json-tool-text-muted, #606266); font-size: 11px">
                                                 {{ maskTxt.orExamplePrefix }}
                                                 <code style="background: #fff; padding: 2px 6px; border-radius: 2px">name | settings[*].name</code>
                                                 {{ maskTxt.orExampleMiddle }}
@@ -3228,7 +3228,7 @@ watch(
 
 .saved-rule-meta {
     font-size: 12px;
-    color: #909399;
+    color: var(--json-tool-text-muted, #606266);
 }
 
 /* 删除确认框样式 */
@@ -3343,7 +3343,7 @@ watch(
 }
 
 :deep(.el-alert__title) code {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-family: var(--json-tool-font-code);
     font-size: 11px;
     background-color: #fff;
     padding: 2px 6px;
@@ -3424,7 +3424,7 @@ watch(
 
 .path-type {
     font-size: 11px;
-    color: #909399;
+    color: var(--json-tool-text-muted, #606266);
     padding: 2px 6px;
     margin-left: 8px;
     white-space: nowrap;

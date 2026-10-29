@@ -1,0 +1,10 @@
+// 非标准外层与合法嵌套字符串组合
+{
+  requestId: 'REQ-JSON5',
+  payload: "{\"user\":{\"id\":\"U001\",\"name\":\"张三\",\"enabled\":true},\"message\":\"客服说：\\\"明天送达\\\"；不要把 } ] 或 \\\"amount\\\": 1 当作外层结构。\",\"path\":\"C:\\\\logs\\\\orders\\\\2026\\\\\",\"url\":\"https://example.com/search?q=JSON&lang=zh\",\"lines\":\"第一行\\n第二行\\t结束\"}"
+  enabled: true,
+  missing: undefined,
+  invalid: NaN,
+  hex: 0xFF,
+  tags: ['json', 'json5',],
+}

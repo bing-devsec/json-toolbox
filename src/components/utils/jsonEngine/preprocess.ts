@@ -1,9 +1,11 @@
 import { isIdentifierChar, isValuePosition } from './scanner';
+import { ChunkedStringBuilder } from './stringBuilder';
 
 type ReplacementScanner = (input: string, index: number) => { replacement: string; nextIndex: number } | null;
 
 const scanOutsideStringsAndComments = (input: string, scanner: ReplacementScanner): string => {
-    let result = '';
+    const result = new ChunkedStringBuilder();
+    let unchangedStart = 0;
     let i = 0;
     let inString = false;
     let stringChar = '';
@@ -15,16 +17,13 @@ const scanOutsideStringsAndComments = (input: string, scanner: ReplacementScanne
         const next = input[i + 1] || '';
 
         if (inLineComment) {
-            result += char;
             if (char === '\n') inLineComment = false;
             i++;
             continue;
         }
 
         if (inBlockComment) {
-            result += char;
             if (char === '*' && next === '/') {
-                result += next;
                 i += 2;
                 inBlockComment = false;
                 continue;
@@ -34,9 +33,7 @@ const scanOutsideStringsAndComments = (input: string, scanner: ReplacementScanne
         }
 
         if (inString) {
-            result += char;
             if (char === '\\' && next) {
-                result += next;
                 i += 2;
                 continue;
             }
@@ -49,21 +46,18 @@ const scanOutsideStringsAndComments = (input: string, scanner: ReplacementScanne
         }
 
         if (char === '/' && next === '/') {
-            result += char + next;
             i += 2;
             inLineComment = true;
             continue;
         }
 
         if (char === '/' && next === '*') {
-            result += char + next;
             i += 2;
             inBlockComment = true;
             continue;
         }
 
         if (char === '#') {
-            result += char;
             i++;
             inLineComment = true;
             continue;
@@ -72,23 +66,25 @@ const scanOutsideStringsAndComments = (input: string, scanner: ReplacementScanne
         if (char === '"' || char === "'") {
             inString = true;
             stringChar = char;
-            result += char;
             i++;
             continue;
         }
 
         const replacement = scanner(input, i);
         if (replacement) {
-            result += replacement.replacement;
+            result.append(input.slice(unchangedStart, i));
+            result.append(replacement.replacement);
             i = replacement.nextIndex;
+            unchangedStart = i;
             continue;
         }
 
-        result += char;
         i++;
     }
 
-    return result;
+    if (unchangedStart === 0) return input;
+    result.append(input.slice(unchangedStart));
+    return result.toString();
 };
 
 export const replaceUndefinedValuesWithNull = (input: string): string => {

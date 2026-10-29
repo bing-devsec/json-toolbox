@@ -13,7 +13,11 @@ const release = path.join(root, 'release');
 fs.mkdirSync(release, { recursive: true });
 const filename = `json-tool-extension-${pkg.version}.zip`;
 const output = path.join(release, filename);
-if (fs.existsSync(output)) fs.unlinkSync(output);
+const infoOutput = path.join(release, filename.replace(/\.zip$/, '.build-info.json'));
+const checksumOutput = output + '.sha256';
+for (const artifact of [output, infoOutput, checksumOutput]) {
+    if (fs.existsSync(artifact)) throw new Error(`Refusing to overwrite ${artifact}. Increment the extension version before packaging.`);
+}
 execFileSync('zip', ['-q', '-r', output, '.', '-x', '*.DS_Store'], { cwd: path.join(root, 'dist') });
 const packageInfo = {
     ...info,
@@ -22,7 +26,7 @@ const packageInfo = {
     packageBytes: fs.statSync(output).size,
     packageSha256: sha256(fs.readFileSync(output)),
 };
-fs.writeFileSync(path.join(release, filename.replace(/\.zip$/, '.build-info.json')), JSON.stringify(packageInfo, null, 2) + '\n');
-fs.writeFileSync(output + '.sha256', `${packageInfo.packageSha256}  ${filename}\n`);
+fs.writeFileSync(infoOutput, JSON.stringify(packageInfo, null, 2) + '\n', { flag: 'wx' });
+fs.writeFileSync(checksumOutput, `${packageInfo.packageSha256}  ${filename}\n`, { flag: 'wx' });
 console.log(`Extension package: ${output}`);
 console.log(`SHA-256: ${packageInfo.packageSha256}`);

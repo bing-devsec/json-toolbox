@@ -43,35 +43,61 @@ export const calculateMaxLevel = (obj: any, currentLevel: number = 1): number =>
     return calculateJsonStructure(obj, 'level', currentLevel);
 };
 
-// 检查 JSON 字符串中是否存在非法转义序列
-export const detectIllegalEscapes = (str: string): { hasIllegal: boolean; details: string[] } => {
+// JSON documents have comments and quoted strings; raw string content does not.
+// Keep the original text scope as the default for existing callers.
+export const detectIllegalEscapes = (str: string, context: 'text' | 'json' = 'text'): { hasIllegal: boolean; details: string[] } => {
     const details: string[] = [];
-
-    // 使用正则表达式查找所有转义序列
-    const escapeRegex = /\\./g;
-    let match;
-
-    while ((match = escapeRegex.exec(str)) !== null) {
-        const escapeSeq = match[0];
-        const char = escapeSeq[1];
-
-        // 检查非法 Unicode 转义
+    const checkEscapeAt = (index: number) => {
+        const char = str[index + 1];
+        // The old /\\./g scan excludes line terminators and a trailing backslash.
+        // Leave these existing line-continuation/syntax rules to the parser.
+        if (!char || char === '\n' || char === '\r' || char === '\u2028' || char === '\u2029') return;
+        const escapeSeq = str.slice(index, index + 2);
         if (char === 'u') {
-            const remaining = str.substr(match.index + 2, 4);
+            const remaining = str.substr(index + 2, 4);
             if (remaining.length < 4 || !/^[0-9a-fA-F]{4}$/.test(remaining)) {
                 details.push(`非法Unicode转义: ${escapeSeq}${remaining.substring(0, 4)}`);
             }
-        }
-        // 检查非法十六进制转义
-        else if (char === 'x') {
-            const remaining = str.substr(match.index + 2, 2);
+        } else if (char === 'x') {
+            const remaining = str.substr(index + 2, 2);
             if (remaining.length < 2 || !/^[0-9a-fA-F]{2}$/.test(remaining)) {
                 details.push(`非法十六进制转义: ${escapeSeq}${remaining.substring(0, 2)}`);
             }
-        }
-        // 检查其他非法转义序列
-        else if (!['"', '\\', '/', 'b', 'f', 'n', 'r', 't'].includes(char)) {
+        } else if (!['"', '\\', '/', 'b', 'f', 'n', 'r', 't'].includes(char)) {
             details.push(`非法转义序列: ${escapeSeq}`);
+        }
+    };
+
+    if (context === 'text') {
+        const escapeRegex = /\\./g;
+        let match;
+        while ((match = escapeRegex.exec(str)) !== null) checkEscapeAt(match.index);
+    } else if (str.includes('\\')) {
+        // Jump between syntax characters rather than copying or formatting the document.
+        const syntaxRegex = /["'\\/#]/g;
+        let quote = '';
+        let match;
+        while ((match = syntaxRegex.exec(str)) !== null) {
+            const char = match[0];
+            const index = match.index;
+            if (quote) {
+                if (char === '\\') {
+                    checkEscapeAt(index);
+                    syntaxRegex.lastIndex = index + 2;
+                } else if (char === quote) {
+                    quote = '';
+                }
+                continue;
+            }
+            if (char === '"' || char === "'") {
+                quote = char;
+            } else if (char === '#' || (char === '/' && str[index + 1] === '/')) {
+                const end = str.indexOf('\n', index + 1);
+                syntaxRegex.lastIndex = end < 0 ? str.length : end + 1;
+            } else if (char === '/' && str[index + 1] === '*') {
+                const end = str.indexOf('*/', index + 2);
+                syntaxRegex.lastIndex = end < 0 ? str.length : end + 2;
+            }
         }
     }
 

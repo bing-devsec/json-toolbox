@@ -150,6 +150,23 @@ test('small files use short debounce and preserve the existing inline parser and
     assert.equal(f.selectedLevel.value, 2); assert.equal(f.workers.length, 0);
 });
 
+test('adding leading comments keeps JSON language and folding analysis, including after another format', () => {
+    const body = '{\n  "payload": "{\\"id\\":1}",\n  "stats": { "ok": true }\n}';
+    const f = fixture({ chars: 500, lines: 20, value: body });
+    f.change(); f.advance(150);
+    assert.equal(f.language.value, 'json'); assert.equal(f.maxLevel.value, 2);
+    for (const prefix of [String.raw`// 日志路径 C:\work\demo` + '\n', '/* note */\n', '# note\n']) {
+        f.model().text = prefix + body; f.change(); f.advance(150);
+        assert.equal(f.language.value, 'json', prefix); assert.equal(f.maxLevel.value, 2);
+    }
+    f.model().text = 'items:\n  - value'; f.change(); f.advance(150);
+    assert.equal(f.language.value, 'yaml'); assert.equal(f.maxLevel.value, 0);
+    f.model().text = '// note\n' + body; f.change(); f.advance(150);
+    assert.equal(f.language.value, 'json'); assert.equal(f.maxLevel.value, 2);
+    assert.equal(f.calls.inline, 5); assert.equal(f.workers.length, 0);
+    f.analysis.destroyLevelAnalysisWorker();
+});
+
 test('new edits terminate stale worker and ignore its success, errors and late failure notifications', () => {
     const f = fixture(); f.change(); f.advance(800); const old = f.workers[0];
     f.change(); assert.equal(old.terminated, true);

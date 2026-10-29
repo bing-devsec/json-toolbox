@@ -78,31 +78,37 @@ const defaultSettings: PersistedSettings = {
 };
 
 const loadSettingsFromStorage = (): PersistedSettings => {
-    if (typeof window === 'undefined') return defaultSettings;
-    try {
-        const parsed = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || 'null');
-        if (parsed) {
-            // 只读取当前支持的设置，旧版本中已删除的字段不再参与运行或保存。
-            const currentSettings = Object.fromEntries(
-                Object.entries(parsed).filter(([key]) => Object.hasOwn(defaultSettings, key)),
-            );
-            return {
-                ...defaultSettings,
-                ...currentSettings,
-                buttonVisibility: {
-                    ...defaultSettings.buttonVisibility,
-                    ...Object.fromEntries(
-                        Object.entries(parsed.buttonVisibility ?? {}).filter(
-                            ([key]) => Object.hasOwn(defaultSettings.buttonVisibility, key) || key === 'format' || key === 'collapse',
-                        ),
-                    ),
-                },
-            };
+    let parsed: Record<string, unknown> | undefined;
+    if (typeof window !== 'undefined') {
+        try {
+            const value: unknown = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || 'null');
+            if (value && typeof value === 'object' && !Array.isArray(value)) parsed = value as Record<string, unknown>;
+        } catch {
+            // 无法读取设置时使用默认偏好。
         }
-    } catch {
-        // 解析失败时使用默认设置
     }
-    return defaultSettings;
+    // 只读取当前扩展支持的设置，旧版本和网页专用字段不再参与运行或保存。
+    const currentSettings = Object.fromEntries(
+        Object.entries(parsed ?? {}).filter(([key]) => Object.hasOwn(defaultSettings, key)),
+    ) as Partial<PersistedSettings>;
+    const savedFontSize = parsed?.fontSize;
+    const savedButtons = parsed?.buttonVisibility;
+    const buttonVisibility = savedButtons && typeof savedButtons === 'object' && !Array.isArray(savedButtons)
+        ? Object.fromEntries(
+            Object.entries(savedButtons).filter(
+                ([key, value]) => typeof value === 'boolean' && (Object.hasOwn(defaultSettings.buttonVisibility, key) || key === 'format' || key === 'collapse'),
+            ),
+        )
+        : {};
+    return {
+        ...defaultSettings,
+        ...currentSettings,
+        fontSize: savedFontSize === 12 || savedFontSize === 13 || savedFontSize === 14 ? savedFontSize : defaultSettings.fontSize,
+        buttonVisibility: {
+            ...defaultSettings.buttonVisibility,
+            ...buttonVisibility,
+        },
+    };
 };
 
 export interface UseToolSettingsReturn {
@@ -142,7 +148,7 @@ export const useToolSettings = (): UseToolSettingsReturn => {
     const indentSize = ref(savedSettings.indentSize);
     const recursiveUnescape = ref(savedSettings.recursiveUnescape ?? true);
     const wordWrap = ref(savedSettings.wordWrap);
-    const fontSize = ref(savedSettings.fontSize || 12);
+    const fontSize = ref(savedSettings.fontSize);
     const arrayNewLine = ref(savedSettings.arrayNewLine);
     const repairOnFormat = ref(savedSettings.repairOnFormat === true);
     const preserveNumberLiterals = { value: true } as const;

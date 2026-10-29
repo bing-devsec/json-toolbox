@@ -3,10 +3,11 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { getJsonToolManualChunk } from './scripts/vite/monaco-chunks.mjs';
 import { monacoLargeFoldingPlugin } from './scripts/vite/monaco-large-folding.mjs';
+import { monacoSingleEditorPlugin } from './scripts/vite/monaco-single-editor.mjs';
 
 export default defineConfig({
     base: './',
-    plugins: [vue(), monacoLargeFoldingPlugin()],
+    plugins: [vue(), monacoLargeFoldingPlugin(), monacoSingleEditorPlugin()],
     resolve: {
         alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
         dedupe: ['vue'],

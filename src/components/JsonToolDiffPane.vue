@@ -429,7 +429,7 @@ onMounted(() => {
 .editor-status-bar .status-text {
     user-select: none;
     white-space: nowrap;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-family: var(--json-tool-font-code);
 }
 
 .diff-status-bar {
