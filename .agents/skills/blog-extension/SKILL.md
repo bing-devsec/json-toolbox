@@ -7,6 +7,8 @@ description: 开发 JSON 浏览器扩展、修复扩展行为、同步网页 JSO
 
 源码路径相对于本扩展仓库。先确认任务是扩展专用修复，还是用户要求与网页工具同步的能力；两端的应用外壳和数据流不同。
 
+主题外观开发、修复或验收时，按需读取 [临时主题核查](../blog-extension-theme-check/SKILL.md)，对照这轮纸感主题暴露的共性问题；不要求普通引擎任务加载该清单。
+
 ## 修改边界
 
 - 入口是 src/App.vue、src/components/JsonToolWorkbench.vue；JSON 引擎、composables 与 Workers 位于 src/components 下。

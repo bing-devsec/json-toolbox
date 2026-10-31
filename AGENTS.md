@@ -4,6 +4,8 @@
 
 扩展开发、网页能力同步及安装包验证使用 [blog-extension](.agents/skills/blog-extension/SKILL.md)。
 
+涉及扩展主题开发、主题样式修复或跨主题验收时，同时对照 [临时主题核查](.agents/skills/blog-extension-theme-check/SKILL.md)；局部修改只检查相关项，不扩大为全工程审计。
+
 - 共享 JSON 语义不等于共享 Nuxt 应用外壳；对照同级 `portal-web` 的对应模块，按任务范围同步。
 - 保留 `scripts/check-local-only.mjs` 的本地处理与 CSP 约束，不能顺带引入博客 API、远程权限或 content scripts。
 - `npm test` 使用项目注册器；`npm run build` 包含类型检查、本地约束校验及构建元信息。

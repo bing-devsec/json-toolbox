@@ -1,0 +1,208 @@
+/* Paper control roles. Color literals belong exclusively to paperTokens.ts.
+   Variables are assigned by role; rendering states below are shared by every button.
+   Specific selectors bridge older component-scoped Element Plus overrides. */
+body[data-interface-style="paper"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn) {
+    --paper-control-background: var(--paper-neutral-background);
+    --paper-control-foreground: var(--paper-neutral-foreground);
+    --paper-control-border: var(--paper-neutral-border);
+    --paper-control-hover-background: var(--paper-neutral-hover-background);
+    --paper-control-hover-foreground: var(--paper-neutral-hover-foreground);
+    --paper-control-hover-border: var(--paper-neutral-hover-border);
+    --paper-control-active-background: var(--paper-neutral-active-background);
+    --paper-control-active-foreground: var(--paper-neutral-active-foreground);
+    --paper-control-active-border: var(--paper-neutral-active-border);
+}
+body[data-interface-style="paper"] .el-button.el-button--primary {
+    --paper-control-background: var(--paper-primary-background);
+    --paper-control-foreground: var(--paper-primary-foreground);
+    --paper-control-border: var(--paper-primary-border);
+    --paper-control-hover-background: var(--paper-primary-hover-background);
+    --paper-control-hover-foreground: var(--paper-primary-hover-foreground);
+    --paper-control-hover-border: var(--paper-primary-hover-border);
+    --paper-control-active-background: var(--paper-primary-active-background);
+    --paper-control-active-foreground: var(--paper-primary-active-foreground);
+    --paper-control-active-border: var(--paper-primary-active-border);
+}
+body[data-interface-style="paper"] :is(.tool-bar .el-button--primary:not(.json-format-button), .panel-actions .el-button--primary, .el-button.transfer-button) {
+    --paper-control-background: var(--paper-secondary-background);
+    --paper-control-foreground: var(--paper-secondary-foreground);
+    --paper-control-border: var(--paper-secondary-border);
+    --paper-control-hover-background: var(--paper-secondary-hover-background);
+    --paper-control-hover-foreground: var(--paper-secondary-hover-foreground);
+    --paper-control-hover-border: var(--paper-secondary-hover-border);
+    --paper-control-active-background: var(--paper-secondary-active-background);
+    --paper-control-active-foreground: var(--paper-secondary-active-foreground);
+    --paper-control-active-border: var(--paper-secondary-active-border);
+}
+body[data-interface-style="paper"] :is(.el-button.el-button--danger, .archive-header-action.danger) {
+    --paper-control-background: var(--paper-danger-background);
+    --paper-control-foreground: var(--paper-danger-foreground);
+    --paper-control-border: var(--paper-danger-border);
+    --paper-control-hover-background: var(--paper-danger-hover-background);
+    --paper-control-hover-foreground: var(--paper-danger-hover-foreground);
+    --paper-control-hover-border: var(--paper-danger-hover-border);
+    --paper-control-active-background: var(--paper-danger-active-background);
+    --paper-control-active-foreground: var(--paper-danger-active-foreground);
+    --paper-control-active-border: var(--paper-danger-active-border);
+}
+
+body[data-interface-style="paper"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn) {
+    background: var(--paper-control-background) !important;
+    color: var(--paper-control-foreground) !important;
+    border-color: var(--paper-control-border) !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+body[data-interface-style="paper"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):hover:not(:disabled):not(.is-disabled) {
+    background: var(--paper-control-hover-background) !important;
+    color: var(--paper-control-hover-foreground) !important;
+    border-color: var(--paper-control-hover-border) !important;
+}
+body[data-interface-style="paper"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):active:not(:disabled):not(.is-disabled) {
+    background: var(--paper-control-active-background) !important;
+    color: var(--paper-control-active-foreground) !important;
+    border-color: var(--paper-control-active-border) !important;
+}
+body[data-interface-style="paper"] :is(.el-button.el-button.is-disabled, .el-button:disabled, .archive-header-action:disabled, .diff-nav-action:disabled, .diff-sync-btn:disabled) {
+    background: var(--paper-disabled-background) !important;
+    color: var(--paper-disabled-foreground) !important;
+    border-color: var(--paper-disabled-border) !important;
+    opacity: 1 !important;
+    cursor: not-allowed;
+}
+body[data-interface-style="paper"] :is(button, [role="button"]):focus-visible {
+    outline: 2px solid var(--paper-focus) !important;
+    outline-offset: 2px;
+}
+body[data-interface-style="paper"] .el-button.transfer-button svg { color: inherit; }
+body[data-interface-style="paper"] .resizer::after { background: var(--json-tool-resizer-grip); }
+/* Selects, checkboxes and radio options are selection controls, not blue exceptions. */
+body[data-interface-style="paper"] :is(.el-select__wrapper.el-select__wrapper, .el-input__wrapper.el-input__wrapper) {
+    box-shadow: inset 0 0 0 1px var(--paper-neutral-border) !important;
+}
+body[data-interface-style="paper"] :is(.el-select__wrapper.is-focused, .el-input__wrapper.is-focus) { box-shadow: inset 0 0 0 2px var(--paper-focus) !important; }
+body[data-interface-style="paper"] .el-select__placeholder { color: var(--json-tool-text-muted) !important; }
+body[data-interface-style="paper"] .el-select-dropdown__item.is-selected { color: var(--paper-selected-fg) !important; background: var(--paper-selected-bg) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper :is(.column-title-icon, .settings-collapse-title .el-icon) { color: var(--theme-accent); }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card { border-color: var(--json-tool-border) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .settings-dialog-content .switch-card:hover { background: var(--json-tool-surface-soft) !important; border-color: var(--paper-neutral-border) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered {
+    background: var(--paper-neutral-background) !important; border-color: var(--paper-neutral-border) !important; color: var(--paper-neutral-foreground) !important;
+}
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked {
+    background: var(--paper-selected-bg) !important; border-color: var(--paper-focus) !important;
+}
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio .el-radio__label { color: var(--json-tool-text) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-checked .el-radio__label { color: var(--paper-selected-fg) !important; }
+body[data-interface-style="paper"] :is(.el-checkbox__input.is-checked, .el-checkbox__input.is-indeterminate) .el-checkbox__inner {
+    background: var(--paper-primary-background) !important; border-color: var(--paper-primary-border) !important;
+}
+body[data-interface-style="paper"] .el-checkbox__input.is-checked .el-checkbox__inner::after { border-color: var(--paper-primary-foreground); }
+body[data-interface-style="paper"] .el-checkbox__input.is-indeterminate .el-checkbox__inner::before { background: var(--paper-primary-foreground); }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-toggle.el-switch .el-switch__core {
+    background: var(--paper-neutral-active-background) !important; border-color: var(--paper-neutral-border) !important;
+}
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-toggle.el-switch.is-checked .el-switch__core {
+    background: var(--paper-primary-background) !important; border-color: var(--paper-primary-border) !important;
+}
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-toggle.el-switch .el-switch__action {
+    background: var(--paper-neutral-foreground) !important;
+}
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-toggle.el-switch.is-checked .el-switch__action { background: var(--paper-primary-foreground) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-toggle.el-switch.is-disabled .el-switch__core { background: var(--paper-disabled-background) !important; border-color: var(--paper-disabled-border) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-toggle.el-switch .el-switch__input:focus-visible ~ .el-switch__core { outline: 2px solid var(--paper-focus) !important; outline-offset: 2px; }
+/* Teleported dialog sections and feedback keep the same material and semantic tones. */
+body[data-interface-style="paper"] :is(.el-dialog.el-dialog .el-dialog__header, .el-message-box.el-message-box .el-message-box__header) { background: var(--json-tool-surface-header) !important; }
+body[data-interface-style="paper"] .el-message.el-message { background: var(--el-message-bg-color, var(--json-tool-surface)) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="paper"] .el-message.el-message--success { --el-message-bg-color: var(--paper-success-bg); --el-message-text-color: var(--theme-success); }
+body[data-interface-style="paper"] .el-message.el-message--warning { --el-message-bg-color: var(--paper-warning-bg); --el-message-text-color: var(--theme-warning); }
+body[data-interface-style="paper"] .el-message.el-message--error { --el-message-bg-color: var(--paper-danger-bg); --el-message-text-color: var(--theme-danger); }
+body[data-interface-style="paper"] .el-message.el-message--success .el-message__content { color: var(--theme-success) !important; }
+body[data-interface-style="paper"] .el-message.el-message--warning .el-message__content { color: var(--theme-warning) !important; }
+body[data-interface-style="paper"] .el-message.el-message--error .el-message__content { color: var(--theme-danger) !important; }
+body[data-interface-style="paper"] .first-use-guide-card { background: var(--json-tool-surface) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="paper"] .first-use-guide-icon { color: var(--theme-accent); }
+
+body[data-interface-style="paper"] .el-message.el-message .el-message__icon { filter: none; }
+
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .settings-dialog-content :is(.el-collapse-item__header, .el-collapse-item__wrap, .el-collapse-item__content) {
+    background: var(--json-tool-surface) !important; color: var(--json-tool-text) !important; border-color: var(--json-tool-border) !important;
+}
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .settings-dialog-content .el-collapse-item__header:is(:hover, .is-active) { background: var(--json-tool-surface-soft) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .settings-subsection-title { color: var(--json-tool-text) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper :is(.switch-card-title, .el-checkbox__label) { color: var(--json-tool-text) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-desc { color: var(--json-tool-text-muted) !important; }
+
+body[data-interface-style="paper"] :is(.error-warning-icon, .error-nav-count) { color: var(--theme-danger); }
+body[data-interface-style="paper"] .diff-sync-btn-group.is-active .diff-sync-btn { background: var(--paper-selected-bg) !important; color: var(--paper-selected-fg) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-toggle.el-switch:not(.is-disabled):not(.is-checked):hover .el-switch__core { background: var(--paper-neutral-hover-background) !important; border-color: var(--paper-neutral-hover-border) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-toggle.el-switch.is-checked:not(.is-disabled):hover .el-switch__core { background: var(--paper-primary-hover-background) !important; border-color: var(--paper-primary-hover-border) !important; }
+/* Secondary dialogs reuse the same paper surfaces and text roles. */
+body[data-interface-style="paper"] .el-dialog :is(.dialog-title, .section-title, .rule-name-label, .field-path-label, .field-label, .saved-rule-name, .affix-row-label, .affix-section-title) { color: var(--json-tool-text) !important; }
+body[data-interface-style="paper"] .el-dialog :is(.priority-hint, .saved-rule-meta, .affix-hint) { color: var(--json-tool-text-muted) !important; }
+body[data-interface-style="paper"] .data-masking-dialog-wrapper.data-masking-dialog-wrapper :is(.rule-item, .field-path-item, .saved-rule-item, .path-help-alert.el-alert--info) { background: var(--json-tool-surface-soft) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="paper"] .data-masking-dialog-wrapper.data-masking-dialog-wrapper :is(.field-path-priority, .path-help-content code) { background: var(--paper-selected-bg) !important; color: var(--paper-selected-fg) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="paper"] .data-masking-dialog-wrapper.data-masking-dialog-wrapper :is(.path-help-content, .el-alert__title, .path-help-alert .el-alert__icon) { color: var(--json-tool-text) !important; }
+body[data-interface-style="paper"] .data-masking-dialog-wrapper.data-masking-dialog-wrapper .path-help-panel { border-left-color: var(--theme-accent) !important; background: var(--json-tool-surface-soft) !important; }
+body[data-interface-style="paper"] .data-masking-dialog-wrapper.data-masking-dialog-wrapper :is(.delete-warning-icon, .delete-confirm-text) { color: var(--theme-danger) !important; }
+body[data-interface-style="paper"] .el-dialog .affix-section { background: var(--json-tool-surface-soft) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="paper"] .el-dialog .el-alert { background: var(--json-tool-surface-soft) !important; color: var(--json-tool-text-muted) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="paper"] .el-dialog .el-alert :is(.el-alert__title, .el-alert__description, .el-alert__icon) { color: var(--json-tool-text-muted) !important; }
+body[data-interface-style="paper"] .el-dialog .dialog-footer { border-top-color: var(--json-tool-border) !important; }
+body[data-interface-style="paper"] .el-dialog .add-field-path-error { color: var(--theme-danger); }
+body[data-interface-style="paper"] .el-message.el-message--info { --el-message-bg-color: var(--json-tool-surface); --el-message-text-color: var(--json-tool-text-muted); }
+body[data-interface-style="paper"] .el-message.el-message--info .el-message__content { color: var(--json-tool-text-muted) !important; }
+
+/* Compound controls own one outer border; children never paint inset frames. */
+body[data-interface-style="paper"] .main-action-group > .data-convert-dropdown:not(:first-child) .el-button {
+    border-left: 1px solid var(--paper-secondary-border) !important;
+    margin-left: 0 !important;
+}
+body[data-interface-style="paper"] .json-tool-root .collapse-control {
+    height: 32px; box-sizing: border-box; gap: 0;
+    border: 1px solid var(--paper-fold-border);
+    border-radius: var(--theme-radius);
+    background: var(--paper-fold-background);
+}
+body[data-interface-style="paper"] .json-tool-root .collapse-control :is(.el-select__wrapper, .el-input__wrapper, .el-button.level-action-button) {
+    height: 30px; min-height: 30px; box-sizing: border-box;
+    background: var(--paper-fold-background) !important;
+    color: var(--paper-fold-foreground) !important;
+    border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+    margin: 0 !important;
+}
+/* A short, low-contrast separator distinguishes the two actions without splitting the frame. */
+body[data-interface-style="paper"] .json-tool-root .collapse-control .level-action-button::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 7px; bottom: 7px;
+    width: 1px;
+    background: var(--paper-fold-border);
+    opacity: .35;
+    pointer-events: none;
+}
+body[data-interface-style="paper"] .json-tool-root .collapse-control .level-action-button:disabled::before {
+    background: var(--paper-disabled-border);
+    opacity: .65;
+}
+body[data-interface-style="paper"] .json-tool-root .collapse-control :is(.el-select__selected-item, .el-select__placeholder, .el-select__caret) { color: var(--paper-fold-foreground) !important; }
+body[data-interface-style="paper"] .json-tool-root .collapse-control :is(.el-select__wrapper:not(.is-disabled):hover, .level-action-button:not(:disabled):hover) { background: var(--paper-fold-hover-background) !important; }
+body[data-interface-style="paper"] .json-tool-root .collapse-control:has(.level-select .el-select__wrapper.is-disabled) { background: var(--paper-disabled-background); border-color: var(--paper-disabled-border); }
+body[data-interface-style="paper"] .json-tool-root .collapse-control :is(.el-select__wrapper.is-disabled, .el-button.level-action-button:disabled) { background: var(--paper-disabled-background) !important; color: var(--paper-disabled-foreground) !important; }
+body[data-interface-style="paper"] .json-tool-root .collapse-control .level-select:has(.el-select__wrapper.is-disabled) :is(.el-select__placeholder, .el-select__caret) { color: var(--paper-disabled-foreground) !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper :is(.el-dialog__header, .el-dialog__footer) { border: 0 !important; box-shadow: none !important; }
+.language-settings { margin-bottom: 20px; }
+
+/* Autocomplete is teleported to body; highlighted paths use the same selection roles. */
+body[data-interface-style="paper"] :is(.field-path-autocomplete, .sort-path-autocomplete) li:is(:hover, .highlighted) {
+    background: var(--paper-selected-bg);
+}
+body[data-interface-style="paper"] :is(.field-path-autocomplete, .sort-path-autocomplete) li:is(:hover, .highlighted) :is(.path-text, .path-type) {
+    color: var(--paper-selected-fg);
+}
+
+/* Keep the dark paper gutter distinct without changing editor geometry or hit targets. */
+body[data-interface-style="paper"] .json-tool-root.theme-dark .monaco-editor .margin {
+    background-color: var(--json-tool-gutter-bg) !important;
+    box-shadow: inset -1px 0 0 var(--json-tool-border);
+}

@@ -1,0 +1,15 @@
+/* Shared layout for card-based settings. Theme files continue to own colors. */
+.el-dialog.settings-dialog-wrapper {
+    display: flex; flex-direction: column; max-width: calc(100vw - 32px);
+    max-height: calc(100dvh - 48px); margin: 24px auto !important;
+}
+.el-dialog.settings-dialog-wrapper > :is(.el-dialog__header, .el-dialog__footer) { flex: 0 0 auto; }
+.el-dialog.settings-dialog-wrapper > .el-dialog__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.el-dialog.settings-dialog-wrapper .settings-collapse-title { width: 100%; }
+.el-dialog.settings-dialog-wrapper .settings-section-current {
+    margin-left: auto; margin-right: 14px; font-size: 12px; font-weight: 400;
+    color: var(--json-tool-text-muted, var(--el-text-color-secondary));
+}
+
+.el-dialog.settings-dialog-wrapper .general-toolbar-options { margin-top: 20px; container-type: inline-size; }
+.el-dialog.settings-dialog-wrapper .appearance-settings { margin: 0; }

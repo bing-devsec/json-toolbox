@@ -32,7 +32,7 @@ export interface UseJsonToolSettingsDialogCtx {
 
 export const useJsonToolSettingsDialog = (ctx: UseJsonToolSettingsDialogCtx) => {
     const settingsDialogVisible = ref(false);
-    const settingsCollapseActiveNames = ref<string | number>('format');
+    const settingsCollapseActiveNames = ref<string | number>('');
 
     const updateWordWrap = () => {
         const singleLineDisplay = ctx.wordWrap.value;
@@ -94,10 +94,9 @@ export const useJsonToolSettingsDialog = (ctx: UseJsonToolSettingsDialogCtx) => 
     const openSettingsDialog = () => {
         settingsDialogVisible.value = true;
         if (ctx.isDiffMode.value && ['unescape', 'archive'].includes(String(settingsCollapseActiveNames.value))) {
-            settingsCollapseActiveNames.value = 'format';
+            settingsCollapseActiveNames.value = '';
             return;
         }
-        settingsCollapseActiveNames.value = 'format';
     };
 
     watch(ctx.showMinimap, () => {

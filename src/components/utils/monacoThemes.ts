@@ -1,3 +1,4 @@
+import { interfaceStyles, getInterfacePalette, normalizeInterfaceStyle } from '../../themes/interfaceThemes';
 import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 export const JSON_TOOL_LIGHT_THEME = 'json-tool-light-theme';
@@ -28,6 +29,8 @@ const darkCurrentLineHighlightColors = {
 };
 
 export const getJsonToolThemeForLanguage = (language: string, mode: JsonToolThemeMode = 'light') => {
+    const style = normalizeInterfaceStyle(typeof document === 'undefined' ? undefined : document.body.dataset.interfaceStyle);
+    if (style !== 'default') return `json-tool-${style}-${mode}-${language === 'toml' ? 'toml' : 'code'}`;
     if (language === 'toml') {
         return mode === 'dark' ? JSON_TOOL_TOML_DARK_THEME : JSON_TOOL_TOML_THEME;
     }
@@ -78,4 +81,35 @@ export const defineJsonToolMonacoThemes = (monacoApi: typeof Monaco) => {
         ],
         colors: darkCurrentLineHighlightColors,
     });
+    for (const style of interfaceStyles) {
+        if (style.id === 'default') continue;
+        for (const mode of ['light', 'dark'] as const) {
+            const p = getInterfacePalette(style.id, mode)!;
+            for (const language of ['code', 'toml']) {
+                monacoApi.editor.defineTheme(`json-tool-${style.id}-${mode}-${language}`, {
+                    base: mode === 'dark' ? 'vs-dark' : 'vs', inherit: true,
+                    rules: language === 'toml' ? [
+                        { token: 'comment', foreground: mode === 'dark' ? '8CAA79' : '557144' },
+                        { token: 'variable', foreground: mode === 'dark' ? '9CDCFE' : '0011FF' },
+                        { token: 'type.identifier', foreground: mode === 'dark' ? '4EC9B0' : 'AF00DB' },
+                        { token: 'string.date', foreground: mode === 'dark' ? 'B5CEA8' : '098658' },
+                        { token: 'keyword', foreground: mode === 'dark' ? '569CD6' : '0000FF' },
+                        { token: 'string', foreground: mode === 'dark' ? 'CE9178' : 'A31515' },
+                        { token: 'number', foreground: mode === 'dark' ? 'B5CEA8' : '098658' },
+                    ] : [],
+                    colors: {
+                        'editor.background': p.editor, 'editor.foreground': p.text,
+                        'editorGutter.background': p.gutter ?? p.editor, 'editorLineNumber.foreground': p.muted,
+                        'editorLineNumber.activeForeground': p.text, 'editorCursor.foreground': p.accent,
+                        'editor.lineHighlightBackground': p.currentLine ?? p.selected, 'editor.lineHighlightBorder': '#00000000',
+                        'editor.selectionBackground': p.selection ?? (mode === 'dark' ? '#5B83B666' : '#8CB4E566'),
+                        'editorWidget.background': p.surface, 'editorWidget.border': p.border,
+                        'editorHoverWidget.background': p.surface, 'editorHoverWidget.border': p.border,
+                        'input.background': p.editor, 'input.foreground': p.text,
+                    },
+                });
+            }
+        }
+    }
+
 };

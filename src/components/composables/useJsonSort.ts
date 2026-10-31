@@ -9,6 +9,13 @@ import { sortJsonByField, sortJsonObject, type SortMethod, type SortOrder } from
 export type FieldSortTarget = 'input' | 'diff-left' | 'diff-right';
 export type DemoPopoverPlacement = 'right-start' | 'left-start' | 'bottom-start' | 'top-start';
 
+export interface SortDemoStep {
+    title: string;
+    content: string;
+    highlight: string | null;
+    buttons: Array<{ text: string; action: () => void; type?: 'primary' | 'default' }>;
+}
+
 export interface PathSuggestion {
     value: string;
     type?: string;
@@ -21,7 +28,7 @@ export interface UseJsonSortSharedState {
     fieldSortTarget: Ref<FieldSortTarget>;
     isDemoMode: Ref<boolean>;
     demoGuideVisible: Ref<boolean>;
-    currentDemoStepData: Ref<any>;
+    currentDemoStepData: Ref<SortDemoStep | null>;
     demoPopoverAnchor: Ref<HTMLElement | null>;
     demoPopoverPlacement: Ref<DemoPopoverPlacement>;
     demoStepsCount: Ref<number>;
@@ -72,7 +79,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
     // 字段排序演示相关状态
     const isDemoMode = ctx.state?.isDemoMode ?? ref(false);
     const demoGuideVisible = ctx.state?.demoGuideVisible ?? ref(false);
-    const currentDemoStepData = ctx.state?.currentDemoStepData ?? ref<any>(null);
+    const currentDemoStepData = ctx.state?.currentDemoStepData ?? ref<SortDemoStep | null>(null);
     const savedInputContent = ref<string | null>(null);
     const demoResults = ref<any>({});
     const currentDemoStep = ctx.state?.currentDemoStep ?? ref(0);
@@ -788,12 +795,12 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
     const showDemoStep: (step: number) => void = (step: number) => {
         currentDemoStep.value = step;
 
-        const steps = [
+        const steps: SortDemoStep[] = [
             {
                 title: ctx.settingsTxt.value.demoStartTitle,
                 content: ctx.settingsTxt.value.demoStartContent,
                 highlight: '.editor-panel-input',
-                buttons: [{ text: ctx.settingsTxt.value.demoStartButton, action: () => showDemoStep(1) }],
+                buttons: [{ text: ctx.settingsTxt.value.demoStartButton, type: 'primary', action: () => showDemoStep(1) }],
             },
             {
                 title: ctx.settingsTxt.value.demoArrayIdTitle,
@@ -801,7 +808,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 highlight: '.editor-panel-input',
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(0) },
-                    { text: ctx.settingsTxt.value.demoSetParams, action: () => setAndNext('', 'id', 2) },
+                    { text: ctx.settingsTxt.value.demoSetParams, type: 'primary', action: () => setAndNext('', 'id', 2) },
                 ],
             },
             {
@@ -810,7 +817,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 highlight: '.editor-panel-input',
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(1) },
-                    { text: ctx.settingsTxt.value.demoExecuteSort, action: () => execAndNext('', 'id', 3) },
+                    { text: ctx.settingsTxt.value.demoExecuteSort, type: 'primary', action: () => execAndNext('', 'id', 3) },
                 ],
             },
             {
@@ -819,7 +826,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 highlight: null,
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(2) },
-                    { text: ctx.settingsTxt.value.demoNextExample, action: () => showDemoStep(4) },
+                    { text: ctx.settingsTxt.value.demoNextExample, type: 'primary', action: () => showDemoStep(4) },
                 ],
             },
             {
@@ -829,7 +836,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(3) },
                     {
-                        text: ctx.settingsTxt.value.demoSetParams,
+                        text: ctx.settingsTxt.value.demoSetParams, type: 'primary',
                         action: () => setAndNext('[*].education', 'graduationYear', 5),
                     },
                 ],
@@ -841,7 +848,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(4) },
                     {
-                        text: ctx.settingsTxt.value.demoExecuteSort,
+                        text: ctx.settingsTxt.value.demoExecuteSort, type: 'primary',
                         action: () => execAndNext('[*].education', 'graduationYear', 6),
                     },
                 ],
@@ -852,7 +859,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 highlight: null,
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(5) },
-                    { text: ctx.settingsTxt.value.demoNextExample, action: () => showDemoStep(7) },
+                    { text: ctx.settingsTxt.value.demoNextExample, type: 'primary', action: () => showDemoStep(7) },
                 ],
             },
             {
@@ -861,7 +868,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 highlight: '.editor-panel-input',
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(6) },
-                    { text: ctx.settingsTxt.value.demoSetParams, action: () => setAndNext('', 'id', 8) },
+                    { text: ctx.settingsTxt.value.demoSetParams, type: 'primary', action: () => setAndNext('', 'id', 8) },
                 ],
             },
             {
@@ -870,7 +877,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 highlight: '.editor-panel-input',
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(7) },
-                    { text: ctx.settingsTxt.value.demoExecuteSort, action: () => execAndNextMap('', 'id', 9) },
+                    { text: ctx.settingsTxt.value.demoExecuteSort, type: 'primary', action: () => execAndNextMap('', 'id', 9) },
                 ],
             },
             {
@@ -879,7 +886,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 highlight: null,
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(8) },
-                    { text: ctx.settingsTxt.value.demoNextExample, action: () => showDemoStep(10) },
+                    { text: ctx.settingsTxt.value.demoNextExample, type: 'primary', action: () => showDemoStep(10) },
                 ],
             },
             {
@@ -888,7 +895,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 highlight: '.editor-panel-input',
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(9) },
-                    { text: ctx.settingsTxt.value.demoSetParams, action: () => setAndNext('', 'value.score', 11) },
+                    { text: ctx.settingsTxt.value.demoSetParams, type: 'primary', action: () => setAndNext('', 'value.score', 11) },
                 ],
             },
             {
@@ -898,7 +905,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 buttons: [
                     { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(10) },
                     {
-                        text: ctx.settingsTxt.value.demoExecuteSort,
+                        text: ctx.settingsTxt.value.demoExecuteSort, type: 'primary',
                         action: () => execAndNextMap('', 'value.score', 12),
                     },
                 ],
@@ -909,7 +916,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
                 highlight: null,
                 buttons: [
                     { text: ctx.settingsTxt.value.demoTryAgain, action: () => startDemoMode() },
-                    { text: ctx.settingsTxt.value.demoEnd, action: () => endDemoMode() },
+                    { text: ctx.settingsTxt.value.demoEnd, type: 'primary', action: () => endDemoMode() },
                 ],
             },
         ];

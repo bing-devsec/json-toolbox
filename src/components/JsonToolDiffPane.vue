@@ -335,12 +335,12 @@ onMounted(() => {
 .diff-editor-row .diff-navigation-marker-bar {
     width: 100%;
     height: 100%;
-    background: #409eff;
+    background: var(--theme-accent, #409eff);
     border-radius: 2px;
 }
 
 .json-tool-root.theme-dark .diff-navigation-marker-bar {
-    background: #79b8ff;
+    background: var(--theme-accent, #79b8ff);
 }
 
 .diff-editor-row .diff-navigation-marker[data-side='left'] .diff-navigation-marker-bar {

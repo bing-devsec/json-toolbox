@@ -8,6 +8,7 @@
 // - 暴露 markInitialized() 给 onMounted 末尾调用，正式开启持久化。
 
 import { ref, watch, type Ref } from 'vue';
+import { normalizeInterfaceStyle, type InterfaceStyle } from '../../themes/interfaceThemes';
 
 const SETTINGS_STORAGE_KEY = 'json-tool-settings';
 
@@ -46,6 +47,7 @@ export interface PersistedSettings {
     customArchiveName: boolean;
     stickyScroll: boolean;
     themeMode: JsonToolThemeMode;
+    interfaceStyle: InterfaceStyle;
 }
 
 const defaultSettings: PersistedSettings = {
@@ -75,6 +77,7 @@ const defaultSettings: PersistedSettings = {
     customArchiveName: false,
     stickyScroll: false,
     themeMode: 'light',
+    interfaceStyle: 'default',
 };
 
 const loadSettingsFromStorage = (): PersistedSettings => {
@@ -130,6 +133,7 @@ export interface UseToolSettingsReturn {
     stickyScroll: Ref<boolean>;
     preferredStickyScroll: Ref<boolean>;
     themeMode: Ref<JsonToolThemeMode>;
+    interfaceStyle: Ref<InterfaceStyle>;
     buttonVisibility: Ref<ButtonVisibility>;
     syncScrollEnabled: Ref<boolean>;
     /** 始终保持数字字面量，保证无损格式化（禁止用户关闭） */
@@ -163,6 +167,7 @@ export const useToolSettings = (): UseToolSettingsReturn => {
     const stickyScroll = ref(savedSettings.stickyScroll ?? true);
     const preferredStickyScroll = ref(stickyScroll.value);
     const themeMode = ref<JsonToolThemeMode>(savedSettings.themeMode === 'dark' ? 'dark' : 'light');
+    const interfaceStyle = ref<InterfaceStyle>(normalizeInterfaceStyle(savedSettings.interfaceStyle));
     const buttonVisibility = ref<ButtonVisibility>(savedSettings.buttonVisibility);
     const syncScrollEnabled = ref(savedSettings.syncScrollEnabled ?? false);
 
@@ -186,6 +191,7 @@ export const useToolSettings = (): UseToolSettingsReturn => {
             customArchiveName: customArchiveName.value,
             stickyScroll: preferredStickyScroll.value,
             themeMode: themeMode.value,
+            interfaceStyle: interfaceStyle.value,
         };
         try {
             localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settingsToSave));
@@ -215,6 +221,7 @@ export const useToolSettings = (): UseToolSettingsReturn => {
             customArchiveName.value,
             stickyScroll.value,
             themeMode.value,
+            interfaceStyle.value,
         ],
         () => {
             saveSettings();
@@ -244,6 +251,7 @@ export const useToolSettings = (): UseToolSettingsReturn => {
         stickyScroll,
         preferredStickyScroll,
         themeMode,
+        interfaceStyle,
         buttonVisibility,
         syncScrollEnabled,
         preserveNumberLiterals,

@@ -1,0 +1,109 @@
+/* Professional IDE: editor chrome is neutral; color is reserved for actions and state.
+   All colors are owned by ideTokens.ts. Geometry and JSON behavior are shared. */
+body[data-interface-style="ide"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn) {
+    --ide-action-bg: var(--ide-button); --ide-action-fg: var(--json-tool-text); --ide-action-border: var(--ide-control-border);
+    --ide-action-hover: var(--ide-hover); --ide-action-pressed: var(--ide-pressed);
+    background: var(--ide-action-bg) !important; color: var(--ide-action-fg) !important; border-color: var(--ide-action-border) !important;
+    box-shadow: none !important; filter: none !important;
+}
+body[data-interface-style="ide"] .el-button.el-button--primary {
+    --ide-action-bg: var(--ide-primary); --ide-action-fg: var(--ide-on-primary); --ide-action-border: var(--ide-primary);
+    --ide-action-hover: var(--ide-primary-hover); --ide-action-pressed: var(--ide-primary-pressed);
+}
+body[data-interface-style="ide"] .tool-bar .el-button.el-button--primary:not(.json-format-button),
+body[data-interface-style="ide"] .panel-actions .el-button.el-button--primary,
+body[data-interface-style="ide"] .el-button.transfer-button {
+    --ide-action-bg: var(--theme-header); --ide-action-fg: var(--json-tool-text); --ide-action-border: var(--json-tool-border);
+    --ide-action-hover: var(--ide-hover); --ide-action-pressed: var(--ide-pressed);
+}
+body[data-interface-style="ide"] :is(.el-button.el-button--danger, .archive-header-action.danger) {
+    --ide-action-fg: var(--theme-danger); --ide-action-hover: var(--ide-danger-background); --ide-action-pressed: var(--ide-danger-background);
+}
+body[data-interface-style="ide"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):hover:not(:disabled):not(.is-disabled) { background: var(--ide-action-hover) !important; }
+body[data-interface-style="ide"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):active:not(:disabled):not(.is-disabled) { background: var(--ide-action-pressed) !important; }
+body[data-interface-style="ide"] :is(.el-button.el-button.is-disabled, .el-button:disabled, .archive-header-action:disabled, .diff-nav-action:disabled, .diff-sync-btn:disabled, .panel-action:disabled) {
+    background: var(--ide-disabled-background) !important; color: var(--ide-disabled) !important; border-color: var(--ide-disabled-border) !important; opacity: 1 !important;
+}
+body[data-interface-style="ide"] :is(button, [role="button"]):focus-visible { outline: 1px solid var(--ide-focus) !important; outline-offset: 2px; }
+body[data-interface-style="ide"] .transfer-button svg { color: inherit !important; }
+body[data-interface-style="ide"] .resizer::after { background: var(--ide-control-border); }
+body[data-interface-style="ide"] .main-action-group > .data-convert-dropdown:not(:first-child) .el-button { margin-left: 0 !important; border-left: 1px solid var(--json-tool-border) !important; }
+
+/* Inputs use one quiet frame, not Element Plus's colored success/primary categories. */
+body[data-interface-style="ide"] :is(.el-select__wrapper.el-select__wrapper, .el-input__wrapper.el-input__wrapper, .el-textarea__inner) {
+    background: var(--ide-input) !important; color: var(--json-tool-text) !important;
+    box-shadow: inset 0 0 0 1px var(--ide-control-border) !important; border: 0 !important;
+}
+body[data-interface-style="ide"] :is(.el-select__wrapper.is-focused, .el-input__wrapper.is-focus, .el-textarea__inner:focus) { box-shadow: inset 0 0 0 1px var(--ide-focus) !important; }
+body[data-interface-style="ide"] :is(.el-input__inner, .el-textarea__inner)::placeholder { color: var(--json-tool-text-muted) !important; }
+body[data-interface-style="ide"] :is(.el-select__placeholder, .el-select__selected-item, .el-select__caret) { color: var(--json-tool-text) !important; }
+body[data-interface-style="ide"] :is(.el-select-dropdown__item.is-selected, .el-select-dropdown__item.is-hovering, .el-dropdown-menu__item:hover, .el-autocomplete-suggestion li:is(:hover, .highlighted)) { background: var(--theme-selected) !important; color: var(--ide-on-selected) !important; }
+body[data-interface-style="ide"] .el-autocomplete-suggestion li:is(:hover, .highlighted) :is(.path-text, .path-type) { color: var(--ide-on-selected) !important; }
+body[data-interface-style="ide"] .el-radio.is-checked .el-radio__label { color: var(--json-tool-text) !important; }
+body[data-interface-style="ide"] .el-checkbox__inner { background: var(--ide-input); border-color: var(--ide-control-border); }
+body[data-interface-style="ide"] :is(.el-checkbox__input.is-checked, .el-checkbox__input.is-indeterminate) .el-checkbox__inner { background: var(--ide-primary); border-color: var(--ide-primary); }
+body[data-interface-style="ide"] .el-checkbox__input.is-checked .el-checkbox__inner::after { border-color: var(--ide-on-primary); }
+body[data-interface-style="ide"] .el-checkbox__input.is-indeterminate .el-checkbox__inner::before { background: var(--ide-on-primary); }
+body[data-interface-style="ide"] .appearance-mode button[aria-pressed="true"] { color: var(--ide-on-selected); background: var(--theme-selected); border-color: var(--ide-focus); }
+
+/* Settings choice tiles own their selected surface, not the legacy light-blue fill.
+   Language, font size, indent and sort direction all share this contract. */
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered {
+    background: var(--ide-button); border-color: var(--ide-control-border); border-radius: var(--theme-radius);
+    color: var(--json-tool-text);
+}
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio__label { color: var(--json-tool-text) !important; }
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered:not(.is-disabled):not(.is-checked):hover { background: var(--ide-hover); }
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked {
+    background: var(--theme-selected); border-color: var(--theme-accent);
+}
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked .el-radio__label { color: var(--ide-on-selected) !important; }
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio:has(input:focus-visible) { outline: 1px solid var(--theme-accent); outline-offset: 2px; }
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-disabled { background: var(--ide-disabled-background); border-color: var(--ide-disabled-border); }
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-disabled .el-radio__label { color: var(--ide-disabled) !important; }
+body[data-interface-style="ide"] .el-checkbox__input:not(.is-disabled):has(input:focus-visible) .el-checkbox__inner { outline: 1px solid var(--theme-accent); outline-offset: 2px; }
+body[data-interface-style="ide"] .el-checkbox__input.is-disabled .el-checkbox__inner::after { border-color: var(--ide-disabled); }
+body[data-interface-style="ide"] .el-checkbox__input.is-disabled .el-checkbox__inner::before { background: var(--ide-disabled); }
+
+/* Folding remains a single compound control, with a short internal separator. */
+body[data-interface-style="ide"] .json-tool-root .collapse-control { height: 32px; box-sizing: border-box; gap: 0; background: var(--ide-input); border: 1px solid var(--ide-control-border); border-radius: var(--theme-radius); }
+body[data-interface-style="ide"] .json-tool-root .collapse-control :is(.el-select__wrapper, .el-input__wrapper, .el-button.level-action-button) { height: 30px; min-height: 30px; box-sizing: border-box; margin: 0 !important; background: var(--ide-input) !important; color: var(--json-tool-text) !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+body[data-interface-style="ide"] .json-tool-root .collapse-control .level-action-button::before { content: ""; position: absolute; left: 0; top: 7px; bottom: 7px; width: 1px; background: var(--ide-control-border); opacity: .6; pointer-events: none; }
+body[data-interface-style="ide"] .json-tool-root .collapse-control :is(.el-select__wrapper:not(.is-disabled):hover, .level-action-button:not(:disabled):hover) { background: var(--ide-hover) !important; }
+body[data-interface-style="ide"] .json-tool-root .collapse-control:has(.el-select__wrapper.is-disabled) { background: var(--ide-disabled-background); border-color: var(--ide-disabled-border); }
+body[data-interface-style="ide"] .json-tool-root .collapse-control :is(.el-select__wrapper.is-disabled, .level-action-button:disabled) { background: var(--ide-disabled-background) !important; color: var(--ide-disabled) !important; }
+body[data-interface-style="ide"] .collapse-control .level-select:has(.is-disabled) :is(.el-select__selected-item, .el-select__caret) { color: var(--ide-disabled) !important; }
+
+/* Editor, panel chrome and dialogs share neutral surfaces, without blue panels. */
+body[data-interface-style="ide"] .panel-header { box-shadow: none !important; }
+body[data-interface-style="ide"] .panel-title { font-weight: 500; color: var(--json-tool-text); }
+body[data-interface-style="ide"] .monaco-editor .margin { background: var(--json-tool-gutter-bg) !important; box-shadow: inset -1px 0 0 var(--json-tool-border); }
+body[data-interface-style="ide"] :is(.el-dialog.el-dialog .el-dialog__header, .el-message-box.el-message-box .el-message-box__header) { background: var(--theme-header) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="ide"] :is(.el-dialog__footer, .dialog-footer, .el-message-box__btns) { border-color: var(--json-tool-border) !important; }
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper :is(.el-dialog__header, .el-dialog__footer) { border: 0 !important; }
+body[data-interface-style="ide"] :is(.dialog-title, .section-title, .rule-name-label, .field-path-label, .field-label, .saved-rule-name, .affix-row-label, .affix-section-title, .form-value-text, .form-compact-line, .path-help-content) { color: var(--json-tool-text) !important; }
+body[data-interface-style="ide"] :is(.priority-hint, .saved-rule-meta, .affix-hint, .switch-card-desc) { color: var(--json-tool-text-muted) !important; }
+body[data-interface-style="ide"] .el-dialog :is(.rule-item, .field-path-item, .saved-rule-item, .affix-section, .form-value-quote--compact) { background: var(--json-tool-surface-soft) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="ide"] :is(.field-path-priority, .path-help-content code) { background: var(--ide-code) !important; color: var(--json-tool-text) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="ide"] .path-help-panel { background: var(--json-tool-surface-soft); border-left-color: var(--theme-accent); }
+body[data-interface-style="ide"] .el-dialog .el-alert { background: var(--json-tool-surface-soft) !important; border-color: var(--json-tool-border) !important; color: var(--json-tool-text) !important; }
+body[data-interface-style="ide"] .el-alert :is(.el-alert__title, .el-alert__description, .el-alert__icon) { color: var(--json-tool-text) !important; }
+body[data-interface-style="ide"] .el-message.el-message { border-color: var(--json-tool-border) !important; }
+body[data-interface-style="ide"] .el-message.el-message--success { --el-message-bg-color: var(--ide-success-background); --el-message-text-color: var(--theme-success); }
+body[data-interface-style="ide"] .el-message.el-message--warning { --el-message-bg-color: var(--ide-warning-background); --el-message-text-color: var(--theme-warning); }
+body[data-interface-style="ide"] .el-message.el-message--error { --el-message-bg-color: var(--ide-danger-background); --el-message-text-color: var(--theme-danger); }
+body[data-interface-style="ide"] .el-message .el-message__content { color: var(--el-message-text-color) !important; }
+body[data-interface-style="ide"] .el-message.el-message { background: var(--el-message-bg-color) !important; }
+body[data-interface-style="ide"] .el-dialog :is(.delete-warning-icon, .delete-confirm-text, .add-field-path-error) { color: var(--theme-danger) !important; }
+body[data-interface-style="ide"] .delete-confirm { background: var(--ide-danger-background); border-color: var(--theme-danger); }
+body[data-interface-style="ide"] .diff-sync-btn-group.is-active .diff-sync-btn { background: var(--theme-selected) !important; color: var(--ide-on-selected) !important; }
+body[data-interface-style="ide"] .path-help-content .path-rule-heading { color: var(--theme-accent); }
+body[data-interface-style="ide"] .demo-guide-popover .demo-current-settings code { color: var(--json-tool-text) !important; background: var(--ide-code) !important; }
+body[data-interface-style="ide"] .demo-guide-popover .step-dot.active { background: var(--ide-primary) !important; }
+
+body[data-interface-style="ide"] .panel-actions .el-button { border-color: var(--json-tool-border) !important; }
+body[data-interface-style="ide"] :is(.el-input.is-disabled .el-input__wrapper, .el-select__wrapper.is-disabled) { background: var(--ide-disabled-background) !important; box-shadow: inset 0 0 0 1px var(--ide-disabled-border) !important; }
+body[data-interface-style="ide"] .el-select:has(.el-select__wrapper.is-disabled) :is(.el-select__placeholder, .el-select__selected-item, .el-select__caret) { color: var(--ide-disabled) !important; }
+body[data-interface-style="ide"] .el-checkbox.is-disabled .el-checkbox__label { color: var(--ide-disabled) !important; }
+body[data-interface-style="ide"] .el-checkbox__input.is-disabled .el-checkbox__inner { background: var(--ide-disabled-background); border-color: var(--ide-disabled-border); }
+body[data-interface-style="ide"] .el-dialog .saved-rule-item:hover { background: var(--ide-hover) !important; }

@@ -96,3 +96,35 @@ test('extension update falls back for unsupported or damaged font sizes while pr
         });
     }
 });
+
+test('new appearance setting defaults safely for older and corrupt records', async () => {
+    for (const interfaceStyle of [undefined, null, 'terminal', {}, 42]) {
+        await withSettings({ interfaceStyle, themeMode: 'dark', fontSize: 14 }, async (settings, values) => {
+            assert.equal(settings.interfaceStyle.value, 'default');
+            assert.equal(settings.themeMode.value, 'dark');
+            settings.markInitialized();
+            settings.saveSettings();
+            assert.equal(JSON.parse(values.get('json-tool-settings')).interfaceStyle, 'default');
+        });
+    }
+});
+
+test('all interface styles persist independently of color mode and processing preferences', async () => {
+    for (const style of ['default', 'ide', 'glass', 'retro', 'paper']) {
+        await withSettings({ interfaceStyle: style, themeMode: 'dark', fontSize: 14, repairOnFormat: true }, async (settings, values) => {
+            assert.equal(settings.interfaceStyle.value, style);
+            settings.markInitialized();
+            settings.themeMode.value = 'light';
+            await nextTick();
+            let saved = JSON.parse(values.get('json-tool-settings'));
+            assert.equal(saved.interfaceStyle, style);
+            assert.equal(saved.fontSize, 14);
+            assert.equal(saved.repairOnFormat, true);
+            settings.interfaceStyle.value = 'paper';
+            await nextTick();
+            saved = JSON.parse(values.get('json-tool-settings'));
+            assert.equal(saved.interfaceStyle, 'paper');
+            assert.equal(saved.themeMode, 'light');
+        });
+    }
+});

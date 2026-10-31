@@ -1,0 +1,4 @@
+interface:
+  display_name: "扩展主题核查（临时）"
+  short_description: "对照纸感主题的实际问题，核查其他扩展主题的明暗配色与控件回归"
+  default_prompt: "使用 $blog-extension-theme-check 对照历史问题清单核查指定的浏览器扩展主题，验证明暗模式并记录实际结果。"

@@ -117,16 +117,20 @@ test('ordinary browser previews keep the switch unavailable without sending exte
     assert.match(component.txt.value.unavailable, /本地编辑/);
 });
 
-test('general settings place the response switch immediately before minimap and remove the old standalone section', async () => {
+test('response capture remains scoped to general settings while editor display preferences are separated', async () => {
     const dialog = parse(await readFile('src/components/SettingsDialog.vue', 'utf8')).descriptor;
     const template = dialog.template.content;
-    assert.doesNotMatch(template, /name="capture"|ExtensionCaptureSettings/);
-    const capture = template.indexOf('<JsonResponseCaptureSwitch');
-    const minimap = template.indexOf('v-model="showMinimapModel"');
-    assert.ok(capture > 0 && minimap > capture);
-    const generalEnd = template.indexOf('</el-collapse-item>');
-    assert.ok(generalEnd > minimap);
-    assert.equal((template.slice(capture, generalEnd).match(/class="switch-card"/g) ?? []).length, 1);
+    assert.doesNotMatch(template, /name="capture"|name="toolbar"|ExtensionCaptureSettings/);
+    const generalStart = template.indexOf('name="settings"');
+    const generalEnd = template.indexOf('</el-collapse-item>', generalStart);
+    const general = template.slice(generalStart, generalEnd);
+    assert.equal((template.match(/<JsonResponseCaptureSwitch/g) ?? []).length, 1);
+    assert.match(general, /<JsonResponseCaptureSwitch v-if="visible && activeName === 'settings'"/);
+    assert.match(general, /v-model="buttonVisibilityModel.compress"/);
+    assert.doesNotMatch(general, /v-model="showMinimapModel"/);
+    const editorStart = template.indexOf('name="editor"');
+    const editorEnd = template.indexOf('</el-collapse-item>', editorStart);
+    assert.match(template.slice(editorStart, editorEnd), /v-model="showMinimapModel"/);
     assert.match(descriptor.template.content, /:disabled="!available \|\| busy"/);
     assert.match(descriptor.template.content, /aria-labelledby/);
 });

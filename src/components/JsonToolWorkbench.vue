@@ -1,5 +1,5 @@
 <template>
-    <div class="json-tool-root" :class="themeRootClass">
+    <div class="json-tool-root" :class="themeRootClass" :style="interfaceVariables">
         <!-- 添加小屏幕提示组件 -->
         <div class="screen-size-warning">
             <el-icon class="warning-icon">
@@ -108,7 +108,7 @@
                             </el-dropdown>
                         </el-button-group>
 
-                        <div v-if="buttonVisibility.collapse" class="collapse-control">
+                        <div v-if="buttonVisibility.collapse" class="collapse-control" role="group" :aria-label="props.locale === 'en' ? 'Folding controls' : '层级折叠'">
                             <el-select
                                 v-model="selectedLevel"
                                 fit-input-width
@@ -394,14 +394,6 @@
             </div>
         </div>
 
-        <JsonToolFloatingActions
-            :locale="props.locale"
-            :theme-mode="themeMode"
-            :dialog-open="settingsDialogVisible || dataMaskingDialogVisible || archiveNameDialogVisible || affixDialogVisible || fieldSortDialogVisible"
-            @toggle-theme="toggleThemeMode"
-            @switch-locale="switchJsonToolLocale" />
-
-
         <!-- 数据脱敏对话框 -->
         <DataMaskingDialog v-if="dataMaskingDialogVisible" v-model="dataMaskingDialogVisible" :json-data="getInputEditorValue()" :locale="props.locale" @apply="handleDataMaskingApply" />
 
@@ -423,6 +415,8 @@
             v-model:visible="settingsDialogVisible"
             v-model:active-name="settingsCollapseActiveNames"
             v-model:button-visibility="buttonVisibility"
+            v-model:interface-style="interfaceStyle"
+            v-model:theme-mode="themeMode"
             v-model:font-size="fontSize"
             v-model:indent-size="indentSize"
             v-model:enable-diagnostics="enableDiagnostics"
@@ -442,6 +436,7 @@
             :locale="props.locale"
             :is-diff-mode="diffMode.isDiffMode.value"
             :word-wrap-locked="isLongLineWrapLocked"
+            @switch-locale="switchJsonToolLocale"
             @update-font-size="updateFontSize"
             @update-word-wrap="updateWordWrap"
             @update-minimap="updateMinimap"
@@ -536,7 +531,6 @@ const JsonToolDiffPane = defineAsyncComponent(() => import('./JsonToolDiffPane.v
 const JsonSortFeature = defineAsyncComponent(() => import('./JsonSortFeature.vue'));
 const SettingsDialog = defineAsyncComponent(() => import('./SettingsDialog.vue'));
 
-import JsonToolFloatingActions from './JsonToolFloatingActions.vue';
 
 // 组合式函数
 import { useEditorContextMenu } from './composables/useEditorContextMenu';
@@ -554,6 +548,10 @@ import { useMonacoLanguageRegistry } from './composables/useMonacoLanguageRegist
 import { useTabId } from './composables/useTabId';
 import { useTabLifecycle } from './composables/useTabLifecycle';
 import { useJsonRepair } from './composables/useJsonRepair';
+import { useInterfaceTheme } from '../themes/useInterfaceTheme';
+import '../themes/interfaceThemes.css';
+import '../themes/paperControls.css';
+import '../themes/ideControls.css';
 import { useToolSettings } from './composables/useToolSettings';
 
 // 本地工具
@@ -743,6 +741,7 @@ const {
     stickyScroll,
     preferredStickyScroll,
     themeMode,
+    interfaceStyle,
     buttonVisibility,
     syncScrollEnabled,
     markInitialized: markSettingsInitialized,
@@ -767,10 +766,6 @@ const effectiveWordWrap = computed({
         }
     },
 });
-
-const toggleThemeMode = () => {
-    themeMode.value = themeMode.value === 'dark' ? 'light' : 'dark';
-};
 
 const switchJsonToolLocale = () => {
     emit('switchLocale');
@@ -834,6 +829,8 @@ const openRepairComparisonById = (comparisonId: string) => {
     showMessageWarning(settingsTxt.value.repairPopupBlocked);
     return false;
 };
+
+const interfaceVariables = useInterfaceTheme(interfaceStyle, themeMode);
 
 const themeRootClass = computed(() => (themeMode.value === 'dark' ? 'theme-dark' : 'theme-light'));
 
@@ -1983,7 +1980,7 @@ const syncOutputEditorIndentFromContent = () => {
     syncEditorDisplayOptions(outputEditor, model.getLanguageId(), indentSize.value, model.getValue());
 };
 
-watch(themeMode, (mode) => {
+watch([themeMode, interfaceStyle], ([mode]) => {
     const activeThemeLanguage = inputContentLanguage.value === 'toml' || getOutputEditorLanguage() === 'toml' ? 'toml' : inputContentLanguage.value;
     monaco.editor.setTheme(getJsonToolThemeForLanguage(activeThemeLanguage, mode));
 });
@@ -5055,11 +5052,14 @@ const transferToInput = (e: MouseEvent) => {
     position: relative;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--json-tool-toolbar-border);
+    background: var(--json-tool-surface);
 }
 
 .tool-bar {
-    border-bottom: 1px solid var(--json-tool-toolbar-border);
-    box-shadow: 0 2px 6px rgba(16, 24, 40, 0.03);
+    border: 0;
+    box-shadow: none;
     padding: 5px 10px;
     display: flex;
     align-items: center;
@@ -5361,7 +5361,7 @@ const transferToInput = (e: MouseEvent) => {
     color: var(--json-tool-button-text);
 }
 
-:global(body.json-tool-theme-dark) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) {
     --json-tool-theme-transition: background-color 120ms ease, color 100ms ease, border-color 120ms ease;
     --json-tool-bg: #181818;
     --json-tool-surface: #1f1f1f;
@@ -5381,14 +5381,14 @@ const transferToInput = (e: MouseEvent) => {
     --json-tool-button-hover-border: #4a4a4a;
 }
 
-:global(body.json-tool-theme-dark .el-overlay) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-overlay) {
     background-color: rgba(0, 0, 0, 0.64);
 }
 
-:global(body.json-tool-theme-dark .el-dialog),
-:global(body.json-tool-theme-dark .el-message-box),
-:global(body.json-tool-theme-dark .el-popover),
-:global(body.json-tool-theme-dark .el-popper.is-light) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message-box),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-popover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-popper.is-light) {
     background: var(--json-tool-surface) !important;
     border: 1px solid var(--json-tool-border) !important;
     color: var(--json-tool-text) !important;
@@ -5396,9 +5396,9 @@ const transferToInput = (e: MouseEvent) => {
     transition: var(--json-tool-theme-transition) !important;
 }
 
-:global(body.json-tool-theme-dark .el-popper),
-:global(body.json-tool-theme-dark .el-select__popper),
-:global(body.json-tool-theme-dark .el-dropdown__popper) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-popper),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__popper),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown__popper) {
     --el-bg-color-overlay: var(--json-tool-surface);
     --el-fill-color-light: #2a2d35;
     --el-fill-color-lighter: #252525;
@@ -5413,13 +5413,13 @@ const transferToInput = (e: MouseEvent) => {
     transition: var(--json-tool-theme-transition) !important;
 }
 
-:global(body.json-tool-theme-dark .el-popper.is-light .el-popper__arrow::before) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-popper.is-light .el-popper__arrow::before) {
     background: var(--json-tool-surface) !important;
     border-color: var(--json-tool-border) !important;
 }
 
-:global(body.json-tool-theme-dark .el-message),
-:global(body.json-tool-theme-dark .el-notification) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-notification) {
     --el-message-bg-color: var(--json-tool-surface-raised);
     --el-message-border-color: var(--json-tool-border);
     --el-message-text-color: var(--json-tool-text);
@@ -5433,115 +5433,115 @@ const transferToInput = (e: MouseEvent) => {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
 }
 
-:global(body.json-tool-theme-dark .el-message__content),
-:global(body.json-tool-theme-dark .el-notification__title) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message__content),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-notification__title) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark .el-notification__content),
-:global(body.json-tool-theme-dark .el-notification__closeBtn) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-notification__content),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-notification__closeBtn) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark .el-message--success),
-:global(body.json-tool-theme-dark .json-tool-message.el-message--success) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message--success),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-message.el-message--success) {
     background-color: rgba(38, 91, 57, 0.92) !important;
     border-color: rgba(50, 122, 76, 0.95) !important;
 }
 
-:global(body.json-tool-theme-dark .el-message--warning),
-:global(body.json-tool-theme-dark .json-tool-message.el-message--warning) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message--warning),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-message.el-message--warning) {
     background-color: rgba(118, 90, 24, 0.92) !important;
     border-color: rgba(154, 116, 32, 0.95) !important;
 }
 
-:global(body.json-tool-theme-dark .el-message--error),
-:global(body.json-tool-theme-dark .json-tool-message.el-message--error) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message--error),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-message.el-message--error) {
     background-color: rgba(116, 51, 51, 0.92) !important;
     border-color: rgba(149, 67, 67, 0.95) !important;
 }
 
-:global(body.json-tool-theme-dark .el-message--info),
-:global(body.json-tool-theme-dark .json-tool-message.el-message--info) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message--info),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-message.el-message--info) {
     background-color: rgba(36, 36, 36, 0.96) !important;
     border-color: var(--json-tool-border-strong) !important;
 }
 
-:global(body.json-tool-theme-dark .el-message .el-message__icon) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message .el-message__icon) {
     filter: brightness(1.12);
 }
 
-:global(body.json-tool-theme-dark .el-dialog__header),
-:global(body.json-tool-theme-dark .el-message-box__header) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__header),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message-box__header) {
     border-bottom: 1px solid var(--json-tool-border) !important;
     background: linear-gradient(to bottom, #232323, #1f1f1f) !important;
 }
 
-:global(body.json-tool-theme-dark .el-dialog__body),
-:global(body.json-tool-theme-dark .el-message-box__content) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__body),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message-box__content) {
     color: var(--json-tool-text) !important;
     background: var(--json-tool-surface) !important;
 }
 
-:global(body.json-tool-theme-dark .el-dialog__footer),
-:global(body.json-tool-theme-dark .el-message-box__btns) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__footer),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message-box__btns) {
     border-top: 1px solid var(--json-tool-border) !important;
     background: var(--json-tool-surface) !important;
 }
 
-:global(body.json-tool-theme-dark .delete-archive-message-box .el-message-box__header),
-:global(body.json-tool-theme-dark .delete-archive-message-box .el-message-box__btns) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .delete-archive-message-box .el-message-box__header),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .delete-archive-message-box .el-message-box__btns) {
     border: 0 !important;
     background: var(--json-tool-surface) !important;
     box-shadow: none !important;
 }
 
-:global(body.json-tool-theme-dark .el-dialog__title),
-:global(body.json-tool-theme-dark .el-message-box__title),
-:global(body.json-tool-theme-dark .dialog-title),
-:global(body.json-tool-theme-dark .dialog-title-with-close),
-:global(body.json-tool-theme-dark .section-title),
-:global(body.json-tool-theme-dark .config-name),
-:global(body.json-tool-theme-dark .saved-rule-name),
-:global(body.json-tool-theme-dark .field-path-label) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__title),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message-box__title),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .dialog-title),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .dialog-title-with-close),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .section-title),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-name),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .saved-rule-name),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .field-path-label) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark .form-label),
-:global(body.json-tool-theme-dark .form-label-row .form-label),
-:global(body.json-tool-theme-dark .form-hint),
-:global(body.json-tool-theme-dark .field-label),
-:global(body.json-tool-theme-dark .rule-name-label),
-:global(body.json-tool-theme-dark .preview-label),
-:global(body.json-tool-theme-dark .preview-value),
-:global(body.json-tool-theme-dark .config-details),
-:global(body.json-tool-theme-dark .config-url),
-:global(body.json-tool-theme-dark .config-headers),
-:global(body.json-tool-theme-dark .saved-rule-meta),
-:global(body.json-tool-theme-dark .delete-confirm-text),
-:global(body.json-tool-theme-dark .empty-hint),
-:global(body.json-tool-theme-dark .textarea-counter) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-label),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-label-row .form-label),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-hint),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .field-label),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .rule-name-label),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .preview-label),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .preview-value),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-details),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-url),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-headers),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .saved-rule-meta),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .delete-confirm-text),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .empty-hint),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .textarea-counter) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark .dialog-close-btn),
-:global(body.json-tool-theme-dark .demo-close-btn),
-:global(body.json-tool-theme-dark .el-dialog__headerbtn .el-dialog__close) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .dialog-close-btn),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-close-btn),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__headerbtn .el-dialog__close) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark .dialog-close-btn:hover),
-:global(body.json-tool-theme-dark .demo-close-btn:hover),
-:global(body.json-tool-theme-dark .el-dialog__headerbtn:hover .el-dialog__close) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .dialog-close-btn:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-close-btn:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__headerbtn:hover .el-dialog__close) {
     background: var(--json-tool-button-hover-bg) !important;
     color: #f5f5f5 !important;
 }
 
-:global(body.json-tool-theme-dark .el-input__wrapper),
-:global(body.json-tool-theme-dark .el-textarea__inner),
-:global(body.json-tool-theme-dark .el-select__wrapper),
-:global(body.json-tool-theme-dark .el-input-number__decrease),
-:global(body.json-tool-theme-dark .el-input-number__increase) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__wrapper),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__inner),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__wrapper),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input-number__decrease),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input-number__increase) {
     --el-input-bg-color: var(--json-tool-input-bg);
     --el-input-text-color: var(--json-tool-text);
     --el-input-border-color: var(--json-tool-input-border);
@@ -5554,237 +5554,237 @@ const transferToInput = (e: MouseEvent) => {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark .el-input__wrapper:hover),
-:global(body.json-tool-theme-dark .el-textarea__inner:hover),
-:global(body.json-tool-theme-dark .el-select__wrapper:hover) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__wrapper:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__inner:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__wrapper:hover) {
     box-shadow: 0 0 0 1px var(--json-tool-input-hover-border) inset !important;
 }
 
-:global(body.json-tool-theme-dark .el-input__wrapper.is-focus),
-:global(body.json-tool-theme-dark .el-input.is-focus .el-input__wrapper),
-:global(body.json-tool-theme-dark .el-textarea__inner:focus),
-:global(body.json-tool-theme-dark .el-select__wrapper.is-focused) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__wrapper.is-focus),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input.is-focus .el-input__wrapper),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__inner:focus),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__wrapper.is-focused) {
     background-color: var(--json-tool-input-bg) !important;
     box-shadow: 0 0 0 1px var(--el-color-primary) inset !important;
 }
 
-:global(body.json-tool-theme-dark .el-input__inner),
-:global(body.json-tool-theme-dark .el-textarea__inner),
-:global(body.json-tool-theme-dark .el-select__selected-item),
-:global(body.json-tool-theme-dark .el-select__placeholder),
-:global(body.json-tool-theme-dark .el-input .el-icon),
-:global(body.json-tool-theme-dark .el-select .el-icon),
-:global(body.json-tool-theme-dark .el-input-number .el-icon) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__inner),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__inner),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__selected-item),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__placeholder),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input .el-icon),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select .el-icon),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input-number .el-icon) {
     background-color: transparent !important;
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark .el-input__inner:-webkit-autofill),
-:global(body.json-tool-theme-dark .el-input__inner:-webkit-autofill:hover),
-:global(body.json-tool-theme-dark .el-input__inner:-webkit-autofill:focus) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__inner:-webkit-autofill),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__inner:-webkit-autofill:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__inner:-webkit-autofill:focus) {
     -webkit-text-fill-color: var(--json-tool-text) !important;
     box-shadow: 0 0 0 1000px var(--json-tool-input-bg) inset !important;
     caret-color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark .el-input__inner::placeholder),
-:global(body.json-tool-theme-dark .el-textarea__inner::placeholder) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__inner::placeholder),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__inner::placeholder) {
     color: #71717a !important;
 }
 
-:global(body.json-tool-theme-dark .el-input__count),
-:global(body.json-tool-theme-dark .el-input__count-inner),
-:global(body.json-tool-theme-dark .el-textarea .el-input__count),
-:global(body.json-tool-theme-dark .el-textarea__word-limit),
-:global(body.json-tool-theme-dark .el-textarea__word-limit .el-input__count-inner) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__count),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__count-inner),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea .el-input__count),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__word-limit),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__word-limit .el-input__count-inner) {
     background: var(--json-tool-input-bg) !important;
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark .el-alert) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert) {
     background-color: var(--json-tool-surface-raised) !important;
     border: 1px solid var(--json-tool-border) !important;
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark .el-alert--info) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert--info) {
     background-color: #242424 !important;
     border-color: #333333 !important;
 }
 
-:global(body.json-tool-theme-dark .el-alert__title),
-:global(body.json-tool-theme-dark .el-alert__content),
-:global(body.json-tool-theme-dark .el-alert__description) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert__title),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert__content),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert__description) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark .el-alert__title strong) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert__title strong) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark .el-alert__icon) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert__icon) {
     color: #9da0a6 !important;
 }
 
-:global(body.json-tool-theme-dark .el-button) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button) {
     background-color: var(--json-tool-button-bg) !important;
     border-color: var(--json-tool-button-border) !important;
     color: var(--json-tool-button-text) !important;
 }
 
-:global(body.json-tool-theme-dark .el-button:hover),
-:global(body.json-tool-theme-dark .el-button:focus) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button:focus) {
     background-color: var(--json-tool-button-hover-bg) !important;
     border-color: var(--json-tool-button-hover-border) !important;
     color: #f5f5f5 !important;
 }
 
-:global(body.json-tool-theme-dark .el-button--primary) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--primary) {
     background-color: #1d4f73 !important;
     border-color: #28658e !important;
     color: #e8f4ff !important;
 }
 
-:global(body.json-tool-theme-dark .el-button--primary:hover),
-:global(body.json-tool-theme-dark .el-button--primary:focus) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--primary:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--primary:focus) {
     background-color: #28658e !important;
     border-color: #3478a5 !important;
 }
 
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain) {
     background-color: rgba(245, 247, 250, 0.1) !important;
     border-color: rgba(245, 247, 250, 0.2) !important;
     color: rgba(245, 247, 250, 0.92) !important;
 }
 
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain:hover),
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain:focus) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain:focus) {
     background-color: rgba(245, 247, 250, 0.18) !important;
     border-color: rgba(245, 247, 250, 0.3) !important;
     color: #ffffff !important;
 }
 
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain:active) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain:active) {
     background-color: rgba(245, 247, 250, 0.14) !important;
     border-color: rgba(245, 247, 250, 0.24) !important;
     color: rgba(245, 247, 250, 0.94) !important;
 }
 
-:global(body.json-tool-theme-dark .el-button--success) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--success) {
     background-color: #265b39 !important;
     border-color: #327a4c !important;
     color: #e8fff0 !important;
 }
 
-:global(body.json-tool-theme-dark .el-button--success:hover),
-:global(body.json-tool-theme-dark .el-button--success:focus) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--success:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--success:focus) {
     background-color: #327a4c !important;
     border-color: #409a61 !important;
     color: #ffffff !important;
 }
 
-:global(body.json-tool-theme-dark .el-button--success:active) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--success:active) {
     background-color: #1f4a2f !important;
     border-color: #327a4c !important;
     color: #e8fff0 !important;
 }
 
-:global(body.json-tool-theme-dark .el-button--warning) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--warning) {
     background-color: #765a18 !important;
     border-color: #9a7420 !important;
     color: #fff6d7 !important;
 }
 
-:global(body.json-tool-theme-dark .el-button--danger) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--danger) {
     background-color: #743333 !important;
     border-color: #954343 !important;
     color: #ffecec !important;
 }
 
-:global(body.json-tool-theme-dark .el-button--danger:hover),
-:global(body.json-tool-theme-dark .el-button--danger:focus) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--danger:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--danger:focus) {
     background-color: #8b3c3c !important;
     border-color: #ad4e4e !important;
     color: #ffffff !important;
 }
 
-:global(body.json-tool-theme-dark .el-button--danger:active) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--danger:active) {
     background-color: #5f2a2a !important;
     border-color: #8b3c3c !important;
     color: #ffecec !important;
 }
 
-:global(body.json-tool-theme-dark .el-button.is-disabled),
-:global(body.json-tool-theme-dark .el-button.is-disabled:hover) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button.is-disabled),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button.is-disabled:hover) {
     background-color: #242424 !important;
     border-color: #2f2f2f !important;
     color: #6f6f6f !important;
 }
 
-:global(body.json-tool-theme-dark .el-radio-button__inner),
-:global(body.json-tool-theme-dark .el-checkbox__inner) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-radio-button__inner),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-checkbox__inner) {
     background-color: var(--json-tool-input-bg) !important;
     border-color: var(--json-tool-input-border) !important;
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark .el-radio-button__original-radio:checked + .el-radio-button__inner),
-:global(body.json-tool-theme-dark .el-checkbox__input.is-checked .el-checkbox__inner) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-radio-button__original-radio:checked + .el-radio-button__inner),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-checkbox__input.is-checked .el-checkbox__inner) {
     background-color: #1d4f73 !important;
     border-color: #28658e !important;
     color: #fff !important;
 }
 
-:global(body.json-tool-theme-dark .el-checkbox__label),
-:global(body.json-tool-theme-dark .el-radio__label) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-checkbox__label),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-radio__label) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark .el-dropdown-menu),
-:global(body.json-tool-theme-dark .el-select-dropdown),
-:global(body.json-tool-theme-dark .el-select-dropdown__wrap),
-:global(body.json-tool-theme-dark .el-select-dropdown__list),
-:global(body.json-tool-theme-dark .el-autocomplete-suggestion),
-:global(body.json-tool-theme-dark .el-autocomplete-suggestion__wrap) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown-menu),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__wrap),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__list),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-autocomplete-suggestion),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-autocomplete-suggestion__wrap) {
     background-color: var(--json-tool-surface) !important;
     border-color: var(--json-tool-border) !important;
 }
 
-:global(body.json-tool-theme-dark .el-dropdown-menu__item),
-:global(body.json-tool-theme-dark .el-select-dropdown__item),
-:global(body.json-tool-theme-dark .el-autocomplete-suggestion li) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown-menu__item),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-autocomplete-suggestion li) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark .el-dropdown-menu__item:hover),
-:global(body.json-tool-theme-dark .el-dropdown-menu__item:focus),
-:global(body.json-tool-theme-dark .el-select-dropdown__item.hover),
-:global(body.json-tool-theme-dark .el-select-dropdown__item.is-hovering),
-:global(body.json-tool-theme-dark .el-select-dropdown__item:focus),
-:global(body.json-tool-theme-dark .el-select-dropdown__item:hover),
-:global(body.json-tool-theme-dark .el-autocomplete-suggestion li:hover),
-:global(body.json-tool-theme-dark .el-autocomplete-suggestion li.highlighted) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown-menu__item:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown-menu__item:focus),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.is-hovering),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item:focus),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-autocomplete-suggestion li:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-autocomplete-suggestion li.highlighted) {
     background-color: #2a2d35 !important;
 }
 
-:global(body.json-tool-theme-dark .el-select-dropdown__item.is-selected),
-:global(body.json-tool-theme-dark .el-select-dropdown__item.selected),
-:global(body.json-tool-theme-dark .el-dropdown-menu__item.is-active) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.is-selected),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.selected),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown-menu__item.is-active) {
     background-color: rgba(64, 158, 255, 0.16) !important;
     color: #e8f4ff !important;
 }
 
-:global(body.json-tool-theme-dark .el-select-dropdown__item.is-disabled),
-:global(body.json-tool-theme-dark .el-select-dropdown__item.is-disabled:hover),
-:global(body.json-tool-theme-dark .el-select-dropdown__item.is-disabled.is-hovering) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.is-disabled),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.is-disabled:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.is-disabled.is-hovering) {
     background-color: var(--json-tool-surface) !important;
     color: #6f6f6f !important;
 }
 
-:global(body.json-tool-theme-dark .el-table),
-:global(body.json-tool-theme-dark .el-table tr),
-:global(body.json-tool-theme-dark .el-table th.el-table__cell),
-:global(body.json-tool-theme-dark .el-table td.el-table__cell) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table tr),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table th.el-table__cell),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table td.el-table__cell) {
     --el-table-border-color: var(--json-tool-border);
     --el-table-border: 1px solid var(--json-tool-border);
     --el-table-text-color: var(--json-tool-text);
@@ -5797,86 +5797,86 @@ const transferToInput = (e: MouseEvent) => {
     border-color: var(--json-tool-border) !important;
 }
 
-:global(body.json-tool-theme-dark .el-table::before),
-:global(body.json-tool-theme-dark .el-table::after),
-:global(body.json-tool-theme-dark .el-table__inner-wrapper::before),
-:global(body.json-tool-theme-dark .el-table__inner-wrapper::after),
-:global(body.json-tool-theme-dark .el-table--border::before),
-:global(body.json-tool-theme-dark .el-table--border::after),
-:global(body.json-tool-theme-dark .el-table__border-left-patch) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table::before),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table::after),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table__inner-wrapper::before),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table__inner-wrapper::after),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table--border::before),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table--border::after),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table__border-left-patch) {
     background-color: var(--json-tool-border) !important;
 }
 
-:global(body.json-tool-theme-dark .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell) {
     background-color: #2a2d35 !important;
 }
 
-:global(body.json-tool-theme-dark .el-empty__description),
-:global(body.json-tool-theme-dark .el-descriptions__label),
-:global(body.json-tool-theme-dark .el-descriptions__content) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-empty__description),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-descriptions__label),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-descriptions__content) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark .form-value-quote--compact),
-:global(body.json-tool-theme-dark .empty-hint),
-:global(body.json-tool-theme-dark .config-preview),
-:global(body.json-tool-theme-dark .config-item),
-:global(body.json-tool-theme-dark .rule-item),
-:global(body.json-tool-theme-dark .field-path-item),
-:global(body.json-tool-theme-dark .saved-rule-item) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-value-quote--compact),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .empty-hint),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-preview),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-item),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .rule-item),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .field-path-item),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .saved-rule-item) {
     background-color: var(--json-tool-surface-raised) !important;
     border-color: var(--json-tool-border) !important;
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark .config-item:hover),
-:global(body.json-tool-theme-dark .saved-rule-item:hover) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-item:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .saved-rule-item:hover) {
     background-color: #2a2d35 !important;
     border-color: var(--json-tool-border-strong) !important;
 }
 
-:global(body.json-tool-theme-dark .form-compact-line),
-:global(body.json-tool-theme-dark .form-value-text),
-:global(body.json-tool-theme-dark .path-text),
-:global(body.json-tool-theme-dark .saved-rule-name) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-compact-line),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-value-text),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-text),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .saved-rule-name) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark .path-type) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-type) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark .delete-confirm) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .delete-confirm) {
     background-color: rgba(116, 51, 51, 0.32) !important;
     border-color: rgba(149, 67, 67, 0.72) !important;
 }
 
-:global(body.json-tool-theme-dark .field-path-delete-btn) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .field-path-delete-btn) {
     background-color: rgba(116, 51, 51, 0.42) !important;
     color: #ffb4b4 !important;
 }
 
-:global(body.json-tool-theme-dark .field-path-delete-btn:hover) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .field-path-delete-btn:hover) {
     background-color: rgba(139, 60, 60, 0.62) !important;
 }
 
-:global(body.json-tool-theme-dark code),
-:global(body.json-tool-theme-dark [style*='background: #fff']) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) code),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) [style*='background: #fff']) {
     background: #2a2a2a !important;
     color: #d4d4d4 !important;
 }
 
-:global(body.json-tool-theme-dark [style*='background-color: #fef0f0']) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) [style*='background-color: #fef0f0']) {
     background-color: rgba(116, 51, 51, 0.32) !important;
     color: #ffb4b4 !important;
 }
 
-:global(body.json-tool-theme-dark [style*='color: #303133']) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) [style*='color: #303133']) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark [style*='color: #606266']),
-:global(body.json-tool-theme-dark [style*='color: #909399']) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) [style*='color: #606266']),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) [style*='color: #909399']) {
     color: var(--json-tool-text-muted) !important;
 }
 
@@ -5947,7 +5947,7 @@ const transferToInput = (e: MouseEvent) => {
     transform: translate(-50%, -50%);
     width: 4px;
     height: 40px;
-    background-color: #c0c4cc;
+    background-color: var(--json-tool-resizer-grip, #c0c4cc);
 }
 
 .json-tool-root.theme-dark .resizer::after {
@@ -6049,7 +6049,7 @@ const transferToInput = (e: MouseEvent) => {
 
 .panel-title i {
     margin-right: 6px;
-    color: #409eff;
+    color: var(--theme-accent, #409eff);
 }
 
 .panel-actions {
@@ -6196,7 +6196,7 @@ const transferToInput = (e: MouseEvent) => {
 
 .first-use-guide-skip:hover,
 .first-use-guide-skip:focus-visible {
-    color: #409eff;
+    color: var(--theme-accent, #409eff);
     border-color: #a0cfff;
     background: #ecf5ff;
     outline: none;
@@ -6462,8 +6462,8 @@ const transferToInput = (e: MouseEvent) => {
     box-shadow: 0 0 0 1px var(--json-tool-level-select-hover-border) inset !important;
 }
 
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper),
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper) {
     --el-input-border-color: var(--json-tool-level-select-border);
     --el-input-hover-border-color: var(--json-tool-level-select-hover-border);
     --el-input-focus-border-color: var(--json-tool-level-select-hover-border);
@@ -6471,10 +6471,10 @@ const transferToInput = (e: MouseEvent) => {
     box-shadow: 0 0 0 1px var(--json-tool-level-select-border) inset !important;
 }
 
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper:hover),
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper:hover),
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper.is-focus),
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper.is-focused) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper.is-focus),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper.is-focused) {
     border-color: var(--json-tool-level-select-hover-border) !important;
     box-shadow: 0 0 0 1px var(--json-tool-level-select-hover-border) inset !important;
 }
@@ -6486,17 +6486,17 @@ const transferToInput = (e: MouseEvent) => {
     box-shadow: 0 0 0 1px var(--json-tool-level-select-disabled-border) inset !important;
 }
 
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select.is-disabled .el-input__wrapper),
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select.is-disabled .el-select__wrapper),
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper.is-disabled),
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper.is-disabled) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select.is-disabled .el-input__wrapper),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select.is-disabled .el-select__wrapper),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper.is-disabled),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper.is-disabled) {
     border-color: var(--json-tool-button-border) !important;
     box-shadow: 0 0 0 1px var(--json-tool-button-border) inset !important;
 }
 
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled),
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled:hover),
-:global(body.json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled:focus) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled:hover),
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled:focus) {
     background-color: #203126 !important;
     border-color: var(--json-tool-level-select-border) !important;
     color: rgba(232, 255, 240, 0.56) !important;
@@ -6559,6 +6559,7 @@ const transferToInput = (e: MouseEvent) => {
     left: 50%;
     transform: translate(-50%, 0);
     background-color: #e4e7ed;
+    color: var(--json-tool-transfer-fg, #409eff);
     cursor: pointer;
     width: 20px;
     height: 20px;
@@ -6572,7 +6573,7 @@ const transferToInput = (e: MouseEvent) => {
 .transfer-button svg {
     width: 18px;
     height: 18px;
-    color: #409eff;
+    color: inherit;
     display: block;
 }
 
@@ -6637,7 +6638,7 @@ const transferToInput = (e: MouseEvent) => {
 
 :deep(.el-dialog__header) {
     padding: 16px 20px 12px;
-    border-bottom: 1px solid #e4e7ed;
+    border-bottom: 1px solid var(--json-tool-border, #e4e7ed);
 }
 
 :deep(.el-dialog__title) {
@@ -6652,7 +6653,7 @@ const transferToInput = (e: MouseEvent) => {
 
 :deep(.el-dialog__footer) {
     padding: 12px 20px 16px;
-    border-top: 1px solid #e4e7ed;
+    border-top: 1px solid var(--json-tool-border, #e4e7ed);
 }
 
 :deep(.el-card) {
@@ -6797,7 +6798,7 @@ const transferToInput = (e: MouseEvent) => {
 }
 
 .archive-header-action:hover:not(:disabled) {
-    color: #409eff;
+    color: var(--theme-accent, #409eff);
     background: var(--json-tool-archive-drag);
 }
 
@@ -6825,11 +6826,11 @@ const transferToInput = (e: MouseEvent) => {
 }
 
 .archive-resizer:hover {
-    background-color: #409eff;
+    background-color: var(--theme-accent, #409eff);
 }
 
 .archive-resizer:active {
-    background-color: #409eff;
+    background-color: var(--theme-accent, #409eff);
 }
 
 .archive-list {
@@ -6926,7 +6927,7 @@ const transferToInput = (e: MouseEvent) => {
 
 .archive-drop-indicator {
     height: 2px;
-    background: #409eff;
+    background: var(--theme-accent, #409eff);
     margin: 2px 0;
     border-radius: 1px;
     pointer-events: none;

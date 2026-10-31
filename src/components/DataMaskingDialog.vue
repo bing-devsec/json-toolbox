@@ -46,54 +46,54 @@
                                         <p class="path-rules-title">{{ maskTxt.pathRulesTitle }}</p>
 
                                         <div style="margin-bottom: 12px">
-                                            <p style="margin: 0 0 6px 0; font-weight: 600; color: #409eff">{{ maskTxt.exactTitle }}</p>
+                                            <p class="path-rule-heading">{{ maskTxt.exactTitle }}</p>
                                             <p style="margin: 0 0 4px 0; padding-left: 12px">
                                                 {{ maskTxt.exactDesc }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">user.password</code>
+                                                <code>user.password</code>
                                                 /
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">company.name</code>
+                                                <code>company.name</code>
                                             </p>
-                                            <p style="margin: 0; padding-left: 12px; color: var(--json-tool-text-muted, #606266); font-size: 11px">
+                                            <p class="path-rule-example">
                                                 {{ maskTxt.exactExamplePrefix }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">name</code>
+                                                <code>name</code>
                                                 {{ maskTxt.exactExampleMiddle }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">name</code>
+                                                <code>name</code>
                                                 {{ maskTxt.exactExampleSuffix }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">company.name</code>
+                                                <code>company.name</code>
                                                 {{ maskTxt.exactExampleEnd }}
                                             </p>
                                         </div>
 
                                         <div style="margin-bottom: 12px">
-                                            <p style="margin: 0 0 6px 0; font-weight: 600; color: #409eff">{{ maskTxt.wildcardTitle }}</p>
+                                            <p class="path-rule-heading">{{ maskTxt.wildcardTitle }}</p>
                                             <p style="margin: 0 0 4px 0; padding-left: 12px">
                                                 {{ maskTxt.wildcardDescPrefix }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">*</code>
+                                                <code>*</code>
                                                 {{ maskTxt.wildcardDescMiddle }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">*.password</code>
+                                                <code>*.password</code>
                                             </p>
-                                            <p style="margin: 0; padding-left: 12px; color: var(--json-tool-text-muted, #606266); font-size: 11px">
+                                            <p class="path-rule-example">
                                                 {{ maskTxt.wildcardExamplePrefix }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">*.password</code>
+                                                <code>*.password</code>
                                                 {{ maskTxt.wildcardExampleMiddle }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">user.password</code>
+                                                <code>user.password</code>
                                                 、
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">root.admin.password</code>
+                                                <code>root.admin.password</code>
                                                 {{ maskTxt.wildcardExampleEnd }}
                                             </p>
                                         </div>
 
                                         <div style="margin-bottom: 12px">
-                                            <p style="margin: 0 0 6px 0; font-weight: 600; color: #409eff">{{ maskTxt.arrayWildcardTitle }}</p>
+                                            <p class="path-rule-heading">{{ maskTxt.arrayWildcardTitle }}</p>
                                             <p style="margin: 0 0 4px 0; padding-left: 12px">
                                                 {{ maskTxt.arrayWildcardDescPrefix }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">[*]</code>
+                                                <code>[*]</code>
                                                 {{ maskTxt.arrayWildcardDescMiddle }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">users[*].email</code>
+                                                <code>users[*].email</code>
                                             </p>
-                                            <p style="margin: 0; padding-left: 12px; color: var(--json-tool-text-muted, #606266); font-size: 11px">
+                                            <p class="path-rule-example">
                                                 {{ maskTxt.wildcardExamplePrefix }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">
+                                                <code>
                                                     company.employees[*].personalInfo.phone
                                                 </code>
                                                 {{ maskTxt.arrayWildcardExampleEnd }}
@@ -101,19 +101,19 @@
                                         </div>
 
                                         <div style="margin-bottom: 0">
-                                            <p style="margin: 0 0 6px 0; font-weight: 600; color: #409eff">{{ maskTxt.orTitle }}</p>
+                                            <p class="path-rule-heading">{{ maskTxt.orTitle }}</p>
                                             <p style="margin: 0 0 4px 0; padding-left: 12px">
                                                 {{ maskTxt.wildcardDescPrefix }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">|</code>
+                                                <code>|</code>
                                                 {{ maskTxt.orDesc }}
                                             </p>
-                                            <p style="margin: 0; padding-left: 12px; color: var(--json-tool-text-muted, #606266); font-size: 11px">
+                                            <p class="path-rule-example">
                                                 {{ maskTxt.orExamplePrefix }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">name | settings[*].name</code>
+                                                <code>name | settings[*].name</code>
                                                 {{ maskTxt.orExampleMiddle }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">name</code>
+                                                <code>name</code>
                                                 {{ maskTxt.orExampleEnd }}
-                                                <code style="background: #fff; padding: 2px 6px; border-radius: 2px">name</code>
+                                                <code>name</code>
                                             </p>
                                         </div>
                                     </div>
@@ -3080,7 +3080,7 @@ watch(
 
 .field-path-priority {
     font-size: 12px;
-    color: #409eff;
+    color: var(--theme-accent, #409eff);
     font-weight: 500;
     padding: 2px 8px;
     background-color: #ecf5ff;
@@ -3318,17 +3318,30 @@ watch(
 .path-help-panel {
     margin-top: 12px;
     padding: 8px 12px;
-    border-left: 3px solid #409eff;
+    border-left: 3px solid var(--theme-accent, #409eff);
 }
 
 .path-help-content {
     font-size: 12px;
     line-height: 1.8;
-    color: #606266;
+    color: var(--json-tool-text, #606266);
+}
+
+.path-rule-heading {
+    margin: 0 0 6px;
+    font-weight: 600;
+    color: var(--theme-accent, #409eff);
+}
+
+.path-rule-example {
+    margin: 0;
+    padding-left: 12px;
+    font-size: 11px;
+    color: var(--json-tool-text-muted, #606266);
 }
 
 .path-help-toggle-btn {
-    color: #409eff;
+    color: var(--theme-accent, #409eff);
     background-color: transparent;
     border-color: transparent;
 }
@@ -3349,57 +3362,57 @@ watch(
     padding: 2px 6px;
     border-radius: 2px;
     border: 1px solid #e4e7ed;
-    color: #409eff;
+    color: var(--theme-accent, #409eff);
 }
 
-:global(body.json-tool-theme-dark) .path-help-alert.el-alert--info {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-alert.el-alert--info {
     background-color: #252526;
     border-color: #3b3d41;
 }
 
-:global(body.json-tool-theme-dark) .path-help-alert:deep(.el-alert__icon) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-alert:deep(.el-alert__icon) {
     color: #8ab4f8;
 }
 
-:global(body.json-tool-theme-dark) .path-help-panel {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-panel {
     background-color: rgba(255, 255, 255, 0.02);
     border-left-color: #4c8ed9;
 }
 
-:global(body.json-tool-theme-dark .path-help-content) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-help-content) {
     color: #b8c0cc !important;
 }
 
-:global(body.json-tool-theme-dark .path-help-content p) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-help-content p) {
     color: #b8c0cc !important;
 }
 
-:global(body.json-tool-theme-dark .path-help-content > div > p:first-child) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-help-content > div > p:first-child) {
     color: #8ab4f8 !important;
 }
 
-:global(body.json-tool-theme-dark .path-help-content > div > p:last-child) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-help-content > div > p:last-child) {
     color: #a4acb8 !important;
 }
 
-:global(body.json-tool-theme-dark) .path-help-alert:deep(.el-alert__title) code {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-alert:deep(.el-alert__title) code {
     background-color: #2d2f34;
     border-color: #4a4d52;
     color: #d7dce4;
 }
 
-:global(body.json-tool-theme-dark) .path-help-toggle-btn,
-:global(body.json-tool-theme-dark) .path-help-toggle-btn:hover,
-:global(body.json-tool-theme-dark) .path-help-toggle-btn:focus,
-:global(body.json-tool-theme-dark) .path-help-toggle-btn:active {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn,
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn:hover,
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn:focus,
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn:active {
     background-color: #2d2f34 !important;
     border-color: #43454a !important;
     color: #d7dce4 !important;
     border-radius: 4px;
 }
 
-:global(body.json-tool-theme-dark) .path-help-toggle-btn:hover,
-:global(body.json-tool-theme-dark) .path-help-toggle-btn:focus-visible {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn:hover,
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn:focus-visible {
     background-color: #34363b !important;
     border-color: #4d5056 !important;
     color: #eef2f8 !important;
@@ -3416,7 +3429,7 @@ watch(
 .path-text {
     flex: 1;
     font-size: 13px;
-    color: #303133;
+    color: var(--json-tool-text, #303133);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

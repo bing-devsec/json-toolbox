@@ -15,20 +15,30 @@
         </template>
         <div class="settings-dialog-content">
             <el-collapse v-model="activeNameModel" accordion>
-                <!-- 设置 -->
+                <el-collapse-item name="theme">
+                    <template #title><div class="settings-collapse-title"><el-icon class="column-title-icon"><Setting /></el-icon><span>{{ sectionCopy.theme.title }}</span><span class="settings-section-current">{{ currentThemeSummary }}</span></div></template>
+                    <div class="settings-collapse-content"><AppearanceSettings :locale="locale" :interface-style="interfaceStyle" :theme-mode="themeMode" @update:interface-style="$emit('update:interfaceStyle', $event)" @update:theme-mode="$emit('update:themeMode', $event)" /></div>
+                </el-collapse-item>
+
                 <el-collapse-item name="settings">
                     <template #title>
-                        <div class="settings-collapse-title">
-                            <el-icon class="column-title-icon">
-                                <Setting />
-                            </el-icon>
-                            <span>{{ settingsTxt.sectionGeneral }}</span>
-                        </div>
+                        <div class="settings-collapse-title"><el-icon class="column-title-icon"><Setting /></el-icon><span>{{ settingsTxt.sectionGeneral }}</span></div>
                     </template>
                     <div class="settings-collapse-content">
-                        <template v-if="!isDiffMode">
-                            <!-- 菜单栏功能设置 -->
-                            <div class="settings-subsection">
+                        <div class="settings-switch-grid">
+                            <div class="switch-card">
+                                <div class="switch-card-head">
+                                    <span class="switch-card-title">{{ sectionCopy.language }}</span>
+                                    <el-radio-group :model-value="locale ?? 'zh'" class="switch-card-radio-group" :aria-label="sectionCopy.language" @change="$emit('switchLocale')">
+                                        <el-radio value="zh" border>简体中文</el-radio>
+                                        <el-radio value="en" border>English</el-radio>
+                                    </el-radio-group>
+                                </div>
+                                <span class="switch-card-desc">{{ sectionCopy.languageDescription }}</span>
+                            </div>
+                            <JsonResponseCaptureSwitch v-if="visible && activeName === 'settings'" :locale="locale" />
+                        </div>
+                        <div v-if="!isDiffMode" class="general-toolbar-options"><div class="settings-subsection">
                                 <div class="settings-subsection-title">{{ settingsTxt.menuVisibilityTitle }}</div>
                                 <div class="button-visibility-list">
                                     <!-- 本地数据处理 -->
@@ -58,12 +68,13 @@
                                         <el-checkbox v-model="buttonVisibilityModel.diff">{{ settingsTxt.btnDiff }}</el-checkbox>
                                     </div>
                                 </div>
-                            </div>
+                            </div></div>
+                    </div>
+                </el-collapse-item>
 
-                        </template>
-
-                        <div class="settings-switch-grid settings-switch-grid--values">
-                            <div class="switch-card">
+                <el-collapse-item name="editor">
+                    <template #title><div class="settings-collapse-title"><el-icon class="column-title-icon"><Edit /></el-icon><span>{{ sectionCopy.editor.title }}</span></div></template>
+                    <div class="settings-collapse-content"><div class="settings-switch-grid"><div class="switch-card">
                                 <div class="switch-card-head">
                                     <span class="switch-card-title">{{ settingsTxt.fontSizeTitleValue(fontSizeModel) }}</span>
                                     <el-radio-group v-model="fontSizeModel" class="switch-card-radio-group" :aria-label="settingsTxt.fontSizeLabel" @change="$emit('updateFontSize')">
@@ -73,26 +84,7 @@
                                     </el-radio-group>
                                 </div>
                                 <span class="switch-card-desc">{{ settingsTxt.fontSizeStaticDesc }}</span>
-                            </div>
-
-                            <!-- 缩进空格 -->
-                            <div class="switch-card">
-                                <div class="switch-card-head">
-                                    <span :id="`${settingsLabelId}-indent`" class="switch-card-title">{{ settingsTxt.indentTitleValue(indentSizeModel) }}</span>
-                                    <el-radio-group v-model="indentSizeModel" class="switch-card-radio-group" :aria-labelledby="`${settingsLabelId}-indent`">
-                                        <el-radio :value="2" border>2</el-radio>
-                                        <el-radio :value="4" border>4</el-radio>
-                                        <el-radio :value="8" border>8</el-radio>
-                                    </el-radio-group>
-                                </div>
-                                <span class="switch-card-desc">{{ settingsTxt.indentStaticDesc }}</span>
-                            </div>
-                        </div>
-
-                        <!-- 开关项集合：统一以 2 列紧凑网格呈现 -->
-                        <div class="settings-switch-grid settings-switch-grid--toggles">
-                            <!-- 语法检查 -->
-                            <div class="switch-card">
+                            </div><div class="switch-card">
                                 <div class="switch-card-head">
                                     <span class="switch-card-title">
                                         {{ enableDiagnosticsModel ? settingsTxt.diagnosticsTitleOn : settingsTxt.diagnosticsTitleOff }}
@@ -100,10 +92,7 @@
                                     <el-switch class="switch-card-toggle" v-model="enableDiagnosticsModel" size="default" />
                                 </div>
                                 <span class="switch-card-desc">{{ settingsTxt.diagnosticsStaticDesc }}</span>
-                            </div>
-
-                            <!-- 字符串换行 -->
-                            <div class="switch-card">
+                            </div><div class="switch-card">
                                 <div class="switch-card-head">
                                     <span class="switch-card-title">
                                         {{ wordWrapLocked ? settingsTxt.wordWrapTitleForced : wordWrapModel ? settingsTxt.wordWrapTitleOff : settingsTxt.wordWrapTitleOn }}
@@ -118,10 +107,7 @@
                                         @change="$emit('updateWordWrap')" />
                                 </div>
                                 <span class="switch-card-desc">{{ wordWrapLocked ? settingsTxt.wordWrapLockedDesc : settingsTxt.wordWrapStaticDesc }}</span>
-                            </div>
-
-                            <!-- 同步滚动（仅普通模式） -->
-                            <div v-if="!isDiffMode" class="switch-card">
+                            </div><div v-if="!isDiffMode" class="switch-card">
                                 <div class="switch-card-head">
                                     <span class="switch-card-title">
                                         {{ syncScrollEnabledModel ? settingsTxt.syncScrollTitleOn : settingsTxt.syncScrollTitleOff }}
@@ -129,10 +115,7 @@
                                     <el-switch class="switch-card-toggle" v-model="syncScrollEnabledModel" size="default" />
                                 </div>
                                 <span class="switch-card-desc">{{ settingsTxt.syncScrollStaticDesc }}</span>
-                            </div>
-
-                            <!-- 粘性滚动（仅普通模式） -->
-                            <div v-if="!isDiffMode" class="switch-card">
+                            </div><div v-if="!isDiffMode" class="switch-card">
                                 <div class="switch-card-head">
                                     <span class="switch-card-title">
                                         {{ stickyScrollModel ? settingsTxt.stickyScrollTitleOn : settingsTxt.stickyScrollTitleOff }}
@@ -140,20 +123,13 @@
                                     <el-switch class="switch-card-toggle" v-model="stickyScrollModel" size="default" @change="$emit('updateStickyScroll')" />
                                 </div>
                                 <span class="switch-card-desc">{{ settingsTxt.stickyScrollStaticDesc }}</span>
-                            </div>
-
-                            <JsonResponseCaptureSwitch v-if="visible && activeName === 'settings'" :locale="locale" />
-
-                            <!-- 缩略图（仅普通模式） -->
-                            <div v-if="!isDiffMode" class="switch-card">
+                            </div><div v-if="!isDiffMode" class="switch-card">
                                 <div class="switch-card-head">
                                     <span class="switch-card-title">{{ showMinimapModel ? settingsTxt.minimapTitleOn : settingsTxt.minimapTitleOff }}</span>
                                     <el-switch class="switch-card-toggle" v-model="showMinimapModel" size="default" @change="$emit('updateMinimap')" />
                                 </div>
                                 <span class="switch-card-desc">{{ settingsTxt.minimapStaticDesc }}</span>
-                            </div>
-                        </div>
-                    </div>
+                            </div></div></div>
                 </el-collapse-item>
 
                 <!-- 格式化设置 -->
@@ -168,6 +144,17 @@
                     </template>
                     <div class="settings-collapse-content">
                         <div class="settings-switch-grid">
+<div class="switch-card">
+                                <div class="switch-card-head">
+                                    <span :id="`${settingsLabelId}-indent`" class="switch-card-title">{{ settingsTxt.indentTitleValue(indentSizeModel) }}</span>
+                                    <el-radio-group v-model="indentSizeModel" class="switch-card-radio-group" :aria-labelledby="`${settingsLabelId}-indent`">
+                                        <el-radio :value="2" border>2</el-radio>
+                                        <el-radio :value="4" border>4</el-radio>
+                                        <el-radio :value="8" border>8</el-radio>
+                                    </el-radio-group>
+                                </div>
+                                <span class="switch-card-desc">{{ settingsTxt.indentStaticDesc }}</span>
+                            </div>
                             <div v-if="!isDiffMode" class="switch-card">
                                 <div class="switch-card-head">
                                     <span class="switch-card-title">{{ repairOnFormatModel ? settingsTxt.repairSettingTitleOn : settingsTxt.repairSettingTitleOff }}</span>
@@ -337,14 +324,21 @@ import 'element-plus/es/components/radio-group/style/css';
 import 'element-plus/es/components/select/style/css';
 import 'element-plus/es/components/switch/style/css';
 
+import { interfaceStyles } from '../themes/interfaceThemes';
+import { settingsSectionCopy } from './utils/settingsSections';
+import './settingsLayout.css';
 import { computed, useId } from 'vue';
 import { Document, Edit, Refresh, Setting, Sort } from '@element-plus/icons-vue';
 import type { SettingsTxt } from './utils/i18n';
+import AppearanceSettings from './AppearanceSettings.vue';
+import type { InterfaceStyle, AppearanceMode } from '../themes/interfaceThemes';
 import JsonResponseCaptureSwitch from './JsonResponseCaptureSwitch.vue';
 import type { ButtonVisibility, SortMethod, SortOrder } from './composables/useToolSettings';
 
 interface Props {
     locale?: 'zh' | 'en';
+    interfaceStyle: InterfaceStyle;
+    themeMode: AppearanceMode;
     visible: boolean;
     activeName: string | number;
     settingsTxt: SettingsTxt;
@@ -371,8 +365,17 @@ interface Props {
 type ModelKey = Exclude<keyof Props, 'locale' | 'settingsTxt' | 'isDiffMode' | 'wordWrapLocked'>;
 
 const props = defineProps<Props>();
+const currentThemeSummary = computed(() => {
+    const style = interfaceStyles.find(item => item.id === props.interfaceStyle) ?? interfaceStyles[0];
+    const english = props.locale === 'en';
+    return `${english ? style.en : style.zh} · ${props.themeMode === 'dark' ? (english ? 'Dark' : '深色') : (english ? 'Light' : '浅色')}`;
+});
+const sectionCopy = computed(() => settingsSectionCopy[props.locale === 'en' ? 'en' : 'zh']);
 const settingsLabelId = useId();
 const emit = defineEmits<{
+    switchLocale: [];
+    'update:interfaceStyle': [value: InterfaceStyle];
+    'update:themeMode': [value: AppearanceMode];
     'update:visible': [value: boolean];
     'update:activeName': [value: string | number];
     'update:buttonVisibility': [value: ButtonVisibility];
@@ -534,7 +537,7 @@ const sortMethodDynamicDesc = computed(() => {
     border: none;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .settings-dialog-content .el-collapse) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .settings-dialog-content .el-collapse) {
     background: transparent !important;
 }
 
@@ -566,7 +569,7 @@ const sortMethodDynamicDesc = computed(() => {
     line-height: 1.4;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .settings-dialog-content .el-collapse-item__header) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .settings-dialog-content .el-collapse-item__header) {
     background-color: #242424 !important;
     color: #cccccc !important;
     border-color: #2b2b2b !important;
@@ -581,7 +584,7 @@ const sortMethodDynamicDesc = computed(() => {
     background-color: #ecf5ff;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .settings-dialog-content .el-collapse-item__header:hover) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .settings-dialog-content .el-collapse-item__header:hover) {
     background-color: #2a2d35 !important;
 }
 
@@ -591,7 +594,7 @@ const sortMethodDynamicDesc = computed(() => {
     border-radius: 4px 4px 0 0;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .settings-dialog-content .el-collapse-item__header.is-active) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .settings-dialog-content .el-collapse-item__header.is-active) {
     background-color: #2a2d35 !important;
     border-bottom-color: #3a3a3a !important;
 }
@@ -600,7 +603,7 @@ const sortMethodDynamicDesc = computed(() => {
     border: none;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .settings-dialog-content .el-collapse-item__wrap) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .settings-dialog-content .el-collapse-item__wrap) {
     background: #1f1f1f !important;
     border: none !important;
 }
@@ -610,7 +613,7 @@ const sortMethodDynamicDesc = computed(() => {
     border-radius: 0 0 4px 4px;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .settings-dialog-content .el-collapse-item__content) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .settings-dialog-content .el-collapse-item__content) {
     background: #1f1f1f !important;
     color: #cccccc !important;
 }
@@ -633,7 +636,7 @@ const sortMethodDynamicDesc = computed(() => {
 
 .column-title-icon {
     font-size: 18px;
-    color: #409eff;
+    color: var(--theme-accent, #409eff);
 }
 
 .settings-subsection {
@@ -651,7 +654,7 @@ const sortMethodDynamicDesc = computed(() => {
     margin-bottom: 12px;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .settings-subsection-title) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .settings-subsection-title) {
     color: #cccccc !important;
 }
 
@@ -688,7 +691,7 @@ const sortMethodDynamicDesc = computed(() => {
     min-height: 70px;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card) {
     background: #242424 !important;
     border-color: #333333 !important;
     color: #cccccc !important;
@@ -700,7 +703,7 @@ const sortMethodDynamicDesc = computed(() => {
     box-shadow: 0 2px 6px rgba(64, 158, 255, 0.08);
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card:hover) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card:hover) {
     background: #2a2d35 !important;
     border-color: #3a3a3a !important;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28) !important;
@@ -719,60 +722,60 @@ const sortMethodDynamicDesc = computed(() => {
     flex-shrink: 0;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle.el-switch) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle.el-switch) {
     --el-switch-on-color: #1d4f73;
     --el-switch-off-color: #30343c;
     --el-switch-border-color: #4a505a;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle .el-switch__core) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle .el-switch__core) {
     background-color: #30343c !important;
     border-color: #4a505a !important;
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle:not(.is-disabled):hover .el-switch__core) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle:not(.is-disabled):hover .el-switch__core) {
     background-color: #363b45 !important;
     border-color: #5a6370 !important;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle.is-checked .el-switch__core) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle.is-checked .el-switch__core) {
     background-color: #1d4f73 !important;
     border-color: #3478a5 !important;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle.is-checked:not(.is-disabled):hover .el-switch__core) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle.is-checked:not(.is-disabled):hover .el-switch__core) {
     background-color: #28658e !important;
     border-color: #4091c2 !important;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle .el-switch__action) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle .el-switch__action) {
     background-color: #d7dce4 !important;
     color: #30343c !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.32);
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle.is-checked .el-switch__action) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle.is-checked .el-switch__action) {
     background-color: #e8f4ff !important;
     color: #28658e !important;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle .el-switch__input:focus-visible ~ .el-switch__core) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle .el-switch__input:focus-visible ~ .el-switch__core) {
     outline: 2px solid rgba(64, 145, 194, 0.42) !important;
     outline-offset: 2px;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle.is-disabled .el-switch__core) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle.is-disabled .el-switch__core) {
     background-color: #26282d !important;
     border-color: #363a42 !important;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle.is-disabled.is-checked .el-switch__core) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle.is-disabled.is-checked .el-switch__core) {
     background-color: #173c58 !important;
     border-color: #245879 !important;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-toggle.is-disabled .el-switch__action) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-toggle.is-disabled .el-switch__action) {
     background-color: #8c939d !important;
 }
 
@@ -788,7 +791,7 @@ const sortMethodDynamicDesc = computed(() => {
     min-width: 0;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-title) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-title) {
     color: #f0f0f0 !important;
 }
 
@@ -802,7 +805,7 @@ const sortMethodDynamicDesc = computed(() => {
     min-height: calc(12px * 1.55 * 2);
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-desc) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-desc) {
     color: #9da0a6 !important;
 }
 
@@ -840,7 +843,7 @@ const sortMethodDynamicDesc = computed(() => {
     border-radius: 6px;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered) {
     background: #252525 !important;
     border-color: #3a3a3a !important;
     color: #cccccc !important;
@@ -862,7 +865,7 @@ const sortMethodDynamicDesc = computed(() => {
     outline-offset: 2px;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio:has(input:focus-visible)) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-radio-group .el-radio:has(input:focus-visible)) {
     outline-color: #79bbff;
 }
 
@@ -871,7 +874,7 @@ const sortMethodDynamicDesc = computed(() => {
     padding-left: 0;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio__label) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-radio-group .el-radio__label) {
     color: #cccccc !important;
 }
 
@@ -880,27 +883,31 @@ const sortMethodDynamicDesc = computed(() => {
     background: #ecf5ff;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked) {
     background: #1d4f73 !important;
     border-color: #3478a5 !important;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked .el-radio__label) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked .el-radio__label) {
     color: #e8f4ff !important;
 }
 
 .button-visibility-list {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, max-content);
+    justify-content: space-between;
+    width: 100%;
     grid-auto-rows: min-content;
-    gap: 6px 24px;
+    gap: 8px 16px;
     align-items: start;
 }
 
-@media (max-width: 900px) {
-    .button-visibility-list {
-        grid-template-columns: repeat(2, 1fr);
-    }
+/* Adapt to the available settings width, keeping at most five aligned columns. */
+@container (max-width: 480px) {
+    .button-visibility-list { grid-template-columns: repeat(3, max-content); }
+}
+@container (max-width: 300px) {
+    .button-visibility-list { grid-template-columns: repeat(2, max-content); }
 }
 
 .button-visibility-item {
@@ -910,6 +917,7 @@ const sortMethodDynamicDesc = computed(() => {
 
 .button-visibility-item :deep(.el-checkbox) {
     width: 100%;
+    margin: 0;
 }
 
 .button-visibility-item :deep(.el-checkbox__label) {
@@ -917,7 +925,7 @@ const sortMethodDynamicDesc = computed(() => {
     color: #606266;
 }
 
-:global(body.json-tool-theme-dark .settings-dialog-wrapper .button-visibility-item .el-checkbox__label) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .settings-dialog-wrapper .button-visibility-item .el-checkbox__label) {
     color: #cccccc !important;
 }
 
@@ -932,8 +940,5 @@ const sortMethodDynamicDesc = computed(() => {
         gap: 8px;
     }
 
-    .button-visibility-list {
-        grid-template-columns: 1fr;
-    }
 }
 </style>

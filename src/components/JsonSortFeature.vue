@@ -1,5 +1,5 @@
 <template>
-    <el-dialog v-model="fieldSortDialogVisibleModel" width="600px" :close-on-click-modal="false" :show-close="false">
+    <el-dialog class="field-sort-dialog-wrapper" v-model="fieldSortDialogVisibleModel" width="600px" :close-on-click-modal="false" :show-close="false">
         <template #header>
             <div class="dialog-header-with-close">
                 <span class="dialog-title-with-close">{{ settingsTxt.fieldSortTitle }}</span>
@@ -23,6 +23,7 @@
                 id="sort-root-path-input"
                 v-model="sortRootPathModel"
                 :fetch-suggestions="queryRootPaths"
+                popper-class="sort-path-autocomplete"
                 :placeholder="settingsTxt.fieldSortRootPathPlaceholder"
                 clearable
                 @select="handleRootPathSelect"
@@ -44,6 +45,7 @@
                 id="sort-field-name-input"
                 v-model="sortFieldNameModel"
                 :fetch-suggestions="queryFieldPathsFromScope"
+                popper-class="sort-path-autocomplete"
                 :trigger-on-focus="true"
                 :placeholder="settingsTxt.fieldSortFieldPlaceholder"
                 clearable
@@ -109,7 +111,7 @@
                     v-for="(btn, index) in currentDemoStepData.buttons"
                     :key="index"
                     size="small"
-                    :type="btn.action === endDemoMode ? 'primary' : 'default'"
+                    :type="btn.type ?? 'default'"
                     @click="btn.action()">
                     {{ btn.text }}
                 </el-button>
@@ -131,19 +133,11 @@ import 'element-plus/es/components/popover/style/css';
 import { computed } from 'vue';
 import type { SettingsTxt } from './utils/i18n';
 import type { SortOrder } from './composables/useToolSettings';
+import type { SortDemoStep } from './composables/useJsonSort';
 
 interface PathSuggestion {
     value: string;
     type?: string;
-}
-
-interface DemoStepData {
-    title: string;
-    content: string;
-    buttons: Array<{
-        text: string;
-        action: () => void;
-    }>;
 }
 
 type SuggestionCallback = (suggestions: PathSuggestion[]) => void;
@@ -156,7 +150,7 @@ interface Props {
     settingsTxt: SettingsTxt;
     isDemoMode: boolean;
     demoGuideVisible: boolean;
-    currentDemoStepData: DemoStepData | null;
+    currentDemoStepData: SortDemoStep | null;
     demoPopoverAnchor: HTMLElement | null;
     demoPopoverPlacement: 'right-start' | 'left-start' | 'bottom-start' | 'top-start';
     demoStepsCount: number;
@@ -210,7 +204,7 @@ const sortFieldNameModel = computed({
 .dialog-title-with-close {
     font-size: 18px;
     font-weight: 600;
-    color: #303133;
+    color: var(--json-tool-text, #303133);
     line-height: 1.5;
 }
 
@@ -228,7 +222,7 @@ const sortFieldNameModel = computed({
     font-size: 14px;
     font-weight: 600;
     line-height: 1;
-    color: #909399;
+    color: var(--json-tool-text-muted, #909399);
     cursor: pointer;
     padding: 0;
     width: 24px;
@@ -247,8 +241,8 @@ const sortFieldNameModel = computed({
 }
 
 .demo-close-btn:hover {
-    background: #f2f3f5;
-    color: #303133;
+    background: var(--json-tool-surface-soft, #f2f3f5);
+    color: var(--json-tool-text, #303133);
     transform: scale(1.08);
 }
 
@@ -267,7 +261,7 @@ const sortFieldNameModel = computed({
 .form-label {
     display: block;
     font-weight: 500;
-    color: #606266;
+    color: var(--json-tool-text, #606266);
     margin-bottom: 6px;
 }
 
@@ -278,21 +272,21 @@ const sortFieldNameModel = computed({
 
 .form-value-quote--compact {
     padding: 12px 16px;
-    background: #f6f7f9;
-    border: 1px solid rgba(20, 30, 40, 0.04);
+    background: var(--json-tool-surface-soft, #f6f7f9);
+    border: 1px solid var(--json-tool-border, rgba(20, 30, 40, 0.04));
     box-sizing: border-box;
 }
 
 .form-compact-line {
     font-weight: 600;
-    color: #394149;
+    color: var(--json-tool-text, #394149);
     font-size: 15px;
     display: inline-block;
     white-space: nowrap;
 }
 
 .form-value-text {
-    color: #2f3b45;
+    color: var(--json-tool-text, #2f3b45);
     font-weight: 600;
     font-size: 15px;
     display: inline-block;
@@ -331,19 +325,19 @@ const sortFieldNameModel = computed({
 /* el-popover 会被 teleport 到 body，使用 popper-class 定位 */
 :global(.demo-guide-popover.el-popover) {
     padding: 0 !important;
-    border-radius: 6px !important;
-    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.18) !important;
-    border: 1px solid #dcdfe6 !important;
+    border-radius: var(--theme-radius, 6px) !important;
+    box-shadow: var(--json-tool-shadow, 0 6px 28px rgba(0, 0, 0, 0.18)) !important;
+    border: 1px solid var(--json-tool-border, #dcdfe6) !important;
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover.el-popover) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover.el-popover) {
     background: #1f1f1f !important;
     border-color: #2b2b2b !important;
     color: #cccccc !important;
     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5) !important;
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover .el-popper__arrow::before) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .el-popper__arrow::before) {
     background: #1f1f1f !important;
     border-color: #2b2b2b !important;
 }
@@ -369,22 +363,23 @@ const sortFieldNameModel = computed({
     align-items: center;
     justify-content: space-between;
     padding: 10px 14px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--json-tool-border, #f0f0f0);
+    background: var(--json-tool-surface-header, transparent);
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover .demo-guide-header) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-guide-header) {
     border-bottom-color: #2b2b2b !important;
     background: linear-gradient(to bottom, #232323, #1f1f1f) !important;
 }
 
 .demo-guide-header h3 {
     margin: 0;
-    color: #303133;
+    color: var(--json-tool-text, #303133);
     font-size: 14px;
     font-weight: 600;
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover .demo-guide-header h3) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-guide-header h3) {
     color: #cccccc !important;
 }
 
@@ -394,25 +389,25 @@ const sortFieldNameModel = computed({
 
 .demo-guide-content p {
     margin: 0 0 10px 0;
-    color: #606266;
+    color: var(--json-tool-text-muted, #606266);
     font-size: 13px;
     line-height: 1.6;
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover .demo-guide-content p) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-guide-content p) {
     color: #9da0a6 !important;
 }
 
 .demo-current-settings {
-    background: #f5f7fa;
-    border: 1px solid #ebeef5;
+    background: var(--json-tool-surface-soft, #f5f7fa);
+    border: 1px solid var(--json-tool-border, #ebeef5);
     border-radius: 4px;
     padding: 6px 10px;
     font-size: 12px;
-    color: #606266;
+    color: var(--json-tool-text-muted, #606266);
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover .demo-current-settings) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-current-settings) {
     background: #242424 !important;
     border-color: #333333 !important;
     color: #cccccc !important;
@@ -421,11 +416,11 @@ const sortFieldNameModel = computed({
 .demo-current-settings strong {
     display: block;
     margin-bottom: 4px;
-    color: #303133;
+    color: var(--json-tool-text, #303133);
     font-weight: 600;
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover .demo-current-settings strong) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-current-settings strong) {
     color: #f0f0f0 !important;
 }
 
@@ -448,7 +443,7 @@ const sortFieldNameModel = computed({
     min-width: 68px;
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover .demo-settings-label) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-settings-label) {
     color: #9da0a6 !important;
 }
 
@@ -457,10 +452,11 @@ const sortFieldNameModel = computed({
     border-radius: 3px;
     font-family: var(--json-tool-font-code);
     font-size: 12px;
-    color: #d73a49;
+    color: var(--theme-accent, #d73a49);
+    background: var(--theme-selected, transparent);
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover .demo-current-settings code) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-current-settings code) {
     background: #303030 !important;
     color: #d4d4d4 !important;
 }
@@ -468,10 +464,10 @@ const sortFieldNameModel = computed({
 .demo-guide-footer {
     padding: 8px 14px;
     text-align: right;
-    border-top: 1px solid #f5f7fa;
+    border-top: 1px solid var(--json-tool-border, #f5f7fa);
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover .demo-guide-footer) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-guide-footer) {
     border-top-color: #2b2b2b !important;
     background: #1f1f1f !important;
 }
@@ -491,16 +487,16 @@ const sortFieldNameModel = computed({
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #e4e7ed;
+    background: var(--json-tool-border-strong, #e4e7ed);
     transition: background-color 0.3s;
 }
 
-:global(body.json-tool-theme-dark .demo-guide-popover .step-dot) {
+:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .step-dot) {
     background: #4a4a4a !important;
 }
 
 .step-dot.active {
-    background: #409eff;
+    background: var(--theme-accent, #409eff);
 }
 
 /* 演示模式下当前引导元素的脉冲高亮描边 */
@@ -522,13 +518,13 @@ const sortFieldNameModel = computed({
     0%,
     100% {
         box-shadow:
-            0 0 0 2px #409eff,
-            0 0 0 5px rgba(64, 158, 255, 0.3);
+            0 0 0 2px var(--theme-accent, #409eff),
+            0 0 0 5px color-mix(in srgb, var(--theme-accent, #409eff) 30%, transparent);
     }
     50% {
         box-shadow:
-            0 0 0 2px #409eff,
-            0 0 0 8px rgba(64, 158, 255, 0.12);
+            0 0 0 2px var(--theme-accent, #409eff),
+            0 0 0 8px color-mix(in srgb, var(--theme-accent, #409eff) 12%, transparent);
     }
 }
 
@@ -536,7 +532,7 @@ const sortFieldNameModel = computed({
 .demo-current-settings {
     margin-top: 12px;
     margin-bottom: 18px;
-    color: #606266;
+    color: var(--json-tool-text-muted, #606266);
     font-size: 14px;
     line-height: 1.6;
     word-break: break-word;
