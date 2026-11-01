@@ -1,0 +1,29 @@
+# JSON Toolbox browser interaction guide
+
+## Purpose and access
+JSON Toolbox formats, compares, converts, sorts and masks JSON locally in a desktop browser. Open the application at ./ with a viewport wider than 900 CSS pixels. Smaller viewports show an explanation without loading the editor. Resizing an already open editor preserves its text.
+
+This is documentation for the browser UI. There is no remote processing endpoint or registered WebMCP API. These public documents contain no user JSON, files, saved archives or settings and do not authorize access to them.
+
+## Editing and formatting
+1. Identify the JSON input editor (JSON 输入编辑器) and JSON preview editor (JSON 预览编辑器) by their accessible names.
+2. Use normal keyboard or native paste in the input editor. Monaco uses an internal textarea: assigning its DOM value does not reliably update the editor model.
+3. Choose Format (格式化). Read the completion/error feedback and inspect the preview. Keep input and output distinct.
+4. Copy (复制) and Download (下载) act on the preview. Upload (上传) opens a local file picker; it does not send the file to a server.
+5. For large documents, the editor renders a visible subset of lines. Visible DOM text is not the complete document. Do not reconstruct or validate a large document from its visible rows alone.
+
+## Comparison
+Choose Compare (对比). Identify the left and right JSON comparison editors by their names and enter the two texts separately. Check the difference count and navigate with Previous/Next (上一处/下一处). Exit comparison with 退出对比. Do not assume that switching modes copies normal editor text into both comparison buffers.
+
+## Sorting
+In Settings (设置), open Sort settings (排序设置) and choose the sorting method and direction. For field-value sorting, choose Sort (排序), fill Sort scope (排序范围), such as users, and Sort field (排序字段), such as id, then choose Start sorting (开始排序). Check the preview and completion message.
+
+## Masking
+Choose Mask (脱敏). Each Field path (字段路径) has its own named input. For an array of users, users[*].email matches each email. Select a masking strategy, supply any required value, then choose Apply (应用). Masking replaces the input text and clears the previous preview. Review the result before copying or exporting; Cancel (取消) closes the dialog without applying.
+
+Path expressions are lightweight JSONPath-style paths with tool-specific extensions, not a complete JSONPath implementation. Validate matching behavior using synthetic samples before applying a rule to user data.
+
+## Settings and safety of data
+General settings contain the interface language; Theme settings contain the five appearances and light/dark modes. Saved preferences are local to the browser. Preserve native clipboard, undo and keyboard behavior. Processing may transform values according to the selected operation/settings: verify sensitive fields and numeric literals in the result.
+
+Use only user-authorized inputs. Keep JSON and results local unless the user explicitly requests an external destination. This discovery documentation is not permission to read, modify, submit or publish user content.

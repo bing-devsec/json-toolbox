@@ -71,6 +71,6 @@ test('application Diff uses ordinary editors and never calls the pruned native f
         assert(!/\b(?:monaco|Monaco)\.editor\.(?:createDiffEditor|createMultiFileDiffEditor)\b/.test(fs.readFileSync(file, 'utf8')), file);
     }
     const diff = fs.readFileSync(path.join(root, 'src/components/composables/useDiffEditors.ts'), 'utf8');
-    assert(diff.includes('diffLeftEditor = monaco.editor.create('));
-    assert(diff.includes('diffRightEditor = monaco.editor.create('));
+    assert(diff.includes('diffLeftEditor = monacoApi.editor.create('));
+    assert(diff.includes('diffRightEditor = monacoApi.editor.create('));
 });

@@ -170,3 +170,16 @@ body[data-interface-style="ide"] :is(.panel-actions, .diff-panel-actions) .el-bu
     border-color: color-mix(in srgb, var(--theme-danger) 45%, var(--json-tool-border)) !important;
 }
 
+/* Keep focus immediate: these frames never animate their geometry or focus shadow. */
+body[data-interface-style="ide"] .json-tool-root .collapse-control .el-select__wrapper {
+    transition-property: background-color, color;
+}
+
+/* Keyboard focus stays inside the compound control; pointer clicks add no ring. */
+body[data-interface-style="ide"] .json-tool-root[data-keyboard-navigation="true"] .collapse-control .el-select__wrapper:has(input:focus-visible) {
+    box-shadow: inset 0 0 0 2px var(--ide-focus) !important;
+}
+body[data-interface-style="ide"] .json-tool-root .collapse-control .level-action-button:focus-visible {
+    outline: 2px solid var(--ide-focus) !important;
+    outline-offset: -3px;
+}

@@ -1,4 +1,5 @@
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { monacoApi } from '../utils/monacoRuntime';
 import {
     findJsonFoldingSummaryIndexAtOrBefore,
     getJsonFoldingSummaryByIndex,
@@ -123,7 +124,7 @@ export const setupJsonFoldingInfoDisplay = (editor: monaco.editor.IStandaloneCod
         const editorHeight = editorRect.height;
         const viewLinesContainer = editorDom.querySelector('.view-lines') as HTMLElement | null;
         const viewLinesRect = viewLinesContainer?.getBoundingClientRect();
-        const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
+        const lineHeight = editor.getOption(monacoApi.editor.EditorOption.lineHeight);
         const foldedElements = editorDom.querySelectorAll('.inline-folded');
         const currentFoldedLines = new Set<number>();
         let visibleModelRanges: monaco.Range[] | undefined;

@@ -16,9 +16,14 @@ const built = await build({
     plugins: [{ name: 'capture-editor-registration', setup(build) {
         build.onResolve({ filter: /^monaco-editor\/esm\/vs\/editor\/editor\.api$/ }, () => ({ path: 'editor', namespace: 'capture' }));
         build.onResolve({ filter: /\?worker$/ }, () => ({ path: 'worker', namespace: 'capture' }));
+        build.onResolve({ filter: /monacoRuntime$/ }, () => ({ path: 'runtime', namespace: 'capture' }));
         build.onResolve({ filter: /^vue$/ }, () => ({ path: 'vue', namespace: 'capture' }));
         build.onResolve({ filter: /^monaco-editor\/esm\/vs\/basic-languages\// }, args => ({ path: args.path, external: true }));
-        build.onLoad({ filter: /.*/, namespace: 'capture' }, args => ({ contents: args.path === 'editor' ? `
+        build.onLoad({ filter: /.*/, namespace: 'capture' }, args => ({ contents: args.path === 'runtime' ? `
+            import * as monacoApi from 'monaco-editor/esm/vs/editor/editor.api';
+            export {monacoApi};
+            export const createMonacoWorker = () => ({});
+        ` : args.path === 'editor' ? `
             export const captures = { registrations: [], definitions: new Map(), providers: new Map() };
             export const languages = {
                 register: value => captures.registrations.push(value),

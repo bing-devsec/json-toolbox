@@ -1,7 +1,6 @@
 import { onBeforeUnmount, type Ref } from 'vue';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
-import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { monacoApi, createMonacoWorker } from '../utils/monacoRuntime';
 import { createJsonLanguageActivation } from '../utils/jsonLanguageActivation';
 import {
     defineJsonToolMonacoThemes,
@@ -28,7 +27,7 @@ export const useMonacoLanguageRegistry = (themeMode: Ref<JsonToolThemeMode>) => 
     const registerYamlLanguage = () => {
         if (registeredLanguages.has('yaml')) return;
         registeredLanguages.add('yaml');
-        monaco.languages.register({ id: 'yaml' });
+        monacoApi.languages.register({ id: 'yaml' });
         // 使用行状态记录块标量的动态缩进，避免正文被按普通 YAML 结构分词。
         class YamlState implements monaco.languages.IState {
             constructor(
@@ -62,7 +61,7 @@ export const useMonacoLanguageRegistry = (themeMode: Ref<JsonToolThemeMode>) => 
             [/[:{}\[\],&*?]/y, 'delimiter'],
             [/[^\s"'\[\]{},][^\s\[\]{},]*(?:[ \t]+[^\s#\[\]{},]+)*/y, 'string'],
         ];
-        monaco.languages.setTokensProvider('yaml', {
+        monacoApi.languages.setTokensProvider('yaml', {
             getInitialState: () => new YamlState(),
             tokenize(line, previousState) {
                 const state = previousState as YamlState;
@@ -124,8 +123,8 @@ export const useMonacoLanguageRegistry = (themeMode: Ref<JsonToolThemeMode>) => 
     const registerXmlLanguage = () => {
         if (registeredLanguages.has('xml')) return;
         registeredLanguages.add('xml');
-        monaco.languages.register({ id: 'xml' });
-        monaco.languages.setMonarchTokensProvider('xml', {
+        monacoApi.languages.register({ id: 'xml' });
+        monacoApi.languages.setMonarchTokensProvider('xml', {
             tokenizer: {
                 root: [
                     [/<!--/, 'comment', '@comment'],
@@ -158,8 +157,8 @@ export const useMonacoLanguageRegistry = (themeMode: Ref<JsonToolThemeMode>) => 
     const registerHtmlLanguage = () => {
         if (registeredLanguages.has('html')) return;
         registeredLanguages.add('html');
-        monaco.languages.register({ id: 'html' });
-        monaco.languages.setMonarchTokensProvider('html', {
+        monacoApi.languages.register({ id: 'html' });
+        monacoApi.languages.setMonarchTokensProvider('html', {
             tokenizer: {
                 root: [
                     [/<!--/, 'comment', '@comment'],
@@ -191,8 +190,8 @@ export const useMonacoLanguageRegistry = (themeMode: Ref<JsonToolThemeMode>) => 
     const registerCssLanguage = () => {
         if (registeredLanguages.has('css')) return;
         registeredLanguages.add('css');
-        monaco.languages.register({ id: 'css' });
-        monaco.languages.setMonarchTokensProvider('css', {
+        monacoApi.languages.register({ id: 'css' });
+        monacoApi.languages.setMonarchTokensProvider('css', {
             tokenizer: {
                 root: [
                     [/\s+/, 'white'],
@@ -226,8 +225,8 @@ export const useMonacoLanguageRegistry = (themeMode: Ref<JsonToolThemeMode>) => 
     const registerTomlLanguage = () => {
         if (registeredLanguages.has('toml')) return;
         registeredLanguages.add('toml');
-        monaco.languages.register({ id: 'toml' });
-        monaco.languages.setMonarchTokensProvider('toml', {
+        monacoApi.languages.register({ id: 'toml' });
+        monacoApi.languages.setMonarchTokensProvider('toml', {
             tokenizer: {
                 root: [
                     [/#.*$/, 'comment'],
@@ -294,19 +293,18 @@ export const useMonacoLanguageRegistry = (themeMode: Ref<JsonToolThemeMode>) => 
     const initializeMonacoEnvironment = (): void => {
         if (typeof window === 'undefined') return;
         jsonLanguageActivation ??= createJsonLanguageActivation(
-            monaco.editor,
-            configuration => monaco.languages.json.jsonDefaults.setModeConfiguration(configuration),
+            monacoApi.editor,
+            configuration => monacoApi.languages.json.jsonDefaults.setModeConfiguration(configuration),
             diagnosticsEnabled,
         );
         window.MonacoEnvironment = {
             getWorker(_, label): Worker {
-                if (label === 'json') return new jsonWorker();
-                return new editorWorker();
+                return createMonacoWorker(label);
             },
         };
 
-        defineJsonToolMonacoThemes(monaco);
-        monaco.editor.setTheme(getJsonToolThemeForLanguage('json', themeMode.value));
+        defineJsonToolMonacoThemes(monacoApi);
+        monacoApi.editor.setTheme(getJsonToolThemeForLanguage('json', themeMode.value));
     };
 
     return {

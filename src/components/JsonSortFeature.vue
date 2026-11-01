@@ -18,9 +18,10 @@
         </div>
 
         <div class="form-item">
-            <label class="form-label" @mousedown.prevent @click.prevent>{{ settingsTxt.fieldSortRootPathLabel }}</label>
+            <label class="form-label" for="sort-root-path-input">{{ settingsTxt.fieldSortRootPathLabel }}</label>
             <el-autocomplete
                 id="sort-root-path-input"
+                :aria-label="settingsTxt.fieldSortRootPathLabel"
                 v-model="sortRootPathModel"
                 :fetch-suggestions="queryRootPaths"
                 popper-class="sort-path-autocomplete"
@@ -41,9 +42,10 @@
         </div>
 
         <div class="form-item">
-            <label class="form-label" @mousedown.prevent @click.prevent>{{ settingsTxt.fieldSortFieldLabel }}</label>
+            <label class="form-label" for="sort-field-name-input">{{ settingsTxt.fieldSortFieldLabel }}</label>
             <el-autocomplete
                 id="sort-field-name-input"
+                :aria-label="settingsTxt.fieldSortFieldLabel"
                 v-model="sortFieldNameModel"
                 :fetch-suggestions="queryFieldPathsFromScope"
                 popper-class="sort-path-autocomplete"

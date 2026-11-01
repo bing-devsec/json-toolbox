@@ -19,3 +19,8 @@
 .swatch-paper i:first-child {
     background: #805735;
 }
+
+.swatch-paper[data-mode="dark"] { background: linear-gradient(#353127, #292720); border-color: #8e806c; }
+.swatch-paper[data-mode="dark"]::before { background: #5b5447; }
+.swatch-paper[data-mode="dark"] i { background: #514634; }
+.swatch-paper[data-mode="dark"] i:first-child { background: #d7b88c; }

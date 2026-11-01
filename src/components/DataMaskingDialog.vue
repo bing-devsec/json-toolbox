@@ -174,7 +174,7 @@
                                 <div class="field-paths-list">
                                     <div v-for="(fieldPathConfig, pathIndex) in currentRule.fieldPaths" :key="pathIndex" class="field-path-item">
                                         <div class="field-path-header">
-                                            <span class="field-path-label">{{ maskTxt.fieldPathLabel(pathIndex + 1) }}</span>
+                                            <label class="field-path-label" :for="`mask-field-path-${pathIndex}`">{{ maskTxt.fieldPathLabel(pathIndex + 1) }}</label>
                                             <div class="field-path-header-right">
                                                 <span class="field-path-priority">{{ maskTxt.priorityLabel(currentRule.fieldPaths.length - pathIndex) }}</span>
                                                 <el-button
@@ -194,6 +194,8 @@
                                         <div class="rule-field">
                                             <el-autocomplete
                                                 ref="fieldPathAutocompleteRef"
+                                                :id="`mask-field-path-${pathIndex}`"
+                                                :aria-label="maskTxt.fieldPathLabel(pathIndex + 1)"
                                                 v-model="fieldPathConfig.fieldPath"
                                                 :fetch-suggestions="queryFieldPaths"
                                                 :placeholder="maskTxt.fieldPathPlaceholder"

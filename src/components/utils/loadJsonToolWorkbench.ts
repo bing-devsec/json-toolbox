@@ -1,8 +1,16 @@
 import { createRetryableModuleLoader } from './jsonToolLoadController';
+import { loadThemeStyles } from '../../themes/styles';
+import { normalizeInterfaceStyle } from '../../themes/ids';
 
 type WorkbenchComponent = typeof import('../JsonToolWorkbench.vue')['default'];
 
-/** 桌面页面和异步组件复用同一次下载；失败后允许重新加载。 */
+/** Share the download and wait for the stored theme before rendering the editor. */
 export const loadJsonToolWorkbench = createRetryableModuleLoader<WorkbenchComponent>(
-    () => import('../JsonToolWorkbench.vue').then(module => module.default),
+    async () => {
+        const [module] = await Promise.all([
+            import('../JsonToolWorkbench.vue'),
+            loadThemeStyles(normalizeInterfaceStyle(document.body.dataset.interfaceStyle)),
+        ]);
+        return module.default;
+    },
 );

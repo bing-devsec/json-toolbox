@@ -8,7 +8,7 @@ Every appearance style is an isolated, self-contained module. Themes never impor
 - `contract.ts`: shared types (Palette, ThemeDefinition). It contains no values.
 - `registry.ts`: ordered definitions and variable dispatch. It contains no colors or rules.
 - `useInterfaceTheme.ts`: applies the variables a theme returns, sets `body[data-interface-style]`, and restores them on unmount.
-- `early.ts`: applies the stored theme before the app mounts, so the skeleton and load states already use the right surface. `main.ts` loads `styles.ts` and calls it once.
+- `early.ts`: applies the stored theme before the app mounts, so the skeleton and load states already use the right surface. `main.ts` calls it once. `loadJsonToolWorkbench` waits for the saved theme stylesheet before rendering.
 - Components consume a stable semantic variable contract (`--json-tool-*`, `--el-*`, `--theme-*`). The contract is the only shared visual boundary.
 
 ## Isolation rules
@@ -34,4 +34,4 @@ Every appearance style is an isolated, self-contained module. Themes never impor
 
 Current status: all five styles are isolated. `default`, `ide` and `paper` are migrated; `glass` (soft-focus glass) and `retro` (2010 desktop client + portal content) are implemented as first versions and still being refined against browser screenshots.
 
-Each implemented theme folder contains `tokens.ts` (palettes, control roles, material strings), `base.css` (material and surface rules), `controls.css` (component states) and `swatch.css` (preview). `styles.ts` only loads the isolated files; it contains no visual rules.
+Each implemented theme folder contains `tokens.ts` (palettes, control roles, material strings), `base.css` (material and surface rules), `controls.css` (component states) and `swatch.css` (preview). `styles.ts` dispatches cached, retryable stylesheet imports; it contains no visual rules. Each theme owns a `styles.ts` entry for its base and controls. Only the saved theme loads at startup; opening Settings prepares all themes before switching becomes available. Preview swatches belong to AppearanceSettings and load with that dialog.

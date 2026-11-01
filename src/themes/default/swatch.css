@@ -11,3 +11,7 @@
 .swatch-default i:first-child {
     background: linear-gradient(180deg, #79bbff, #409eff);
 }
+
+.swatch-default i, .swatch-default i:first-child { background: #1d6fcc; border-color: #1a62b5; }
+.swatch-default[data-mode="dark"] { background: linear-gradient(180deg, #232323 0 28%, #1f1f1f 28%); border-color: #4a4a4a; }
+.swatch-default[data-mode="dark"] i { background: #1d4f73; border-color: #3478a5; }

@@ -129,4 +129,3 @@ body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover .demo-
 /* IDE: crisp functional separators; shape, not font metrics, carries density. */
 body[data-interface-style="ide"] .panel-header { box-shadow: none; }
 body[data-interface-style="ide"] .editor-status-bar { font-variant-numeric: tabular-nums; }
-

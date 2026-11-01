@@ -129,4 +129,3 @@ body[data-interface-style="paper"].json-tool-theme-dark .demo-guide-popover .dem
 /* Paper: warm canvas, fine rules, no elevation on chrome. */
 body[data-interface-style="paper"] :is(.tool-bar-wrapper, .panel-header, .editor-status-bar, .el-dialog, .el-message-box) { box-shadow: none !important; }
 body[data-interface-style="paper"] .el-button { box-shadow: none; }
-

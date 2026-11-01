@@ -20,7 +20,8 @@
 // Monaco 按需引入：仅引核心编辑器 API + JSON 语言贡献，避免拉入 basic-languages 全家桶。
 // 与主文件 JsonTool.client.vue 保持同一入口，确保 Vite 不会因为另一个 'monaco-editor'
 // 入口而合并出完整产物 chunk。
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { monacoApi } from '../utils/monacoRuntime';
 import { type Ref, ref } from 'vue';
 
 import { calculateByteSize } from '../utils/byteUtils';
@@ -258,8 +259,8 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
                     if (data.type === 'inline' && data.requestId === repairInlineRequestId && diffLeftEditor && diffRightEditor) {
                         const leftDecos: monaco.editor.IModelDeltaDecoration[] = [], rightDecos: monaco.editor.IModelDeltaDecoration[] = [];
                         for (const row of data.inline) {
-                            for (const seg of row.leftSegments) leftDecos.push({ range: new monaco.Range(row.leftLine, seg.startCol, row.leftLine, seg.endCol), options: { inlineClassName: 'diff-inline-delete' } });
-                            for (const seg of row.rightSegments) rightDecos.push({ range: new monaco.Range(row.rightLine, seg.startCol, row.rightLine, seg.endCol), options: { inlineClassName: 'diff-inline-insert' } });
+                            for (const seg of row.leftSegments) leftDecos.push({ range: new monacoApi.Range(row.leftLine, seg.startCol, row.leftLine, seg.endCol), options: { inlineClassName: 'diff-inline-delete' } });
+                            for (const seg of row.rightSegments) rightDecos.push({ range: new monacoApi.Range(row.rightLine, seg.startCol, row.rightLine, seg.endCol), options: { inlineClassName: 'diff-inline-insert' } });
                         }
                         inlineLeftDecorations = diffLeftEditor.deltaDecorations(inlineLeftDecorations, leftDecos);
                         inlineRightDecorations = diffRightEditor.deltaDecorations(inlineRightDecorations, rightDecos);
@@ -272,13 +273,13 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
                                 const segment = row.rightSegments[0] || row.leftSegments[0];
                                 const editor = row.rightSegments.length ? diffRightEditor : diffLeftEditor;
                                 const line = row.rightSegments.length ? row.rightLine : row.leftLine;
-                                if (segment) editor.revealRangeInCenterIfOutsideViewport(new monaco.Range(line, segment.startCol, line, segment.endCol));
+                                if (segment) editor.revealRangeInCenterIfOutsideViewport(new monacoApi.Range(line, segment.startCol, line, segment.endCol));
                             } else if (navigationChange) {
                                 // A whole inserted/deleted line (e.g. `]`) has no paired character diff.
                                 const hasRight = navigationChange.modifiedEndLineNumber >= navigationChange.modifiedStartLineNumber;
                                 const editor = hasRight ? diffRightEditor : diffLeftEditor;
                                 const line = hasRight ? navigationChange.modifiedStartLineNumber : navigationChange.originalStartLineNumber;
-                                editor.revealRangeInCenterIfOutsideViewport(new monaco.Range(line, 1, line, 1));
+                                editor.revealRangeInCenterIfOutsideViewport(new monacoApi.Range(line, 1, line, 1));
                             }
                         }
                     }
@@ -344,7 +345,7 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
         const insertionPoint = (editor: monaco.editor.IStandaloneCodeEditor, start: number): DiffNavigationBounds => {
             const lineCount = editor.getModel()?.getLineCount() ?? 1;
             const top = editor.getTopForLineNumber(Math.max(1, Math.min(start, lineCount)));
-            return { top, bottom: top + editor.getOption(monaco.editor.EditorOption.lineHeight) };
+            return { top, bottom: top + editor.getOption(monacoApi.editor.EditorOption.lineHeight) };
         };
         return {
             left: left ?? insertionPoint(diffLeftEditor, change.originalStartLineNumber),
@@ -506,7 +507,7 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
 
             if (hasLeft) {
                 leftDecos.push({
-                    range: new monaco.Range(c.originalStartLineNumber, 1, c.originalEndLineNumber, 1),
+                    range: new monacoApi.Range(c.originalStartLineNumber, 1, c.originalEndLineNumber, 1),
                     options: {
                         isWholeLine: true,
                         className: 'diff-line-delete',
@@ -515,7 +516,7 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
             }
             if (hasRight) {
                 rightDecos.push({
-                    range: new monaco.Range(c.modifiedStartLineNumber, 1, c.modifiedEndLineNumber, 1),
+                    range: new monacoApi.Range(c.modifiedStartLineNumber, 1, c.modifiedEndLineNumber, 1),
                     options: {
                         isWholeLine: true,
                         className: 'diff-line-insert',
@@ -538,13 +539,13 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
                     if (!inline) continue;
                     for (const seg of inline.leftSegments) {
                         leftDecos.push({
-                            range: new monaco.Range(leftLineNo, seg.startCol, leftLineNo, seg.endCol),
+                            range: new monacoApi.Range(leftLineNo, seg.startCol, leftLineNo, seg.endCol),
                             options: { inlineClassName: 'diff-inline-delete' },
                         });
                     }
                     for (const seg of inline.rightSegments) {
                         rightDecos.push({
-                            range: new monaco.Range(rightLineNo, seg.startCol, rightLineNo, seg.endCol),
+                            range: new monacoApi.Range(rightLineNo, seg.startCol, rightLineNo, seg.endCol),
                             options: { inlineClassName: 'diff-inline-insert' },
                         });
                     }
@@ -580,7 +581,7 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
             for (let i = low; i < diffLineChanges.length && diffLineChanges[i][startKey] <= end; i++) {
                 const c = diffLineChanges[i];
                 if (c[endKey] < c[startKey]) continue;
-                decorations.push({ range: new monaco.Range(Math.max(start, c[startKey]), 1, Math.min(end, c[endKey]), 1), options: {
+                decorations.push({ range: new monacoApi.Range(Math.max(start, c[startKey]), 1, Math.min(end, c[endKey]), 1), options: {
                     isWholeLine: true, className: side === 'left' ? 'diff-line-delete' : 'diff-line-insert',
                 } });
             }
@@ -636,7 +637,7 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
 
         if (direction === 'left') {
             // 右 → 左：用 modified 的内容覆盖 original 的差异块
-            const modContent = modEnd >= modStart ? modModel.getValueInRange(new monaco.Range(modStart, 1, modEnd, modModel.getLineMaxColumn(modEnd))) : '';
+            const modContent = modEnd >= modStart ? modModel.getValueInRange(new monacoApi.Range(modStart, 1, modEnd, modModel.getLineMaxColumn(modEnd))) : '';
             if (origEnd < origStart) {
                 // 左侧是纯插入点（没有对应行）→ 在 origStart 所指行之后插入
                 if (modContent) {
@@ -644,15 +645,15 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
                     const totalLines = origModel.getLineCount();
                     const range =
                         insertLine > totalLines
-                            ? new monaco.Range(totalLines, origModel.getLineMaxColumn(totalLines), totalLines, origModel.getLineMaxColumn(totalLines))
-                            : new monaco.Range(insertLine, 1, insertLine, 1);
+                            ? new monacoApi.Range(totalLines, origModel.getLineMaxColumn(totalLines), totalLines, origModel.getLineMaxColumn(totalLines))
+                            : new monacoApi.Range(insertLine, 1, insertLine, 1);
                     const text = insertLine > totalLines ? '\n' + modContent : modContent + '\n';
                     diffLeftEditor.executeEdits('diff-sync-right-to-left', [{ range, text }]);
                 }
             } else if (modContent) {
                 diffLeftEditor.executeEdits('diff-sync-right-to-left', [
                     {
-                        range: new monaco.Range(origStart, 1, origEnd, origModel.getLineMaxColumn(origEnd)),
+                        range: new monacoApi.Range(origStart, 1, origEnd, origModel.getLineMaxColumn(origEnd)),
                         text: modContent,
                     },
                 ]);
@@ -661,8 +662,8 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
                 const delEnd = origEnd + 1;
                 const delRange =
                     delEnd <= totalLines
-                        ? new monaco.Range(origStart, 1, delEnd, 1)
-                        : new monaco.Range(
+                        ? new monacoApi.Range(origStart, 1, delEnd, 1)
+                        : new monacoApi.Range(
                               Math.max(1, origStart - 1),
                               origStart > 1 ? origModel.getLineMaxColumn(origStart - 1) : 1,
                               origEnd,
@@ -673,22 +674,22 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
         } else {
             // 左 → 右：用 original 的内容覆盖 modified 的差异块
             const origContent =
-                origEnd >= origStart ? origModel.getValueInRange(new monaco.Range(origStart, 1, origEnd, origModel.getLineMaxColumn(origEnd))) : '';
+                origEnd >= origStart ? origModel.getValueInRange(new monacoApi.Range(origStart, 1, origEnd, origModel.getLineMaxColumn(origEnd))) : '';
             if (modEnd < modStart) {
                 if (origContent) {
                     const insertLine = Math.max(1, modStart);
                     const totalLines = modModel.getLineCount();
                     const range =
                         insertLine > totalLines
-                            ? new monaco.Range(totalLines, modModel.getLineMaxColumn(totalLines), totalLines, modModel.getLineMaxColumn(totalLines))
-                            : new monaco.Range(insertLine, 1, insertLine, 1);
+                            ? new monacoApi.Range(totalLines, modModel.getLineMaxColumn(totalLines), totalLines, modModel.getLineMaxColumn(totalLines))
+                            : new monacoApi.Range(insertLine, 1, insertLine, 1);
                     const text = insertLine > totalLines ? '\n' + origContent : origContent + '\n';
                     diffRightEditor.executeEdits('diff-sync-left-to-right', [{ range, text }]);
                 }
             } else if (origContent) {
                 diffRightEditor.executeEdits('diff-sync-left-to-right', [
                     {
-                        range: new monaco.Range(modStart, 1, modEnd, modModel.getLineMaxColumn(modEnd)),
+                        range: new monacoApi.Range(modStart, 1, modEnd, modModel.getLineMaxColumn(modEnd)),
                         text: origContent,
                     },
                 ]);
@@ -697,8 +698,8 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
                 const delEnd = modEnd + 1;
                 const delRange =
                     delEnd <= totalLines
-                        ? new monaco.Range(modStart, 1, delEnd, 1)
-                        : new monaco.Range(
+                        ? new monacoApi.Range(modStart, 1, delEnd, 1)
+                        : new monacoApi.Range(
                               Math.max(1, modStart - 1),
                               modStart > 1 ? modModel.getLineMaxColumn(modStart - 1) : 1,
                               modEnd,
@@ -723,7 +724,7 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
             for (const [editor, target] of [[diffLeftEditor, bounds.left], [diffRightEditor, bounds.right]] as const) {
                 if (!target) continue;
                 const layout = editor.getLayoutInfo();
-                const scrollTop = getDiffNavigationScrollTop(target, editor.getScrollTop(), layout.height - layout.horizontalScrollbarHeight, editor.getOption(monaco.editor.EditorOption.lineHeight));
+                const scrollTop = getDiffNavigationScrollTop(target, editor.getScrollTop(), layout.height - layout.horizontalScrollbarHeight, editor.getOption(monacoApi.editor.EditorOption.lineHeight));
                 if (scrollTop !== null) editor.setScrollTop(scrollTop);
             }
             updateDiffSyncButtons();
@@ -733,7 +734,7 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
         if (!bounds.right) return;
         const layout = diffRightEditor.getLayoutInfo();
         const viewportHeight = layout.height - layout.horizontalScrollbarHeight;
-        const rightLineHeight = diffRightEditor.getOption(monaco.editor.EditorOption.lineHeight);
+        const rightLineHeight = diffRightEditor.getOption(monacoApi.editor.EditorOption.lineHeight);
         const targetScrollTop = getDiffNavigationScrollTop(bounds.right, diffRightEditor.getScrollTop(), viewportHeight, rightLineHeight);
 
         diffSyncingScroll = true;
@@ -909,18 +910,20 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
             },
         };
 
-        const leftModel = monaco.editor.createModel(pendingLocaleState?.left.text ?? '', 'json');
-        const rightModel = monaco.editor.createModel(pendingLocaleState?.right.text ?? '', 'json');
+        const leftModel = monacoApi.editor.createModel(pendingLocaleState?.left.text ?? '', 'json');
+        const rightModel = monacoApi.editor.createModel(pendingLocaleState?.right.text ?? '', 'json');
         updateDiffModelDisplayOptions(leftModel, initialIndentSize);
         updateDiffModelDisplayOptions(rightModel, initialIndentSize);
 
-        diffLeftEditor = monaco.editor.create(leftContainerRef.value, {
+        diffLeftEditor = monacoApi.editor.create(leftContainerRef.value, {
             ...baseOptions,
             model: leftModel,
+            ariaLabel: document.documentElement.lang.startsWith('en') ? 'Left JSON comparison editor' : '左侧 JSON 对比编辑器',
         });
-        diffRightEditor = monaco.editor.create(rightContainerRef.value, {
+        diffRightEditor = monacoApi.editor.create(rightContainerRef.value, {
             ...baseOptions,
             model: rightModel,
+            ariaLabel: document.documentElement.lang.startsWith('en') ? 'Right JSON comparison editor' : '右侧 JSON 对比编辑器',
         });
         leftNavigationMarker = createDiffNavigationMarker(diffLeftEditor, 'left');
         rightNavigationMarker = createDiffNavigationMarker(diffRightEditor, 'right');

@@ -220,7 +220,14 @@ body[data-interface-style="glass"] .monaco-editor .margin {
     box-shadow: inset -1px 0 0 var(--glass-divider);
 }
 
+/* Modal sheets need a denser frosted surface than the surrounding chrome.
+   Blur is bounded by the panel, keeping the form readable over JSON text. */
 body[data-interface-style="glass"] :is(.el-dialog, .el-message-box) {
+    background: var(--glass-dialog) !important;
+    border-color: var(--glass-dialog-border) !important;
+    backdrop-filter: blur(var(--glass-dialog-blur));
+    -webkit-backdrop-filter: blur(var(--glass-dialog-blur));
+    --el-bg-color-overlay: var(--glass-dialog);
     overflow: hidden;
 }
 
@@ -254,10 +261,9 @@ body[data-interface-style="glass"] :is(.el-dialog__footer, .el-message-box__btns
     border-top: 1px solid var(--glass-divider) !important;
 }
 
+/* A flat scrim avoids stacking a full-screen blur over the editor. */
 body[data-interface-style="glass"] .el-overlay {
     background: var(--glass-scrim) !important;
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
 }
 
 body[data-interface-style="glass"] .first-use-guide {

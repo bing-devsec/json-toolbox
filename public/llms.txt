@@ -1,0 +1,13 @@
+# JSON Toolbox
+
+> A desktop browser JSON editor for local formatting, comparison, conversion, sorting and data masking. User JSON is processed in the browser.
+
+This document describes the application, not the contents of any user's editor. It does not grant access to user files or permission to transmit their data.
+
+## Application
+- [Open JSON Toolbox](./): Interactive editor; a viewport wider than 900 CSS pixels is required.
+- [Browser interaction guide](./agent-guide.txt): Named controls, input/output behavior, comparison buffers, sorting and masking workflows.
+- [Agent resource catalog](./ai-catalog.json): Machine-readable declaration of published agent resources. This local browser tool currently publishes no callable agent services; the entries list is empty.
+
+## Interaction
+Use the visible browser interface and native clipboard/keyboard input. The application exposes no remote formatting API or WebMCP tools. Obtain user authorization for access to their JSON and for any external sharing. Confirm operation results before exporting them.

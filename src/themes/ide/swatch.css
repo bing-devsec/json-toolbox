@@ -22,3 +22,8 @@
     background: #0078d4;
     border-color: #0078d4;
 }
+
+.swatch-ide[data-mode="light"] { background: #ffffff; border-color: #d0d0d0; }
+.swatch-ide[data-mode="light"]::before { background: #f8f8f8; border-color: #e5e5e5; }
+.swatch-ide[data-mode="light"] i { background: #f3f3f3; border-color: #868686; }
+.swatch-ide[data-mode="light"] i:first-child { background: #005fb8; border-color: #005fb8; }

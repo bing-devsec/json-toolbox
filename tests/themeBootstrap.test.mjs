@@ -47,5 +47,5 @@ test('missing or invalid stored appearance falls back to the default theme', () 
     const result = run('{not json');
     assert.equal(result.body.dataset.interfaceStyle, 'default');
     assert.equal(result.classes.get('json-tool-theme-dark'), false);
-    assert.equal(result.variables.size, 0);
+    assert.equal(result.variables.get('--el-color-primary'), '#1D6FCC');
 });

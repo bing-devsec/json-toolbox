@@ -1,5 +1,6 @@
 // Monaco 相关的纯操作：view zone 渲染、行块尺寸计算、保留 undo 的全文替换
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { monacoApi } from './monacoRuntime';
 
 import type { DiffLineChange } from './diffEngine';
 import { getVisibleDiffViewZone } from './diffViewZoneGeometry';
@@ -127,7 +128,7 @@ export const getEditorBlockHeight = (editor: monaco.editor.IStandaloneCodeEditor
     const safeStart = Math.max(1, Math.min(startLineNumber, lineCount));
     const safeEnd = Math.max(safeStart, Math.min(endLineNumber, lineCount));
     const top = editor.getTopForLineNumber(safeStart);
-    const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
+    const lineHeight = editor.getOption(monacoApi.editor.EditorOption.lineHeight);
     const editorWithBottom = editor as monaco.editor.IStandaloneCodeEditor & {
         getBottomForLineNumber?: (lineNumber: number) => number;
     };
@@ -241,8 +242,8 @@ export const getDiffChangeTop = (
     rightEditor: monaco.editor.IStandaloneCodeEditor,
     change: DiffLineChange,
 ): number => {
-    const leftLineHeight = leftEditor.getOption(monaco.editor.EditorOption.lineHeight);
-    const rightLineHeight = rightEditor.getOption(monaco.editor.EditorOption.lineHeight);
+    const leftLineHeight = leftEditor.getOption(monacoApi.editor.EditorOption.lineHeight);
+    const rightLineHeight = rightEditor.getOption(monacoApi.editor.EditorOption.lineHeight);
     const { hasLeft, hasRight, leftLineCount, rightLineCount } = getDiffLineRangeInfo(change);
 
     /** 计算某一侧"差异块顶部"的 Y 坐标（包含 view zone 之前的高度） */
@@ -312,7 +313,7 @@ export const replaceEditorValuePreservingUndo = (editor: monaco.editor.IStandalo
 
     const lastLine = model.getLineCount();
     const lastCol = model.getLineMaxColumn(lastLine);
-    const fullRange = new monaco.Range(1, 1, lastLine, lastCol);
+    const fullRange = new monacoApi.Range(1, 1, lastLine, lastCol);
 
     // 关键：编辑前后各切一次 undo step，保证本次替换独占一个 undo group
     model.pushStackElement();

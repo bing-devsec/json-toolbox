@@ -73,10 +73,10 @@ const contrast = (a, b) => {
     return (Math.max(x, y) + .05) / (Math.min(x, y) + .05);
 };
 
-test('catalog order is fixed and the default theme owns no variables', () => {
+test('catalog order is fixed and default keeps its legacy editor palette', () => {
     assert.deepEqual(Array.from(api.interfaceStyles, item => item.id), STYLE_IDS);
-    assert.deepEqual(Object.keys(api.getInterfaceVariables('default', 'light')), []);
-    assert.deepEqual(Object.keys(api.getInterfaceVariables('default', 'dark')), []);
+    assert.equal(api.getInterfaceVariables('default', 'light')['--el-color-primary'], '#1D6FCC');
+    assert.equal(api.getInterfaceVariables('default', 'dark')['--default-primary-fg'], '#E8F4FF');
     assert.equal(api.getInterfacePalette('default', 'light'), null);
 });
 
@@ -177,15 +177,36 @@ test('theme styles keep colors in their own tokens', async () => {
     }
 });
 
-test('every theme stylesheet is loaded exactly once by styles.ts', async () => {
+test('each theme owns its deferred styles and settings owns the preview swatches', async () => {
     const styles = await readFile('src/themes/styles.ts', 'utf8');
+    const appearance = await readFile('src/components/AppearanceSettings.vue', 'utf8');
     for (const style of NON_DEFAULT) {
-        const directory = path.join(process.cwd(), 'src/themes', style);
-        const cssFiles = (await readdir(directory)).filter(name => name.endsWith('.css'));
-        assert.ok(cssFiles.length > 0, `${style} has no stylesheet`);
+        assert.ok(styles.includes(`import('./${style}/styles')`), `${style} has no deferred loader`);
+        const entry = await readFile(`src/themes/${style}/styles.ts`, 'utf8');
+        const cssFiles = (await readdir(`src/themes/${style}`)).filter(name => name.endsWith('.css'));
         for (const name of cssFiles) {
-            const specifier = `./${style}/${name}`;
-            assert.equal(styles.split(`'${specifier}'`).length - 1, 1, `${specifier} must be imported once`);
+            if (name === 'swatch.css') assert.equal(appearance.split(`'../themes/${style}/${name}'`).length - 1, 1);
+            else assert.equal(entry.split(`'./${name}'`).length - 1, 1, `${style}/${name} must be imported once`);
+        }
+    }
+});
+
+test('primary action materials stay readable in normal, hover and pressed states', () => {
+    for (const style of STYLE_IDS) for (const mode of ['light', 'dark']) {
+        const v = api.getInterfaceVariables(style, mode);
+        const prefix = style === 'paper' ? '--paper-primary-' : `--${style}-primary-`;
+        const normal = style === 'ide'
+            ? [v['--ide-primary'], v['--ide-on-primary']]
+            : [v[prefix + (style === 'paper' ? 'background' : 'bg')], v[prefix + (style === 'paper' ? 'foreground' : 'fg')]];
+        const states = [normal,
+            [v['--toolbar-primary-hover-bg'], v['--toolbar-primary-hover-fg']],
+            [v['--toolbar-primary-active-bg'], v['--toolbar-primary-active-fg']],
+        ];
+        for (const [index, [background, foreground]] of states.entries()) {
+            assert.match(foreground, /^#[0-9a-f]{6}$/i, `${style}/${mode}/${index} foreground`);
+            const stops = background.match(/#[0-9a-f]{6}\b/ig);
+            assert.ok(stops?.length, `${style}/${mode}/${index} material stops`);
+            for (const stop of stops) assert.ok(contrast(foreground, stop) >= 4.5, `${style}/${mode}/${index}: ${foreground} on ${stop}`);
         }
     }
 });

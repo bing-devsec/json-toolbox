@@ -7,7 +7,7 @@ export const retroPalettes: Record<AppearanceMode, Palette> = {
         surface: '#f6f9fc', soft: '#e6eef7', text: '#1e334a', muted: '#4e6379',
         border: '#8ca7c0', borderStrong: '#6f8aa6', accent: '#285f99',
         editor: '#ffffff', gutter: '#eef4fa', currentLine: '#f0f7ff', selection: '#bcd9f7',
-        selected: '#d6e8fc', header: 'linear-gradient(#4c86bd, #2f6398)',
+        selected: '#d6e8fc', header: 'linear-gradient(#3e73aa, #2f6398)',
         radius: '4px', shadow: '0 3px 10px rgba(20,40,65,.28)',
     },
     dark: {
@@ -46,9 +46,9 @@ const controls: Record<AppearanceMode, RetroControls> = {
             disabledBackground: '#e3e9f0', disabledForeground: '#8b98a6', disabledBorder: '#b7c5d3',
         },
         primary: {
-            background: 'linear-gradient(#5b9bd8, #2f6fb3)', foreground: '#ffffff', border: '#1e4f8a',
-            hoverBackground: 'linear-gradient(#6fb0e8, #3a7fc4)', hoverBorder: '#1e4f8a',
-            activeBackground: 'linear-gradient(#2b639f, #4a86c4)',
+            background: 'linear-gradient(#3e73aa, #285b90)', foreground: '#ffffff', border: '#1e4f8a',
+            hoverBackground: 'linear-gradient(#366b9d, #2f6398)', hoverBorder: '#1e4f8a',
+            activeBackground: 'linear-gradient(#244d78, #285780)',
             disabledBackground: '#a9bfd4', disabledForeground: '#f3f8fd', disabledBorder: '#8aa5bf',
         },
         danger: {
@@ -75,8 +75,8 @@ const controls: Record<AppearanceMode, RetroControls> = {
             disabledBackground: '#1b2b3c', disabledForeground: '#7e90a3', disabledBorder: '#31485e',
         },
         primary: {
-            background: 'linear-gradient(#3f77ad, #21456a)', foreground: '#eaf4ff', border: '#12293f',
-            hoverBackground: 'linear-gradient(#4d8ac2, #2a537c)', hoverBorder: '#12293f',
+            background: 'linear-gradient(#366b9d, #21456a)', foreground: '#eaf4ff', border: '#12293f',
+            hoverBackground: 'linear-gradient(#305f90, #254d76)', hoverBorder: '#12293f',
             activeBackground: 'linear-gradient(#17324c, #2b5a86)',
             disabledBackground: '#2a3f55', disabledForeground: '#7e90a3', disabledBorder: '#3d5d7d',
         },
@@ -102,7 +102,7 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--retro-border': '#8aa5bf',
         '--retro-highlight': '#ffffff',
         '--retro-shadow': 'rgba(36,60,86,.22)',
-        '--retro-title': 'linear-gradient(#4c86bd, #2f6398)',
+        '--retro-title': 'linear-gradient(#3e73aa, #2f6398)',
         '--retro-title-border': '#1e4f8a',
         '--retro-title-text': '#ffffff',
         '--retro-title-highlight': 'rgba(255,255,255,.45)',

@@ -1,23 +1,18 @@
 <template>
-    <div class="json-tool-root" :class="themeRootClass" :style="interfaceVariables">
-        <!-- 添加小屏幕提示组件 -->
-        <div class="screen-size-warning">
-            <el-icon class="warning-icon">
-                <WarningFilled />
-            </el-icon>
-            <div class="warning-text">
-                <p>{{ settingsTxt.screenWarn1 }}</p>
-                <p>{{ settingsTxt.screenWarn2 }}</p>
-            </div>
-        </div>
-
+    <div
+        class="json-tool-root"
+        :class="themeRootClass"
+        :style="interfaceVariables"
+        :data-keyboard-navigation="keyboardNavigation ? 'true' : undefined"
+        @keydown.capture="keyboardNavigation = true"
+        @pointerdown.capture="keyboardNavigation = false">
         <!-- 原有的 JSON 工具容器 -->
         <div class="json-tool-container">
             <!-- 工具栏 -->
-            <div class="tool-bar-wrapper">
+            <div class="tool-bar-wrapper" ref="messageToolbarRef" :inert="!editorRuntimeReady">
                 <!-- 左侧渐变遮罩和滚动按钮 -->
                 <div v-if="canScrollLeft" class="scroll-indicator scroll-indicator-left">
-                    <el-button type="primary" circle size="small" class="scroll-btn scroll-btn-left" @click="scrollToolBar('left')" :icon="ArrowLeft" />
+                    <el-button type="primary" circle size="small" class="scroll-btn scroll-btn-left" :aria-label="props.locale === 'en' ? 'Scroll toolbar left' : '向左滚动工具栏'" @click="scrollToolBar('left')" :icon="ArrowLeft" />
                     <div class="gradient-mask gradient-mask-left"></div>
                 </div>
 
@@ -108,7 +103,7 @@
                             </el-dropdown>
                         </el-button-group>
 
-                        <div v-if="buttonVisibility.collapse" class="collapse-control" role="group" :aria-label="props.locale === 'en' ? 'Folding controls' : '层级折叠'">
+                        <div v-if="buttonVisibility.collapse" class="collapse-control" role="group" :aria-disabled="repair.repairing.value || maxLevel === 0" :aria-label="props.locale === 'en' ? 'Folding controls' : '层级折叠'">
                             <el-select
                                 v-model="selectedLevel"
                                 fit-input-width
@@ -136,8 +131,13 @@
                 <!-- 右侧渐变遮罩和滚动按钮 -->
                 <div v-if="canScrollRight" class="scroll-indicator scroll-indicator-right">
                     <div class="gradient-mask gradient-mask-right"></div>
-                    <el-button type="primary" circle size="small" class="scroll-btn scroll-btn-right" @click="scrollToolBar('right')" :icon="ArrowRight" />
+                    <el-button type="primary" circle size="small" class="scroll-btn scroll-btn-right" :aria-label="props.locale === 'en' ? 'Scroll toolbar right' : '向右滚动工具栏'" @click="scrollToolBar('right')" :icon="ArrowRight" />
                 </div>
+            </div>
+
+            <div v-if="editorRuntimeError" class="editor-runtime-error" role="alert">
+                <span>{{ props.locale === 'en' ? 'The editor could not load.' : '编辑器加载失败。' }}</span>
+                <el-button size="small" @click="reloadEditorPage">{{ props.locale === 'en' ? 'Reload page' : '刷新重试' }}</el-button>
             </div>
 
             <!-- Diff 模式编辑区域：拆分到 JsonToolDiffPane 子组件 -->
@@ -148,6 +148,7 @@
                 <template v-if="archives.length">
                     <div
                         class="archive-sidebar"
+                        :inert="!editorsInitialized"
                         :class="{
                             collapsed: archiveSidebarWidth <= calculateArchiveMinWidth(),
                             'archive-dragging': !!draggingArchiveId,
@@ -223,7 +224,7 @@
                     <div class="archive-resizer" @mousedown="startArchiveResize" @touchstart.passive="startArchiveResize"></div>
                 </template>
 
-                <div class="editor-panel editor-panel-input" :style="{ width: `${leftPanelWidth}%` }">
+                <div class="editor-panel editor-panel-input" :inert="!editorsInitialized" :style="{ width: `${leftPanelWidth}%` }">
                     <div class="panel-header" @dblclick="toggleInputMaximize">
                         <div class="panel-title">
                             <span>{{ settingsTxt.panelEditor }}</span>
@@ -326,7 +327,7 @@
                     </el-button>
                 </div>
 
-                <div class="editor-panel editor-panel-output" :style="{ width: `${100 - leftPanelWidth}%` }">
+                <div class="editor-panel editor-panel-output" :inert="!editorsInitialized" :style="{ width: `${100 - leftPanelWidth}%` }">
                     <div class="panel-header" @dblclick="toggleOutputMaximize">
                         <div class="panel-title">{{ settingsTxt.panelPreview }}</div>
                         <div
@@ -373,7 +374,7 @@
                     </div>
                 </div>
                 <div
-                    v-if="shouldShowFirstUseGuide"
+                    v-if="shouldShowFirstUseGuide && !editorRuntimeError && !comparisonMode && !props.externalImport"
                     class="first-use-guide"
                     role="region"
                     :aria-label="settingsTxt.firstUseGuideTitle"
@@ -382,7 +383,7 @@
                         <h3 class="first-use-guide-title">{{ settingsTxt.firstUseGuideTitle }}</h3>
                         <p class="first-use-guide-desc">{{ settingsTxt.firstUseGuideDesc }}</p>
                         <div class="first-use-guide-actions">
-                            <el-button type="primary" size="small" @click="loadFirstUseSample">
+                            <el-button type="primary" size="small" :disabled="!editorsInitialized" @click="loadFirstUseSample">
                                 {{ settingsTxt.firstUseGuideLoad }}
                             </el-button>
                             <button type="button" class="first-use-guide-skip" @click="dismissFirstUseGuide">
@@ -488,7 +489,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, onUnmounted, nextTick
 // 第三方库
 import { parseTree, findNodeAtOffset, getNodePath, getLocation, type Node as JsonAstNode } from 'jsonc-parser';
 
-import { ElButton, ElButtonGroup, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElMessage, ElMessageBox, ElOption, ElSelect, ElUpload } from 'element-plus';
+import { ElButton, ElButtonGroup, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElMessageBox, ElOption, ElSelect, ElUpload } from 'element-plus';
 import 'element-plus/es/components/button/style/css';
 import 'element-plus/es/components/button-group/style/css';
 import 'element-plus/es/components/dropdown/style/css';
@@ -503,33 +504,22 @@ import 'element-plus/es/components/upload/style/css';
 
 import type { UploadFile } from 'element-plus';
 import { Loading, ArrowLeft, ArrowRight, ArrowDown, ArrowUp, CopyDocument, Download, Upload, Delete, Setting, WarningFilled, Edit, Refresh } from '@element-plus/icons-vue';
-import { showMessageError, showMessageSuccess, showMessageWarning } from '@/utils/jsonToolMessage';
+import { bindJsonToolMessageToolbar, showMessageError, showMessageSuccess, showMessageWarning } from '@/utils/jsonToolMessage';
 
 // Monaco Editor
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { monacoApi, loadMonacoRuntime, optimizeLargeEditorLineMapping, clearEditorContent } from './utils/monacoRuntime';
 import { getJsonToolEditorTypography } from './utils/editorTypography';
-import 'monaco-editor/esm/vs/editor/contrib/bracketMatching/browser/bracketMatching';
-import 'monaco-editor/esm/vs/editor/contrib/clipboard/browser/clipboard';
-import 'monaco-editor/esm/vs/editor/contrib/comment/browser/comment';
-import 'monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu';
-import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController';
-import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding';
-import 'monaco-editor/esm/vs/editor/contrib/longLinesHelper/browser/longLinesHelper';
-import 'monaco-editor/esm/vs/editor/contrib/multicursor/browser/multicursor';
-import 'monaco-editor/esm/vs/editor/contrib/smartSelect/browser/smartSelect';
-import 'monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScrollContribution';
-import 'monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScroll.css';
-import 'monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.css';
-import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding.css';
-import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess';
-import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 
 const BatchAffixDialog = defineAsyncComponent(() => import('./BatchAffixDialog.vue'));
 const ArchiveNameDialog = defineAsyncComponent(() => import('./ArchiveNameDialog.vue'));
 const DataMaskingDialog = defineAsyncComponent(() => import('./DataMaskingDialog.vue'));
 const JsonToolDiffPane = defineAsyncComponent(() => import('./JsonToolDiffPane.vue'));
 const JsonSortFeature = defineAsyncComponent(() => import('./JsonSortFeature.vue'));
-const SettingsDialog = defineAsyncComponent(() => import('./SettingsDialog.vue'));
+const SettingsDialog = defineAsyncComponent(async () => {
+    const [component] = await Promise.all([import('./SettingsDialog.vue'), preloadThemeStyles()]);
+    return component.default;
+});
 
 
 // 组合式函数
@@ -550,6 +540,7 @@ import { useTabLifecycle } from './composables/useTabLifecycle';
 import { useJsonRepair } from './composables/useJsonRepair';
 import { useInterfaceTheme } from '../themes/useInterfaceTheme';
 import { clearEarlyTheme } from '../themes/early';
+import { preloadThemeStyles } from '../themes/styles';
 import { useToolSettings } from './composables/useToolSettings';
 
 // 本地工具
@@ -570,8 +561,6 @@ import { calculateMaxLevel, detectIllegalEscapes } from './utils/jsonStructure';
 import { unescapeJsonText, type JsonUnescapeMessageKind } from './utils/jsonUnescape';
 import { getJsonToolThemeForLanguage } from './utils/monacoThemes';
 import { ensureMonacoTextareaAttrs, type MonacoTextareaAttrObserver } from './utils/monacoTextareaAttrs';
-import { optimizeLargeEditorLineMapping } from './utils/largeEditorLineMapping';
-import { clearEditorContent } from './utils/clearEditorContent';
 import { getChangedLineRanges } from './utils/changedLineRanges';
 import type { JsonToolOutputType } from './utils/jsonToolLocaleTransition';
 
@@ -581,6 +570,10 @@ import type { ImportFormatWarning } from '../extension/importSession';
 import type { ReviewUsageKind } from '../extension/reviewClient';
 
 const props = defineProps<{ locale?: 'zh' | 'en'; externalImport?: ExternalJsonImport | null }>();
+// Start as soon as the shell module is available, overlapping its DOM construction.
+const editorRuntime = loadMonacoRuntime();
+void editorRuntime.catch(() => {}); // onMounted owns the visible failure state.
+
 const emit = defineEmits<{ switchLocale: []; 'external-imported': [id: string, warning?: ImportFormatWarning]; 'external-import-failed': [id: string, reason: string]; 'successful-use': [kind: ReviewUsageKind]; 'review-blocked': [blocked: boolean] }>();
 const externalEditorReady = ref(false);
 const reviewConversionBusy = ref(0);
@@ -672,6 +665,9 @@ const inputDragEnterDepth = ref(0);
 const isInputMaximized = ref(false); // 编辑区域是否最大化
 const isOutputMaximized = ref(false); // 预览区域是否最大化
 const editorsInitialized = ref(false);
+const editorRuntimeReady = ref(false);
+const editorRuntimeError = ref(false);
+const reloadEditorPage = () => window.location.reload();
 
 // 切换编辑区域最大化状态
 const toggleInputMaximize = () => {
@@ -831,6 +827,9 @@ const openRepairComparisonById = (comparisonId: string) => {
 clearEarlyTheme();
 const interfaceVariables = useInterfaceTheme(interfaceStyle, themeMode);
 
+// Readonly select inputs can match :focus-visible even after pointer input.
+// Track input modality within this workbench without document-level listeners.
+const keyboardNavigation = ref(false);
 const themeRootClass = computed(() => (themeMode.value === 'dark' ? 'theme-dark' : 'theme-light'));
 
 watch(
@@ -1295,7 +1294,7 @@ const updateModelDisplayOptions = (
 const ensureModelLanguage = (model: monaco.editor.ITextModel, language: string) => {
     ensureMonacoLanguageRegistered(language);
     if (model.getLanguageId() !== language) {
-        monaco.editor.setModelLanguage(model, language);
+        monacoApi.editor.setModelLanguage(model, language);
     }
 };
 
@@ -1341,6 +1340,11 @@ const outputEditorContainer = ref<HTMLElement | null>(null); // 输出编辑器�
 const mainEditorContainer = ref<HTMLElement | null>(null); // 普通模式左右编辑器外层容器
 const editorContainerWidth = ref(0); // 编辑器容器宽度，用于计算按钮显示状态
 const toolBarRef = ref<HTMLElement | null>(null); // 工具栏容器引用
+const messageToolbarRef = ref<HTMLElement | null>(null); // Shared by normal and Diff mode.
+let disposeMessageToolbar = () => {};
+onMounted(() => {
+    if (messageToolbarRef.value) disposeMessageToolbar = bindJsonToolMessageToolbar(messageToolbarRef.value);
+});
 const canScrollLeft = ref(false); // 是否可以向左滚动
 const canScrollRight = ref(false); // 是否可以向右滚动
 const {
@@ -1540,7 +1544,7 @@ const setOutputEditorValue = (
     if (resolvedLanguage === 'json' && shouldUsePreparedJsonModel(content)) {
         const previousModel = outputEditor.getModel();
         const displayIndentSize = getDisplayIndentSizeForContent(resolvedLanguage, content, customIndentSize ?? indentSize.value);
-        const nextModel = monaco.editor.createModel(content, resolvedLanguage);
+        const nextModel = monacoApi.editor.createModel(content, resolvedLanguage);
 
         updateModelDisplayOptions(nextModel, displayIndentSize);
         forceJsonModelTokenization(nextModel);
@@ -1718,7 +1722,7 @@ const getEditorGuideOptions = (enableBracketPairs: boolean, isFocused: boolean):
 });
 
 const syncEditorGuideFocus = (editor: monaco.editor.IStandaloneCodeEditor) => {
-    const enableBracketPairs = editor.getOption(monaco.editor.EditorOption.guides).bracketPairs !== false;
+    const enableBracketPairs = editor.getOption(monacoApi.editor.EditorOption.guides).bracketPairs !== false;
     editor.updateOptions({ guides: getEditorGuideOptions(enableBracketPairs, editor.hasWidgetFocus()) });
 };
 
@@ -1776,6 +1780,9 @@ const getEditorOptions = (
         language,
         theme: getJsonToolThemeForLanguage(language, themeMode.value),
         readOnly: isReadOnly,
+        ariaLabel: props.locale === 'en'
+            ? (isReadOnly ? 'JSON preview editor' : 'JSON input editor')
+            : (isReadOnly ? 'JSON 预览编辑器' : 'JSON 输入编辑器'),
         cursorBlinking: 'blink' as const, // 确保光标闪烁
         cursorStyle: 'line' as const, // 细线光标
         renderLineHighlightOnlyWhenFocus: true, // 仅在编辑器聚焦时显示当前行高亮
@@ -1893,11 +1900,11 @@ const updateInputEditorConfig = (language?: EditorContentLanguage) => {
     const model = inputEditor.getModel();
     if (model) {
         ensureModelLanguage(model, resolvedLanguage);
-        monaco.editor.setTheme(getJsonToolThemeForLanguage(resolvedLanguage, themeMode.value));
+        monacoApi.editor.setTheme(getJsonToolThemeForLanguage(resolvedLanguage, themeMode.value));
         displayIndentSize = syncEditorDisplayOptions(inputEditor, resolvedLanguage, indentSize.value);
 
         if (resolvedLanguage !== 'json') {
-            monaco.editor.setModelMarkers(model, 'json', []);
+            monacoApi.editor.setModelMarkers(model, 'json', []);
             inputEditorErrors.value = [];
             currentErrorIndex.value = -1;
         } else {
@@ -1934,7 +1941,7 @@ const updateOutputEditorConfig = (language: string = 'json', enableLargeFileFold
     const model = outputEditor.getModel();
     if (model) {
         ensureModelLanguage(model, language);
-        monaco.editor.setTheme(getJsonToolThemeForLanguage(language, themeMode.value));
+        monacoApi.editor.setTheme(getJsonToolThemeForLanguage(language, themeMode.value));
         displayIndentSize = getDisplayIndentSizeForContent(language, model.getValue(), fallbackIndentSize);
         updateModelDisplayOptions(model, displayIndentSize);
     }
@@ -1980,8 +1987,9 @@ const syncOutputEditorIndentFromContent = () => {
 };
 
 watch([themeMode, interfaceStyle], ([mode]) => {
+    if (!editorRuntimeReady.value) return;
     const activeThemeLanguage = inputContentLanguage.value === 'toml' || getOutputEditorLanguage() === 'toml' ? 'toml' : inputContentLanguage.value;
-    monaco.editor.setTheme(getJsonToolThemeForLanguage(activeThemeLanguage, mode));
+    monacoApi.editor.setTheme(getJsonToolThemeForLanguage(activeThemeLanguage, mode));
 });
 
 let lastFocusedEditor: monaco.editor.IStandaloneCodeEditor | null = null;
@@ -2131,7 +2139,7 @@ const findStringRangeByAst = (model: monaco.editor.ITextModel, position: monaco.
 
         const start = model.getPositionAt(matchedNode.offset);
         const end = model.getPositionAt(matchedNode.offset + matchedNode.length);
-        return new monaco.Range(start.lineNumber, start.column, end.lineNumber, end.column);
+        return new monacoApi.Range(start.lineNumber, start.column, end.lineNumber, end.column);
     }
 
     return null;
@@ -2187,7 +2195,7 @@ const findStringRangeByScan = (model: monaco.editor.ITextModel, position: monaco
         if (endQuote !== null) {
             // 验证：检查这个范围是否包含当前位置
             if (currentIndex <= endQuote) {
-                return new monaco.Range(lineNumber, currentIndex + 1, lineNumber, endQuote + 2);
+                return new monacoApi.Range(lineNumber, currentIndex + 1, lineNumber, endQuote + 2);
             }
         }
 
@@ -2196,7 +2204,7 @@ const findStringRangeByScan = (model: monaco.editor.ITextModel, position: monaco
         if (startQuote !== null) {
             // 验证：检查这个范围是否包含当前位置
             if (startQuote <= currentIndex) {
-                return new monaco.Range(lineNumber, startQuote + 1, lineNumber, currentIndex + 2);
+                return new monacoApi.Range(lineNumber, startQuote + 1, lineNumber, currentIndex + 2);
             }
         }
     }
@@ -2214,7 +2222,7 @@ const findStringRangeByScan = (model: monaco.editor.ITextModel, position: monaco
     if (endQuote !== null) {
         // 验证：当前位置是否在这个字符串范围内（包括引号）
         if (currentIndex >= nearestQuote && currentIndex <= endQuote + 1) {
-            return new monaco.Range(lineNumber, nearestQuote + 1, lineNumber, endQuote + 2);
+            return new monacoApi.Range(lineNumber, nearestQuote + 1, lineNumber, endQuote + 2);
         }
     }
 
@@ -2223,7 +2231,7 @@ const findStringRangeByScan = (model: monaco.editor.ITextModel, position: monaco
     if (startQuote !== null) {
         // 验证：当前位置是否在这个字符串范围内（包括引号）
         if (currentIndex >= startQuote && currentIndex <= nearestQuote + 1) {
-            return new monaco.Range(lineNumber, startQuote + 1, lineNumber, nearestQuote + 2);
+            return new monacoApi.Range(lineNumber, startQuote + 1, lineNumber, nearestQuote + 2);
         }
     }
 
@@ -2485,13 +2493,13 @@ const setupDoubleClickSelectString = (editor: monaco.editor.IStandaloneCodeEdito
             const model = editor.getModel();
             if (!model) return;
 
-            const clickPosition = new monaco.Position(currentPosition.lineNumber, currentPosition.column);
+            const clickPosition = new monacoApi.Position(currentPosition.lineNumber, currentPosition.column);
 
             setTimeout(() => {
                 const stringRange = findStringRange(model, clickPosition);
 
                 if (stringRange) {
-                    const stringValueRange = new monaco.Range(
+                    const stringValueRange = new monacoApi.Range(
                         stringRange.startLineNumber,
                         stringRange.startColumn + 1, // 跳过开始引号
                         stringRange.endLineNumber,
@@ -2769,9 +2777,9 @@ const refreshInputEditorErrors = () => {
         return;
     }
 
-    const markers = monaco.editor.getModelMarkers({ resource: model.uri });
+    const markers = monacoApi.editor.getModelMarkers({ resource: model.uri });
     const errors = markers
-        .filter((m) => m.severity === monaco.MarkerSeverity.Error)
+        .filter((m) => m.severity === monacoApi.MarkerSeverity.Error)
         .sort((a, b) => a.startLineNumber - b.startLineNumber || a.startColumn - b.startColumn);
 
     inputEditorErrors.value = errors;
@@ -2794,7 +2802,7 @@ const refreshInputMarkersListener = () => {
         return;
     }
 
-    inputMarkersListener = monaco.editor.onDidChangeMarkers((uris) => {
+    inputMarkersListener = monacoApi.editor.onDidChangeMarkers((uris) => {
         const hit = uris.some((u) => u.toString() === inputModel.uri.toString());
         if (!hit) return;
         refreshInputEditorErrors();
@@ -2808,7 +2816,7 @@ const setInputEditorValue = (content: string, language: EditorContentLanguage = 
     if (language === 'json' && shouldUsePreparedJsonModel(content)) {
         const previousModel = inputEditor.getModel();
         const displayIndentSize = getDisplayIndentSizeForContent('json', content, indentSize.value);
-        const nextModel = monaco.editor.createModel(content, 'json');
+        const nextModel = monacoApi.editor.createModel(content, 'json');
 
         updateModelDisplayOptions(nextModel, displayIndentSize);
         forceJsonModelTokenization(nextModel);
@@ -2891,7 +2899,7 @@ const goToNextError = () => {
 
 const jumpToError = (error: monaco.editor.IMarker) => {
     if (!inputEditor) return;
-    const range = new monaco.Range(error.startLineNumber, error.startColumn, error.endLineNumber, error.endColumn);
+    const range = new monacoApi.Range(error.startLineNumber, error.startColumn, error.endLineNumber, error.endColumn);
     inputEditor.setSelection(range);
     inputEditor.revealRangeInCenter(range);
     inputEditor.focus();
@@ -2905,7 +2913,7 @@ const createInputEditor = () => {
     if (!inputEditorContainer.value) return;
 
     const inputOptions = getEditorOptions(indentSize.value, false, inputContentLanguage.value, true, 1);
-    inputEditor = monaco.editor.create(inputEditorContainer.value, inputOptions);
+    inputEditor = monacoApi.editor.create(inputEditorContainer.value, inputOptions);
     optimizeLargeEditorLineMapping(inputEditor);
     currentInputLineCount.value = getEditorLineCount(inputEditor);
 
@@ -2935,7 +2943,7 @@ const createOutputEditor = () => {
 
     // 默认启用大文件折叠优化（因为是输出编辑器，通常会处理较大的JSON）
     const options = getEditorOptions(indentSize.value, true, 'json', true);
-    outputEditor = monaco.editor.create(outputEditorContainer.value, options);
+    outputEditor = monacoApi.editor.create(outputEditorContainer.value, options);
     optimizeLargeEditorLineMapping(outputEditor);
     outputEditorTextareaAttrObserver?.disconnect();
     outputEditorTextareaAttrObserver = ensureMonacoTextareaAttrs(outputEditorContainer.value, 'monaco-output-editor');
@@ -2951,7 +2959,7 @@ const configureJsonSchemaSupport = () => {
 
     // 关闭语法检查时，需要手动清除已有的 markers，否则红色波浪线不会消失
     if ((!enableDiagnostics.value || !isJsonModel) && model) {
-        monaco.editor.setModelMarkers(model, 'json', []);
+        monacoApi.editor.setModelMarkers(model, 'json', []);
         inputEditorErrors.value = [];
         currentErrorIndex.value = -1;
     }
@@ -3183,6 +3191,7 @@ const initializeEditorLayout = () => {
 
     // 设置初始化成功标志
     editorsInitialized.value = true;
+    if (!performance.getEntriesByName('json-tool:editor-ready').length) performance.mark('json-tool:editor-ready');
     scheduleStartupGc();
 };
 
@@ -3321,8 +3330,8 @@ const initializeNormalEditors = async () => {
         createOutputEditor();
         configureOutputEditor();
 
-        await waitForNextFrame();
-
+        // Both models and containers exist; finalize as the restore path does,
+        // without keeping already-created editors inert for another frame.
         initializeEditorLayout();
         setupResizeObservers();
         externalEditorReady.value = true;
@@ -3340,8 +3349,16 @@ onMounted(async () => {
     window.addEventListener('keydown', handleEscapeKey);
     window.addEventListener('keydown', handleGlobalFind, true);
 
-    // 初始化基础环境
+    // The shell can paint while Monaco downloads; never create editors after unmount.
+    try {
+        await editorRuntime;
+    } catch {
+        if (!isTabPageClosing.value) editorRuntimeError.value = true;
+        return;
+    }
+    if (isTabPageClosing.value) return;
     initializeMonacoEnvironment();
+    editorRuntimeReady.value = true;
 
     if (comparisonMode.value) {
         diffMode.enterDiffMode();
@@ -3381,8 +3398,8 @@ onMounted(async () => {
 
 // 清理编辑器实例
 onBeforeUnmount(() => {
-    // 关闭所有消息提示，避免路由切换时消息提示仍然显示
-    ElMessage.closeAll();
+    // Release the feedback slot and its layout observers with this workbench.
+    disposeMessageToolbar();
     destroyLevelAnalysisWorker();
     cancelFoldingInfoWorker();
     stopResize();
@@ -4483,7 +4500,7 @@ const copyOutput = async () => {
             // 自动选择内容以方便用户复制
             outputEditor?.focus();
             outputEditor?.getModel()?.getFullModelRange();
-            outputEditor?.setSelection(outputEditor.getModel()?.getFullModelRange() || new monaco.Range(0, 0, 0, 0));
+            outputEditor?.setSelection(outputEditor.getModel()?.getFullModelRange() || new monacoApi.Range(0, 0, 0, 0));
         }
     } catch (error: any) {
         showMessageError(settingsTxt.value.msgCopyFailManual);
@@ -5038,47 +5055,6 @@ body[data-interface-style="default"] .json-tool-root.theme-dark {
         border-color 120ms ease;
 }
 
-/* 添加小屏幕提示样式 */
-.screen-size-warning {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--json-tool-bg, #f5f7fa);
-    z-index: 2000;
-    padding: 20px;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-
-.warning-icon {
-    font-size: 48px;
-    color: var(--el-color-warning, #e6a23c);
-    margin-bottom: 20px;
-}
-
-.warning-text {
-    font-size: 16px;
-    color: var(--json-tool-text-muted, #606266);
-    line-height: 1.6;
-    max-width: 80%;
-    margin: 0 auto;
-}
-
-@media screen and (max-width: 900px) {
-    .json-tool-container {
-        display: none;
-    }
-
-    .screen-size-warning {
-        display: flex;
-    }
-}
-
 /* 工具栏包装器 */
 .tool-bar-wrapper {
     position: relative;
@@ -5506,18 +5482,18 @@ body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button
 :global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:not(:disabled):not(.is-disabled)) {
     background-color: var(--el-color-info-light-9, #f4f4f5) !important;
     border-color: var(--el-color-info-light-5, #d3d4d6) !important;
-    color: var(--el-color-info, #909399) !important;
+    color: var(--default-file-transfer-fg, var(--el-color-info, #909399)) !important;
 }
 :global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:hover:not(:disabled):not(.is-disabled)),
 :global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:focus:not(:disabled):not(.is-disabled)) {
     background-color: var(--el-color-info-light-8, #e9e9eb) !important;
     border-color: var(--el-color-info-light-3, #b1b3b8) !important;
-    color: var(--el-color-info, #909399) !important;
+    color: var(--default-file-transfer-fg, var(--el-color-info, #909399)) !important;
 }
 :global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:active:not(:disabled):not(.is-disabled)) {
     background-color: var(--el-color-info-light-7, #dedfe0) !important;
     border-color: var(--el-color-info-light-3, #b1b3b8) !important;
-    color: var(--el-color-info, #909399) !important;
+    color: var(--default-file-transfer-fg, var(--el-color-info, #909399)) !important;
 }
 :global(body[data-interface-style="default"].json-tool-theme-dark :is(.panel-actions, .diff-panel-actions) .file-transfer-button:not(:disabled):not(.is-disabled)) {
     background-color: #3a3a3a !important;
@@ -6311,6 +6287,22 @@ body[data-interface-style="default"] .json-tool-root.theme-dark .resizer.resizer
     font-size: 16px;
 }
 
+.editor-runtime-error {
+    position: absolute;
+    z-index: 20;
+    top: 64px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--el-color-danger);
+    border-radius: 4px;
+    color: var(--el-text-color-primary);
+    background: var(--el-bg-color);
+}
+
 .first-use-guide {
     position: absolute;
     top: 0;
@@ -6852,14 +6844,6 @@ body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide
 
 :deep(.el-card__body) {
     padding: 16px 20px;
-}
-
-:global(.json-tool-message) {
-    right: 15px !important;
-    left: auto !important;
-    transform: translateX(0) !important;
-    position: fixed !important;
-    z-index: 9999 !important;
 }
 
 :deep(.el-divider) {

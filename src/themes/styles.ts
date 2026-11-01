@@ -1,14 +1,14 @@
-/** Loads the isolated stylesheets. Definitions stay data-only so tests never touch CSS. */
-import './default/swatch.css';
-import './ide/base.css';
-import './ide/controls.css';
-import './ide/swatch.css';
-import './glass/base.css';
-import './glass/controls.css';
-import './glass/swatch.css';
-import './retro/base.css';
-import './retro/controls.css';
-import './retro/swatch.css';
-import './paper/base.css';
-import './paper/controls.css';
-import './paper/swatch.css';
+import type { InterfaceStyle } from './ids';
+import { createRetryableModuleLoader } from '../components/utils/jsonToolLoadController';
+
+// The saved theme is ready before the workbench mounts. The settings dialog prepares
+// the remaining styles before it offers a switch, so switching never flashes unstyled UI.
+const loaders: Record<InterfaceStyle, () => Promise<unknown>> = {
+    default: async () => {},
+    ide: createRetryableModuleLoader(() => import('./ide/styles')),
+    glass: createRetryableModuleLoader(() => import('./glass/styles')),
+    retro: createRetryableModuleLoader(() => import('./retro/styles')),
+    paper: createRetryableModuleLoader(() => import('./paper/styles')),
+};
+export const loadThemeStyles = async (style: InterfaceStyle): Promise<void> => { await loaders[style](); };
+export const preloadThemeStyles = async (): Promise<void> => { await Promise.all(Object.values(loaders).map(load => load())); };
