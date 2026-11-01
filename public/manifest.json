@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "JSON 工具箱",
   "version": "1.2.0",
+  "homepage_url": "https://github.com/bing-devsec/json-toolbox",
   "description": "在本地格式化、修复、压缩、校验、转换、排序、脱敏和对比 JSON，支持文件导入导出与本地存档。",
   "minimum_chrome_version": "120",
   "action": {
