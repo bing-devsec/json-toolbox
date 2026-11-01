@@ -1,0 +1,375 @@
+/* Retro controls. All colors and bevels come from retro tokens. */
+
+body[data-interface-style="retro"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn) {
+    --retro-control-bg: var(--retro-neutral-bg);
+    --retro-control-fg: var(--retro-neutral-fg);
+    --retro-control-border: var(--retro-neutral-border);
+    --retro-control-hover-bg: var(--retro-neutral-hover-bg);
+    --retro-control-hover-border: var(--retro-neutral-hover-border);
+    --retro-control-active-bg: var(--retro-neutral-active-bg);
+    --retro-control-disabled-bg: var(--retro-neutral-disabled-bg);
+    --retro-control-disabled-fg: var(--retro-neutral-disabled-fg);
+    --retro-control-disabled-border: var(--retro-neutral-disabled-border);
+    background: var(--retro-control-bg) !important;
+    color: var(--retro-control-fg) !important;
+    border: 1px solid var(--retro-control-border) !important;
+    border-radius: var(--retro-radius) !important;
+    box-shadow: inset 0 1px 0 var(--retro-highlight), inset 0 -1px 0 var(--retro-shadow), 0 1px 1px var(--retro-shadow) !important;
+    filter: none !important;
+    font-weight: 500;
+}
+
+body[data-interface-style="retro"] .el-button.el-button--primary {
+    --retro-control-bg: var(--retro-primary-bg);
+    --retro-control-fg: var(--retro-primary-fg);
+    --retro-control-border: var(--retro-primary-border);
+    --retro-control-hover-bg: var(--retro-primary-hover-bg);
+    --retro-control-hover-border: var(--retro-primary-hover-border);
+    --retro-control-active-bg: var(--retro-primary-active-bg);
+    --retro-control-disabled-bg: var(--retro-primary-disabled-bg);
+    --retro-control-disabled-fg: var(--retro-primary-disabled-fg);
+    --retro-control-disabled-border: var(--retro-primary-disabled-border);
+    box-shadow: inset 0 1px 0 var(--retro-title-highlight), var(--retro-primary-shadow) !important;
+}
+
+body[data-interface-style="retro"] :is(.tool-bar .el-button--primary:not(.json-format-button), .panel-actions .el-button--primary, .el-button.transfer-button) {
+    --retro-control-bg: var(--retro-secondary-bg);
+    --retro-control-fg: var(--retro-secondary-fg);
+    --retro-control-border: var(--retro-secondary-border);
+    --retro-control-hover-bg: var(--retro-secondary-hover-bg);
+    --retro-control-hover-border: var(--retro-secondary-hover-border);
+    --retro-control-active-bg: var(--retro-secondary-active-bg);
+    box-shadow: inset 0 1px 0 var(--retro-highlight), inset 0 -1px 0 var(--retro-shadow), 0 1px 1px var(--retro-shadow) !important;
+}
+
+body[data-interface-style="retro"] :is(.el-button.el-button--danger, .archive-header-action.danger) {
+    --retro-control-bg: var(--retro-danger-bg);
+    --retro-control-fg: var(--retro-danger-fg);
+    --retro-control-border: var(--retro-danger-border);
+    --retro-control-hover-bg: var(--retro-danger-hover-bg);
+    --retro-control-hover-border: var(--retro-danger-hover-border);
+    --retro-control-active-bg: var(--retro-danger-active-bg);
+}
+
+body[data-interface-style="retro"] :is(.el-button--success, .el-button--info, .el-button--warning) {
+    --retro-control-bg: var(--retro-neutral-bg);
+    --retro-control-fg: var(--retro-neutral-fg);
+    --retro-control-border: var(--retro-neutral-border);
+}
+body[data-interface-style="retro"] .el-button.el-button--success { color: var(--retro-success-fg) !important; }
+body[data-interface-style="retro"] .el-button.el-button--warning { color: var(--retro-warning-fg) !important; }
+body[data-interface-style="retro"] .el-button.el-button--info { color: var(--json-tool-text-muted) !important; }
+
+body[data-interface-style="retro"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):hover:not(:disabled):not(.is-disabled) {
+    background: var(--retro-control-hover-bg) !important;
+    border-color: var(--retro-control-hover-border) !important;
+}
+body[data-interface-style="retro"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):active:not(:disabled):not(.is-disabled) {
+    background: var(--retro-control-active-bg) !important;
+    box-shadow: inset 0 2px 4px var(--retro-shadow) !important;
+}
+body[data-interface-style="retro"] :is(.el-button.el-button.is-disabled, .el-button:disabled, .archive-header-action:disabled, .diff-nav-action:disabled, .diff-sync-btn:disabled, .panel-action:disabled) {
+    background: var(--retro-control-disabled-bg) !important;
+    color: var(--retro-control-disabled-fg) !important;
+    border-color: var(--retro-control-disabled-border) !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+}
+body[data-interface-style="retro"] :is(button, [role="button"]):focus-visible {
+    outline: 2px solid var(--retro-focus) !important;
+    outline-offset: 2px;
+}
+body[data-interface-style="retro"] .el-button.transfer-button svg { color: inherit !important; }
+body[data-interface-style="retro"] .main-action-group > .data-convert-dropdown:not(:first-child) .el-button {
+    margin-left: 0 !important;
+    border-left: 1px solid var(--retro-border) !important;
+}
+body[data-interface-style="retro"] .el-button-group > .el-button:not(:first-child) {
+    border-left-color: var(--retro-border) !important;
+}
+
+/* Inputs are sunken white wells with a blue focus ring. */
+body[data-interface-style="retro"] :is(.el-select__wrapper.el-select__wrapper, .el-input__wrapper.el-input__wrapper, .el-textarea__inner) {
+    background: var(--retro-input) !important;
+    color: var(--json-tool-text) !important;
+    border: 0 !important;
+    border-radius: 2px !important;
+    box-shadow: inset 0 1px 2px var(--retro-shadow), inset 0 0 0 1px var(--retro-input-border) !important;
+}
+body[data-interface-style="retro"] :is(.el-select__wrapper.is-focused, .el-input__wrapper.is-focus, .el-textarea__inner:focus) {
+    box-shadow: inset 0 0 0 1px var(--retro-focus), 0 0 0 2px color-mix(in srgb, var(--retro-focus) 24%, transparent) !important;
+}
+body[data-interface-style="retro"] :is(.el-input__inner, .el-textarea__inner)::placeholder { color: var(--json-tool-text-muted) !important; }
+body[data-interface-style="retro"] :is(.el-select__placeholder, .el-select__selected-item, .el-select__caret) { color: var(--json-tool-text) !important; }
+body[data-interface-style="retro"] :is(.el-select-dropdown__item.is-selected, .el-select-dropdown__item.is-hovering, .el-dropdown-menu__item:hover, .el-autocomplete-suggestion li:is(:hover, .highlighted)) {
+    background: var(--retro-selected) !important;
+    color: var(--retro-selected-text) !important;
+}
+body[data-interface-style="retro"] .el-autocomplete-suggestion li:is(:hover, .highlighted) :is(.path-text, .path-type) {
+    color: var(--retro-selected-text) !important;
+}
+
+body[data-interface-style="retro"] .el-checkbox__inner {
+    background: var(--retro-input);
+    border-color: var(--retro-input-border);
+    border-radius: 2px;
+}
+body[data-interface-style="retro"] :is(.el-checkbox__input.is-checked, .el-checkbox__input.is-indeterminate) .el-checkbox__inner {
+    background: var(--retro-focus);
+    border-color: var(--retro-focus);
+}
+body[data-interface-style="retro"] .el-checkbox__input.is-checked .el-checkbox__inner::after { border-color: var(--retro-on-accent); }
+body[data-interface-style="retro"] .el-checkbox__input.is-indeterminate .el-checkbox__inner::before { background: var(--retro-on-accent); }
+body[data-interface-style="retro"] .el-checkbox__input:not(.is-disabled):has(input:focus-visible) .el-checkbox__inner {
+    outline: 2px solid var(--retro-focus);
+    outline-offset: 2px;
+}
+body[data-interface-style="retro"] .el-radio__inner {
+    background: var(--retro-input);
+    border-color: var(--retro-input-border);
+}
+body[data-interface-style="retro"] .el-radio__input.is-checked .el-radio__inner {
+    background: var(--retro-focus);
+    border-color: var(--retro-focus);
+}
+body[data-interface-style="retro"] .el-radio__input.is-checked .el-radio__inner::after { background: var(--retro-on-accent); }
+body[data-interface-style="retro"] .el-radio__input.is-checked + .el-radio__label { color: var(--json-tool-text) !important; }
+body[data-interface-style="retro"] .el-radio:has(input:focus-visible) { outline: 2px solid var(--retro-focus); outline-offset: 2px; }
+body[data-interface-style="retro"] .el-switch__core {
+    background: var(--retro-switch-track) !important;
+    border-color: var(--retro-switch-track-border) !important;
+}
+body[data-interface-style="retro"] .el-switch .el-switch__action {
+    background-color: var(--retro-switch-thumb) !important;
+    border: 1px solid var(--retro-switch-thumb-border) !important;
+    box-shadow: var(--retro-switch-thumb-shadow) !important;
+    box-sizing: border-box;
+}
+body[data-interface-style="retro"] .el-switch.is-checked .el-switch__core {
+    background: var(--retro-focus) !important;
+    border-color: var(--retro-focus) !important;
+}
+body[data-interface-style="retro"] .el-switch.is-checked .el-switch__action {
+    background-color: var(--retro-on-accent) !important;
+    border-color: var(--retro-switch-thumb-border) !important;
+}
+
+/* Compound folding control: one raised frame with a short internal rule. */
+body[data-interface-style="retro"] .json-tool-root .collapse-control {
+    height: 32px;
+    box-sizing: border-box;
+    gap: 0;
+    background: var(--retro-face) !important;
+    border: 1px solid var(--retro-border) !important;
+    border-radius: var(--retro-radius) !important;
+    box-shadow: inset 0 1px 0 var(--retro-highlight), inset 0 -1px 0 var(--retro-shadow);
+    overflow: hidden;
+}
+body[data-interface-style="retro"] .json-tool-root .collapse-control :is(.el-select__wrapper, .el-input__wrapper, .el-button.level-action-button) {
+    height: 30px;
+    min-height: 30px;
+    box-sizing: border-box;
+    margin: 0 !important;
+    background: transparent !important;
+    color: var(--retro-neutral-fg) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+body[data-interface-style="retro"] .json-tool-root .collapse-control .level-action-button::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: var(--retro-border);
+    pointer-events: none;
+}
+body[data-interface-style="retro"] .json-tool-root .collapse-control :is(.el-select__wrapper:not(.is-disabled):hover, .level-action-button:not(:disabled):hover) {
+    background: var(--retro-neutral-hover-bg) !important;
+}
+body[data-interface-style="retro"] .json-tool-root .collapse-control:has(.el-select__wrapper.is-disabled) {
+    background: var(--retro-neutral-disabled-bg) !important;
+    border-color: var(--retro-neutral-disabled-border) !important;
+}
+body[data-interface-style="retro"] .json-tool-root .collapse-control :is(.el-select__wrapper.is-disabled, .level-action-button:disabled) {
+    background: transparent !important;
+    color: var(--retro-neutral-disabled-fg) !important;
+}
+
+/* Settings window: blue title bar handled in base, light client body here. */
+body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper {
+    background: var(--retro-window) !important;
+}
+body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .settings-dialog-content :is(.el-collapse-item__header, .el-collapse-item__wrap, .el-collapse-item__content) {
+    background: var(--retro-window) !important;
+    border-color: var(--retro-dotted) !important;
+}
+body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .settings-dialog-content .el-collapse-item__header:is(:hover, .is-active) {
+    background: var(--retro-selected) !important;
+    color: var(--retro-selected-text) !important;
+}
+body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card {
+    background: var(--retro-face) !important;
+    border: 1px solid var(--retro-border) !important;
+    border-radius: 3px;
+}
+body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card:hover {
+    background: var(--retro-selected) !important;
+}
+body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered {
+    background: var(--retro-face) !important;
+    border-color: var(--retro-border) !important;
+    border-radius: 3px;
+    color: var(--json-tool-text);
+}
+body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered:not(.is-disabled):not(.is-checked):hover {
+    background: var(--retro-neutral-hover-bg) !important;
+}
+body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked {
+    background: var(--retro-selected) !important;
+    border-color: var(--retro-focus) !important;
+}
+body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-checked .el-radio__label {
+    color: var(--retro-selected-text) !important;
+}
+body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio:has(input:focus-visible) {
+    outline: 2px solid var(--retro-focus);
+    outline-offset: 2px;
+}
+body[data-interface-style="retro"] .appearance-mode button[aria-pressed="true"] {
+    background: var(--retro-selected);
+    color: var(--retro-selected-text);
+    border-color: var(--retro-focus);
+}
+body[data-interface-style="retro"] .appearance-style-card[aria-pressed="true"] {
+    border-color: var(--retro-focus);
+    box-shadow: inset 0 0 0 1px var(--retro-focus);
+    background: var(--retro-selected);
+}
+
+/* Masking, sort and demo share the client window surfaces. */
+body[data-interface-style="retro"] :is(.rule-item, .field-path-item, .saved-rule-item, .affix-section, .path-help-panel, .form-value-quote--compact) {
+    background: var(--retro-face-solid) !important;
+    border-color: var(--retro-border) !important;
+    border-radius: 3px;
+}
+/* The rule editor is a static form; only clickable saved-rule cards get hover. */
+body[data-interface-style="retro"] .saved-rule-item:hover {
+    background: var(--retro-selected) !important;
+}
+body[data-interface-style="retro"] :is(.field-path-priority, .path-help-content code) {
+    background: var(--retro-selected) !important;
+    color: var(--retro-selected-text) !important;
+    border-color: var(--retro-border) !important;
+}
+body[data-interface-style="retro"] .path-help-panel {
+    border-left: 3px solid var(--retro-link) !important;
+}
+body[data-interface-style="retro"] .path-help-content .path-rule-heading { color: var(--retro-link) !important; }
+body[data-interface-style="retro"] .el-dialog .el-alert {
+    background: var(--retro-face-solid) !important;
+    border-color: var(--retro-border) !important;
+    color: var(--json-tool-text) !important;
+}
+body[data-interface-style="retro"] .el-dialog :is(.dialog-title, .section-title, .rule-name-label, .field-path-label, .field-label, .saved-rule-name, .affix-row-label, .affix-section-title) {
+    color: var(--json-tool-text) !important;
+}
+body[data-interface-style="retro"] .el-dialog :is(.priority-hint, .saved-rule-meta, .affix-hint) {
+    color: var(--json-tool-text-muted) !important;
+}
+body[data-interface-style="retro"] .sort-direction-card,
+body[data-interface-style="retro"] .sort-option-card {
+    background: var(--retro-face) !important;
+    border-color: var(--retro-border) !important;
+    border-radius: 3px;
+}
+body[data-interface-style="retro"] .sort-direction-card.is-active,
+body[data-interface-style="retro"] .sort-option-card.is-active {
+    background: var(--retro-selected) !important;
+    border-color: var(--retro-focus) !important;
+    color: var(--retro-selected-text) !important;
+}
+body[data-interface-style="retro"] .step-dot.active { background: var(--theme-accent) !important; }
+body[data-interface-style="retro"] .diff-sync-btn-group.is-active .diff-sync-btn {
+    background: var(--retro-selected) !important;
+    color: var(--retro-selected-text) !important;
+}
+body[data-interface-style="retro"] .diff-cell-center {
+    background: var(--json-tool-diff-center-bg) !important;
+    border-color: var(--json-tool-diff-center-border) !important;
+}
+body[data-interface-style="retro"] .el-message.el-message {
+    border: 1px solid var(--retro-border) !important;
+    border-radius: 3px !important;
+    box-shadow: var(--retro-window-shadow) !important;
+}
+body[data-interface-style="retro"] :is(.error-warning-icon, .error-nav-count) { color: var(--theme-danger) !important; }
+body[data-interface-style="retro"] .el-dialog .delete-confirm {
+    background: color-mix(in srgb, var(--theme-danger) 10%, var(--retro-window)) !important;
+    border-color: var(--retro-danger-border) !important;
+}
+body[data-interface-style="retro"] .el-dialog :is(.delete-warning-icon, .delete-confirm-text, .add-field-path-error) {
+    color: var(--theme-danger) !important;
+}
+
+
+/* Archive title actions behave like Windows title-bar controls on the blue strip. */
+body[data-interface-style="retro"] .archive-sidebar-header .archive-header-action {
+    border-radius: var(--archive-action-radius) !important;
+    background: transparent !important; border-color: transparent !important; box-shadow: none !important;
+    color: var(--retro-title-text) !important;
+}
+body[data-interface-style="retro"] .archive-sidebar-header .archive-header-action:hover:not(:disabled):not(.is-disabled) {
+    background: var(--retro-title-control-hover) !important;
+    border-color: var(--retro-title-control-hover-border) !important;
+    color: var(--retro-title-text) !important;
+}
+body[data-interface-style="retro"] .archive-sidebar-header .archive-header-action:active:not(:disabled):not(.is-disabled) {
+    background: var(--retro-title-control-active) !important;
+}
+body[data-interface-style="retro"] .archive-sidebar-header .archive-header-action.danger:hover:not(:disabled):not(.is-disabled) {
+    background: var(--retro-title-control-danger) !important;
+    border-color: var(--retro-title-control-hover-border) !important;
+    color: var(--retro-title-text) !important;
+}
+body[data-interface-style="retro"] .archive-sidebar-header .archive-header-action:disabled {
+    background: transparent !important; border-color: transparent !important;
+    color: color-mix(in srgb, var(--retro-title-text) 48%, transparent) !important; opacity: 1 !important;
+}
+
+/* Path help is a text link, not a button: no fill, border or hover background. */
+body[data-interface-style="retro"] .el-button.path-help-toggle-btn {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: var(--theme-accent) !important;
+}
+body[data-interface-style="retro"] .el-button.path-help-toggle-btn:hover:not(:disabled):not(.is-disabled),
+body[data-interface-style="retro"] .el-button.path-help-toggle-btn:active:not(:disabled):not(.is-disabled) {
+    background: transparent !important;
+    color: var(--theme-accent) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Diff's local formatting action is the accent action; sort stays neutral. */
+body[data-interface-style="retro"] .diff-panel-actions .diff-format-button,
+body[data-interface-style="retro"] .diff-panel-actions .diff-format-button:hover:not(:disabled):not(.is-disabled) {
+    color: var(--theme-accent) !important;
+    border-color: color-mix(in srgb, var(--theme-accent) 45%, var(--json-tool-border)) !important;
+}
+
+/* File transfer shares the accent with diff format. */
+body[data-interface-style="retro"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button,
+body[data-interface-style="retro"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:hover:not(:disabled):not(.is-disabled) {
+    color: var(--theme-accent) !important;
+    border-color: color-mix(in srgb, var(--theme-accent) 45%, var(--json-tool-border)) !important;
+}
+
+body[data-interface-style="retro"] :is(.panel-actions, .diff-panel-actions) .el-button--success,
+body[data-interface-style="retro"] :is(.panel-actions, .diff-panel-actions) .el-button--success:hover:not(:disabled):not(.is-disabled) {
+    border-color: color-mix(in srgb, var(--theme-success) 45%, var(--json-tool-border)) !important;
+}
+

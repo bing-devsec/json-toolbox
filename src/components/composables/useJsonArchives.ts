@@ -30,7 +30,7 @@ interface UseJsonArchivesOptions {
 
 const ARCHIVE_SIDEBAR_HORIZONTAL_PADDING = 10;
 const ARCHIVE_ITEM_HORIZONTAL_PADDING = 8;
-const ARCHIVE_COLLAPSED_NAME_MAX_CHARS = 6;
+const ARCHIVE_COLLAPSED_NAME_MAX_CHARS = 5;
 
 /**
  * 管理 JSON 存档的标签页隔离存储、选择/拖拽状态及侧边栏尺寸。
@@ -104,8 +104,10 @@ export const useJsonArchives = (options: UseJsonArchivesOptions) => {
         return options.settingsTxt.value.archiveUsedSize(formatFileSize(totalSize));
     };
 
-    /** 计算侧边栏允许的最小宽度；无输入参数，返回像素值。 */
-    const calculateArchiveMinWidth = (): number => 72;
+    /** 计算侧边栏允许的最小宽度；无输入参数，返回像素值。
+     * 5 个中文字符约 5×12=60px，加 20px 横向测量余量约 80px；
+     * 三个 26px header 动作 + 1px 间距需要 80px；取 84px 留安全余量。 */
+    const calculateArchiveMinWidth = (): number => 84;
 
     const calculateArchiveMaxWidth = (): number => {
         if (archives.value.length === 0) return 100;

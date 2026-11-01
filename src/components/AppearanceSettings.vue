@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue';
-import { interfaceStyles, type InterfaceStyle, type AppearanceMode } from '../themes/interfaceThemes';
+import { interfaceStyles, type InterfaceStyle, type AppearanceMode } from '../themes/registry';
 const props = defineProps<{ locale?: 'zh' | 'en'; interfaceStyle: InterfaceStyle; themeMode: AppearanceMode }>();
 const english = computed(() => props.locale === 'en');
 const modes = [{ id: 'light', zh: '浅色', en: 'Light' }, { id: 'dark', zh: '深色', en: 'Dark' }] as const;
@@ -33,12 +33,8 @@ defineEmits<{ 'update:interfaceStyle': [value: InterfaceStyle]; 'update:themeMod
 .appearance-style-card:focus-visible, .appearance-mode button:focus-visible { outline: 2px solid var(--el-color-primary); outline-offset: 2px; }
 .appearance-style-name { font-size: 13px; font-weight: 600; }
 .appearance-style-description { font-size: 11px; line-height: 1.5; color: var(--el-text-color-secondary); }
-.appearance-swatch { height: 38px; display: flex; gap: 4px; align-items: flex-end; padding: 6px; border: 1px solid #b8c3cf; background: #f1f4f8; }
-.appearance-swatch i { width: 18px; height: 9px; background: #409eff; border-radius: 2px; }
-.swatch-ide { background: linear-gradient(#181818 25%, #1f1f1f 25%); border-color: #3c3c3c; }.swatch-ide i { background: #616161; border-radius: 1px; }.swatch-ide i:first-child { background: #0078d4; }
-.swatch-glass { background: linear-gradient(120deg, #c9ddfa, #ead7f5); border-radius: 9px; }.swatch-glass i { background: #ffffffbd; border: 1px solid #a6b8d7; border-radius: 5px; }
-.swatch-retro { background: linear-gradient(#f1f8ff, #afc8e1); border-color: #7e9ab6; }.swatch-retro i { background: linear-gradient(#fff, #b5cfe7); border: 1px outset #c1d5e7; }
-.swatch-paper { background: #faf5e9; border-color: #cfc3ad; }.swatch-paper i { background: #ac9271; border-radius: 0; }
+.appearance-swatch { position: relative; height: 44px; display: flex; gap: 4px; align-items: flex-end; padding: 6px; box-sizing: border-box; overflow: hidden; }
+.appearance-swatch i { width: 18px; height: 9px; flex: 0 0 auto; display: block; }
 .appearance-mode { display: flex; gap: 4px; }.appearance-mode button { padding: 4px 10px; border: 1px solid var(--el-border-color); border-radius: 4px; background: var(--el-bg-color); color: var(--el-text-color-primary); font: inherit; }
 .appearance-mode button[aria-pressed="true"] { color: var(--el-color-primary); border-color: var(--el-color-primary); background: var(--el-fill-color-light); }
 @media (max-width: 700px) { .appearance-style-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -1,0 +1,132 @@
+/* Isolated adaptation layer for paper. No other theme selectors are allowed here. */
+body[data-interface-style="paper"] {
+    color: var(--json-tool-text);
+    background: var(--json-tool-bg);
+    --theme-on-accent: #ffffff;
+}
+body[data-interface-style="paper"].json-tool-theme-dark { --theme-on-accent: #17202e; }
+body[data-interface-style="paper"] :is(.el-dialog, .el-message-box, .el-popper, .el-notification, .el-message) {
+    background: var(--json-tool-surface) !important;
+    color: var(--json-tool-text) !important;
+    border-color: var(--json-tool-border) !important;
+    border-radius: var(--theme-radius);
+    --el-bg-color-overlay: var(--json-tool-surface);
+    --el-fill-color-blank: var(--json-tool-surface);
+    --el-fill-color-light: var(--json-tool-surface-soft);
+    --el-text-color-primary: var(--json-tool-text);
+    --el-text-color-regular: var(--json-tool-text);
+    --el-text-color-secondary: var(--json-tool-text-muted);
+    --el-border-color: var(--json-tool-border);
+    --el-border-color-light: var(--json-tool-border);
+    --el-color-primary: var(--theme-accent);
+    --el-color-primary-light-9: var(--theme-selected);
+}
+body[data-interface-style="paper"] :is(.tool-bar-wrapper, .panel-header, .archive-sidebar-header, .editor-status-bar) {
+    background: var(--theme-header) !important;
+    border-color: var(--json-tool-border) !important;
+    color: var(--json-tool-text) !important;
+}
+body[data-interface-style="paper"] :is(.el-button, .el-select__wrapper, .el-input__wrapper, .el-textarea__inner) {
+    background: var(--json-tool-surface) !important;
+    color: var(--json-tool-text) !important;
+    border-color: var(--json-tool-border) !important;
+    border-radius: var(--theme-radius) !important;
+    --el-input-text-color: var(--json-tool-text);
+    --el-select-input-color: var(--json-tool-text);
+}
+body[data-interface-style="paper"] .el-button:not(.is-disabled):hover {
+    background: var(--theme-selected) !important; border-color: var(--theme-accent) !important;
+}
+body[data-interface-style="paper"] .el-button--primary {
+    background: var(--theme-accent) !important; color: var(--theme-on-accent) !important;
+    border-color: var(--theme-accent) !important;
+}
+body[data-interface-style="paper"] .el-button--primary:not(.is-disabled):hover {
+    background: var(--theme-accent) !important; filter: brightness(1.08);
+}
+body[data-interface-style="paper"] .el-button.is-disabled { opacity: .5; }
+body[data-interface-style="paper"] :is(.el-dialog__title, .el-message-box__title, .dialog-title-with-close, .switch-card-title, .settings-subsection-title, .el-checkbox__label, .el-radio__label, .el-select__selected-item, .el-dropdown-menu__item) { color: var(--json-tool-text) !important; }
+body[data-interface-style="paper"] :is(.switch-card-desc, .el-dialog__body, .el-message-box__content) { color: var(--json-tool-text-muted) !important; }
+body[data-interface-style="paper"] :is(.el-collapse-item__header, .el-collapse-item__wrap, .el-collapse-item__content, .switch-card, .el-dropdown-menu) {
+    background: var(--json-tool-surface) !important;
+    color: var(--json-tool-text) !important;
+    border-color: var(--json-tool-border) !important;
+}
+body[data-interface-style="paper"] :is(.switch-card:hover, .el-collapse-item__header:hover, .el-dropdown-menu__item:hover, .el-select-dropdown__item.is-hovering) { background: var(--theme-selected) !important; }
+
+/* Feedback keeps data semantics while following the theme surface. */
+body[data-interface-style="paper"] .el-message.el-message { background-color: var(--json-tool-surface) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="paper"] .el-message.el-message--success { --el-message-bg-color: color-mix(in srgb, var(--theme-success) 14%, var(--json-tool-surface)); --el-message-text-color: var(--theme-success); background-color: var(--el-message-bg-color) !important; border-color: color-mix(in srgb, var(--theme-success) 40%, var(--json-tool-border)) !important; }
+body[data-interface-style="paper"] .el-message--success .el-message__content { color: var(--theme-success) !important; }
+body[data-interface-style="paper"] .el-message.el-message--warning { --el-message-bg-color: color-mix(in srgb, var(--theme-warning) 16%, var(--json-tool-surface)); --el-message-text-color: var(--theme-warning); background-color: var(--el-message-bg-color) !important; border-color: color-mix(in srgb, var(--theme-warning) 40%, var(--json-tool-border)) !important; }
+body[data-interface-style="paper"] .el-message--warning .el-message__content { color: var(--theme-warning) !important; }
+body[data-interface-style="paper"] .el-message.el-message--error { --el-message-bg-color: color-mix(in srgb, var(--theme-danger) 14%, var(--json-tool-surface)); --el-message-text-color: var(--theme-danger); background-color: var(--el-message-bg-color) !important; border-color: color-mix(in srgb, var(--theme-danger) 40%, var(--json-tool-border)) !important; }
+body[data-interface-style="paper"] .el-message--error .el-message__content { color: var(--theme-danger) !important; }
+body[data-interface-style="paper"] .el-message.el-message--info { --el-message-bg-color: var(--json-tool-surface); --el-message-text-color: var(--json-tool-text-muted); }
+body[data-interface-style="paper"] .el-message--info .el-message__content { color: var(--json-tool-text-muted) !important; }
+
+/* First-use guide follows theme surfaces in dark mode. */
+body[data-interface-style="paper"] .json-tool-root.theme-dark .first-use-guide {
+    background:
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--theme-accent) 12%, transparent), transparent 34%),
+        linear-gradient(180deg, color-mix(in srgb, var(--json-tool-surface) 78%, transparent), color-mix(in srgb, var(--json-tool-surface) 54%, transparent));
+}
+body[data-interface-style="paper"] .json-tool-root.theme-dark .first-use-guide-card {
+    border-color: var(--json-tool-border);
+    background: var(--json-tool-surface-raised);
+    box-shadow: var(--json-tool-shadow);
+}
+body[data-interface-style="paper"] .json-tool-root.theme-dark .first-use-guide-title { color: var(--json-tool-text); }
+body[data-interface-style="paper"] .json-tool-root.theme-dark .first-use-guide-desc { color: var(--json-tool-text-muted); }
+body[data-interface-style="paper"] .json-tool-root.theme-dark .first-use-guide-skip {
+    color: var(--json-tool-text);
+    border-color: var(--json-tool-border);
+    background: var(--json-tool-surface);
+}
+body[data-interface-style="paper"] .json-tool-root.theme-dark .first-use-guide-skip:hover,
+body[data-interface-style="paper"] .json-tool-root.theme-dark .first-use-guide-skip:focus-visible { color: var(--theme-accent); border-color: var(--theme-accent); background: var(--theme-selected); }
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-interface-style="paper"] :is(.json-tool-root, .json-tool-container, .el-button, .appearance-style-card) { transition: none !important; }
+}
+body[data-interface-style="paper"] .el-button-group > .el-button { border-radius: 0 !important; }
+body[data-interface-style="paper"] .el-button-group > .el-button:first-child { border-radius: var(--theme-radius) 0 0 var(--theme-radius) !important; }
+body[data-interface-style="paper"] .el-button-group > .el-button:last-child { border-radius: 0 var(--theme-radius) var(--theme-radius) 0 !important; }
+
+/* Teleported poppers and the demo guide follow the theme surface in dark mode. */
+body[data-interface-style="paper"].json-tool-theme-dark .el-popper__arrow::before {
+    background: var(--json-tool-surface) !important;
+    border-color: var(--json-tool-border) !important;
+}
+body[data-interface-style="paper"].json-tool-theme-dark .demo-guide-popover.el-popover {
+    background: var(--json-tool-surface) !important;
+    border-color: var(--json-tool-border) !important;
+    color: var(--json-tool-text) !important;
+    box-shadow: var(--json-tool-shadow) !important;
+}
+body[data-interface-style="paper"].json-tool-theme-dark .demo-guide-popover .el-popper__arrow::before {
+    background: var(--json-tool-surface) !important;
+    border-color: var(--json-tool-border) !important;
+}
+body[data-interface-style="paper"].json-tool-theme-dark .demo-guide-popover .demo-guide-header {
+    background: var(--json-tool-surface-header) !important;
+    border-bottom-color: var(--json-tool-border) !important;
+}
+body[data-interface-style="paper"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-header h3, .demo-current-settings strong, .demo-settings-label) {
+    color: var(--json-tool-text) !important;
+}
+body[data-interface-style="paper"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-content p, .demo-current-settings, .step-dot) {
+    color: var(--json-tool-text-muted) !important;
+}
+body[data-interface-style="paper"].json-tool-theme-dark .demo-guide-popover .demo-current-settings code {
+    background: var(--json-tool-surface-soft) !important;
+    color: var(--json-tool-text) !important;
+}
+body[data-interface-style="paper"].json-tool-theme-dark .demo-guide-popover .demo-guide-footer {
+    border-top-color: var(--json-tool-border) !important;
+}
+
+/* Paper: warm canvas, fine rules, no elevation on chrome. */
+body[data-interface-style="paper"] :is(.tool-bar-wrapper, .panel-header, .editor-status-bar, .el-dialog, .el-message-box) { box-shadow: none !important; }
+body[data-interface-style="paper"] .el-button { box-shadow: none; }
+

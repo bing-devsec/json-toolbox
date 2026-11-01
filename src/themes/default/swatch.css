@@ -1,0 +1,13 @@
+.swatch-default {
+    background: linear-gradient(180deg, #fbfcfd 0 28%, #f1f4f8 28%);
+    border: 1px solid #b8c3cf;
+    border-radius: 3px;
+}
+.swatch-default i {
+    background: linear-gradient(180deg, #66b1ff, #409eff);
+    border: 1px solid #337ecc;
+    border-radius: 3px;
+}
+.swatch-default i:first-child {
+    background: linear-gradient(180deg, #79bbff, #409eff);
+}

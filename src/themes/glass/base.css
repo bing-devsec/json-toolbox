@@ -1,0 +1,364 @@
+/* Isolated adaptation layer for ide. No other theme selectors are allowed here. */
+body[data-interface-style="glass"] {
+    color: var(--json-tool-text);
+    background: var(--json-tool-bg);
+}
+body[data-interface-style="glass"] :is(.el-dialog, .el-message-box, .el-popper, .el-notification, .el-message) {
+    background: var(--json-tool-surface) !important;
+    color: var(--json-tool-text) !important;
+    border-color: var(--json-tool-border) !important;
+    border-radius: var(--theme-radius);
+    --el-bg-color-overlay: var(--json-tool-surface);
+    --el-fill-color-blank: var(--json-tool-surface);
+    --el-fill-color-light: var(--json-tool-surface-soft);
+    --el-text-color-primary: var(--json-tool-text);
+    --el-text-color-regular: var(--json-tool-text);
+    --el-text-color-secondary: var(--json-tool-text-muted);
+    --el-border-color: var(--json-tool-border);
+    --el-border-color-light: var(--json-tool-border);
+    --el-color-primary: var(--theme-accent);
+    --el-color-primary-light-9: var(--theme-selected);
+}
+body[data-interface-style="glass"] :is(.tool-bar-wrapper, .panel-header, .archive-sidebar-header, .editor-status-bar) {
+    background: var(--theme-header) !important;
+    border-color: var(--json-tool-border) !important;
+    color: var(--json-tool-text) !important;
+}
+body[data-interface-style="glass"] :is(.el-button, .el-select__wrapper, .el-input__wrapper, .el-textarea__inner) {
+    background: var(--json-tool-surface) !important;
+    color: var(--json-tool-text) !important;
+    border-color: var(--json-tool-border) !important;
+    border-radius: var(--theme-radius) !important;
+    --el-input-text-color: var(--json-tool-text);
+    --el-select-input-color: var(--json-tool-text);
+}
+body[data-interface-style="glass"] .el-button:not(.is-disabled):hover {
+    background: var(--theme-selected) !important; border-color: var(--theme-accent) !important;
+}
+body[data-interface-style="glass"] .el-button--primary {
+    background: var(--theme-accent) !important; color: var(--theme-on-accent) !important;
+    border-color: var(--theme-accent) !important;
+}
+body[data-interface-style="glass"] .el-button--primary:not(.is-disabled):hover {
+    background: var(--theme-accent) !important; filter: brightness(1.08);
+}
+body[data-interface-style="glass"] .el-button.is-disabled { opacity: .5; }
+body[data-interface-style="glass"] :is(.el-dialog__title, .el-message-box__title, .dialog-title-with-close, .switch-card-title, .settings-subsection-title, .el-checkbox__label, .el-radio__label, .el-select__selected-item, .el-dropdown-menu__item) { color: var(--json-tool-text) !important; }
+body[data-interface-style="glass"] :is(.switch-card-desc, .el-dialog__body, .el-message-box__content) { color: var(--json-tool-text-muted) !important; }
+body[data-interface-style="glass"] :is(.el-collapse-item__header, .el-collapse-item__wrap, .el-collapse-item__content, .switch-card, .el-dropdown-menu) {
+    background: var(--json-tool-surface) !important;
+    color: var(--json-tool-text) !important;
+    border-color: var(--json-tool-border) !important;
+}
+body[data-interface-style="glass"] :is(.switch-card:hover, .el-collapse-item__header:hover, .el-dropdown-menu__item:hover, .el-select-dropdown__item.is-hovering) { background: var(--theme-selected) !important; }
+
+/* Feedback keeps data semantics while following the theme surface. */
+body[data-interface-style="glass"] .el-message.el-message { background-color: var(--json-tool-surface) !important; border-color: var(--json-tool-border) !important; }
+body[data-interface-style="glass"] .el-message.el-message--success { --el-message-bg-color: color-mix(in srgb, var(--theme-success) 14%, var(--json-tool-surface)); --el-message-text-color: var(--theme-success); background-color: var(--el-message-bg-color) !important; border-color: color-mix(in srgb, var(--theme-success) 40%, var(--json-tool-border)) !important; }
+body[data-interface-style="glass"] .el-message--success .el-message__content { color: var(--theme-success) !important; }
+body[data-interface-style="glass"] .el-message.el-message--warning { --el-message-bg-color: color-mix(in srgb, var(--theme-warning) 16%, var(--json-tool-surface)); --el-message-text-color: var(--theme-warning); background-color: var(--el-message-bg-color) !important; border-color: color-mix(in srgb, var(--theme-warning) 40%, var(--json-tool-border)) !important; }
+body[data-interface-style="glass"] .el-message--warning .el-message__content { color: var(--theme-warning) !important; }
+body[data-interface-style="glass"] .el-message.el-message--error { --el-message-bg-color: color-mix(in srgb, var(--theme-danger) 14%, var(--json-tool-surface)); --el-message-text-color: var(--theme-danger); background-color: var(--el-message-bg-color) !important; border-color: color-mix(in srgb, var(--theme-danger) 40%, var(--json-tool-border)) !important; }
+body[data-interface-style="glass"] .el-message--error .el-message__content { color: var(--theme-danger) !important; }
+body[data-interface-style="glass"] .el-message.el-message--info { --el-message-bg-color: var(--json-tool-surface); --el-message-text-color: var(--json-tool-text-muted); }
+body[data-interface-style="glass"] .el-message--info .el-message__content { color: var(--json-tool-text-muted) !important; }
+
+/* First-use guide follows theme surfaces in dark mode. */
+body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide {
+    background:
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--theme-accent) 12%, transparent), transparent 34%),
+        linear-gradient(180deg, color-mix(in srgb, var(--json-tool-surface) 78%, transparent), color-mix(in srgb, var(--json-tool-surface) 54%, transparent));
+}
+body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-card {
+    border-color: var(--json-tool-border);
+    background: var(--json-tool-surface-raised);
+    box-shadow: var(--json-tool-shadow);
+}
+body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-title { color: var(--json-tool-text); }
+body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-desc { color: var(--json-tool-text-muted); }
+body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-skip {
+    color: var(--json-tool-text);
+    border-color: var(--json-tool-border);
+    background: var(--json-tool-surface);
+}
+body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-skip:hover,
+body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-skip:focus-visible { color: var(--theme-accent); border-color: var(--theme-accent); background: var(--theme-selected); }
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-interface-style="glass"] :is(.json-tool-root, .json-tool-container, .el-button, .appearance-style-card) { transition: none !important; }
+}
+body[data-interface-style="glass"] .el-button-group > .el-button { border-radius: 0 !important; }
+body[data-interface-style="glass"] .el-button-group > .el-button:first-child { border-radius: var(--theme-radius) 0 0 var(--theme-radius) !important; }
+body[data-interface-style="glass"] .el-button-group > .el-button:last-child { border-radius: 0 var(--theme-radius) var(--theme-radius) 0 !important; }
+
+/* Teleported poppers and the demo guide follow the theme surface in dark mode. */
+body[data-interface-style="glass"] .el-popper__arrow::before {
+    background: var(--glass-popover) !important;
+    border-color: var(--glass-popover-border) !important;
+}
+body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover.el-popover {
+    background: var(--json-tool-surface) !important;
+    border-color: var(--json-tool-border) !important;
+    color: var(--json-tool-text) !important;
+    box-shadow: var(--json-tool-shadow) !important;
+}
+body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover .el-popper__arrow::before {
+    background: var(--json-tool-surface) !important;
+    border-color: var(--json-tool-border) !important;
+}
+body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover .demo-guide-header {
+    background: var(--json-tool-surface-header) !important;
+    border-bottom-color: var(--json-tool-border) !important;
+}
+body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-header h3, .demo-current-settings strong, .demo-settings-label) {
+    color: var(--json-tool-text) !important;
+}
+body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-content p, .demo-current-settings, .step-dot) {
+    color: var(--json-tool-text-muted) !important;
+}
+body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover .demo-current-settings code {
+    background: var(--json-tool-surface-soft) !important;
+    color: var(--json-tool-text) !important;
+}
+body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover .demo-guide-footer {
+    border-top-color: var(--json-tool-border) !important;
+}
+
+/* Glass material. Blur only decorates static chrome; editors stay solid. */
+
+body[data-interface-style="glass"] {
+    background: var(--json-tool-bg);
+    background-attachment: fixed;
+}
+
+body[data-interface-style="glass"] .json-tool-container {
+    background: transparent;
+}
+
+body[data-interface-style="glass"] :is(.tool-bar-wrapper, .panel-header) {
+    background: var(--glass-chrome) !important;
+    border-color: var(--glass-chrome-border) !important;
+    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow-soft);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
+}
+
+body[data-interface-style="glass"] .tool-bar {
+    background: transparent !important;
+}
+
+body[data-interface-style="glass"] .editor-status-bar {
+    background: var(--json-tool-surface-status) !important;
+    border-top: 0 !important;
+    color: var(--json-tool-text-muted) !important;
+    box-shadow: inset 0 1px 0 var(--glass-divider), var(--glass-status-shadow);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+body[data-interface-style="glass"] .archive-sidebar {
+    position: relative;
+    background: var(--glass-panel) !important;
+    border-right: 0 !important;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+body[data-interface-style="glass"] .archive-sidebar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--glass-chrome-border);
+    pointer-events: none;
+    z-index: 2;
+}
+
+body[data-interface-style="glass"] .archive-item.is-active {
+    background: var(--glass-selected-bg) !important;
+    color: var(--glass-selected-fg) !important;
+}
+
+body[data-interface-style="glass"] .editor-panel {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: var(--glass-shadow-soft);
+}
+/* Visual frame only: borders must never change panel content geometry. */
+body[data-interface-style="glass"] .editor-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--glass-chrome-border);
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* Docked panes are square; only floating surfaces keep the soft radius. */
+body[data-interface-style="glass"] .diff-editor-container {
+    border-radius: 0 !important;
+}
+body[data-interface-style="glass"] .editor-skeleton {
+    border-radius: 0 !important;
+}
+
+body[data-interface-style="glass"] .resizer {
+    background: transparent;
+    border-color: var(--glass-divider);
+}
+
+body[data-interface-style="glass"] .resizer::after {
+    background: var(--json-tool-resizer-grip);
+    border-radius: 999px;
+}
+
+body[data-interface-style="glass"] .monaco-editor .margin {
+    background: var(--json-tool-gutter-bg) !important;
+    box-shadow: inset -1px 0 0 var(--glass-divider);
+}
+
+body[data-interface-style="glass"] :is(.el-dialog, .el-message-box) {
+    overflow: hidden;
+}
+
+body[data-interface-style="glass"] :is(.el-popover.el-popper, .el-select__popper, .el-dropdown__popper) {
+    background: var(--glass-popover) !important;
+    border: 1px solid var(--glass-popover-border) !important;
+    border-radius: var(--glass-radius) !important;
+    box-shadow: var(--glass-shadow) !important;
+    backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(1.2);
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(1.2);
+}
+
+body[data-interface-style="glass"] .el-popper {
+    background: var(--glass-popover) !important;
+    border-color: var(--glass-popover-border) !important;
+    --el-bg-color-overlay: var(--glass-popover);
+}
+
+/* Inner dropdown wrappers must not add another translucent layer. */
+body[data-interface-style="glass"] .el-dropdown__popper .el-dropdown-menu,
+body[data-interface-style="glass"] .el-select__popper .el-select-dropdown {
+    background: transparent !important;
+}
+
+body[data-interface-style="glass"] :is(.el-dialog__header, .el-message-box__header) {
+    background: var(--glass-chrome) !important;
+    border-bottom: 1px solid var(--glass-divider) !important;
+}
+
+body[data-interface-style="glass"] :is(.el-dialog__footer, .el-message-box__btns) {
+    border-top: 1px solid var(--glass-divider) !important;
+}
+
+body[data-interface-style="glass"] .el-overlay {
+    background: var(--glass-scrim) !important;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+body[data-interface-style="glass"] .first-use-guide {
+    background: var(--glass-guide-scrim) !important;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+body[data-interface-style="glass"] .first-use-guide-card {
+    background: var(--glass-dialog) !important;
+    border-color: var(--glass-dialog-border) !important;
+    box-shadow: var(--glass-shadow) !important;
+    backdrop-filter: blur(calc(var(--glass-blur) + 6px));
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 6px));
+}
+
+body[data-interface-style="glass"] .screen-size-warning {
+    background: var(--glass-dialog) !important;
+}
+
+body[data-interface-style="glass"] .el-message.el-message {
+    border-radius: var(--glass-radius-small) !important;
+    box-shadow: var(--glass-shadow-soft) !important;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+body[data-interface-style="glass"] .demo-guide-popover.el-popover {
+    background: var(--glass-dialog) !important;
+}
+
+body[data-interface-style="glass"] .demo-guide-popover .demo-guide-header {
+    background: var(--glass-chrome) !important;
+    border-bottom-color: var(--glass-divider) !important;
+}
+
+body[data-interface-style="glass"] .demo-guide-popover .demo-current-settings {
+    background: var(--glass-panel-soft) !important;
+    border-color: var(--glass-chrome-border) !important;
+}
+
+body[data-interface-style="glass"] .demo-guide-popover .demo-current-settings code {
+    background: var(--glass-selected-bg) !important;
+    color: var(--glass-selected-fg) !important;
+}
+
+body[data-interface-style="glass"] .demo-guide-popover .demo-guide-footer {
+    border-top-color: var(--glass-divider) !important;
+}
+
+body[data-interface-style="glass"] .level-select-dropdown .el-select-dropdown__item.is-selected,
+body[data-interface-style="glass"] .el-select-dropdown__item.is-selected {
+    background: var(--glass-selected-bg) !important;
+    color: var(--glass-selected-fg) !important;
+}
+
+body[data-interface-style="glass"] .folding-info-text {
+    color: var(--json-tool-text-muted) !important;
+}
+
+
+/* App-level surfaces outside the workbench (capture notice, review invitation). */
+body[data-interface-style="glass"] .capture-notice {
+    background: var(--glass-panel-soft) !important;
+    border-bottom: 1px solid var(--glass-divider) !important;
+    color: var(--json-tool-text) !important;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+body[data-interface-style="glass"] .capture-notice button {
+    background: var(--glass-neutral-bg) !important;
+    color: var(--glass-neutral-fg) !important;
+    border: 1px solid var(--glass-neutral-border) !important;
+    border-radius: var(--glass-radius-small);
+}
+body[data-interface-style="glass"] .review-invitation {
+    background: var(--glass-dialog) !important;
+    border: 1px solid var(--glass-dialog-border) !important;
+    border-radius: var(--glass-radius) !important;
+    box-shadow: var(--glass-shadow) !important;
+    color: var(--json-tool-text) !important;
+    backdrop-filter: blur(calc(var(--glass-blur) + 4px));
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 4px));
+}
+body[data-interface-style="glass"] .review-invitation :is(h2, p) { color: var(--json-tool-text) !important; }
+body[data-interface-style="glass"] .review-invitation button {
+    background: var(--glass-neutral-bg) !important;
+    color: var(--glass-neutral-fg) !important;
+    border: 1px solid var(--glass-neutral-border) !important;
+    border-radius: var(--glass-radius-small);
+}
+body[data-interface-style="glass"] .review-invitation .review-primary {
+    background: var(--glass-primary-bg) !important;
+    color: var(--glass-primary-fg) !important;
+    border-color: var(--glass-primary-border) !important;
+}
+body[data-interface-style="glass"] .review-invitation .review-never {
+    background: transparent !important; border-color: transparent !important; color: var(--json-tool-text-muted) !important;
+}
+body[data-interface-style="glass"] .review-invitation :is(.review-icon, .review-close) { color: var(--theme-accent) !important; stroke: currentColor; }
+body[data-interface-style="glass"] .review-invitation p.review-error { color: var(--theme-danger) !important; }
+
+
+/* Bordered editor panels start 1px lower; the title actions follow the same line. */

@@ -1,0 +1,30 @@
+.swatch-glass {
+    background:
+        radial-gradient(120% 90% at 18% 0%, #ffffff 0%, transparent 58%),
+        linear-gradient(120deg, #dce9fb, #e9ddff 55%, #dcf4ef);
+    border: 1px solid rgba(255, 255, 255, 0.92);
+    border-radius: 10px;
+    box-shadow: inset 0 1px 0 #fff, 0 3px 9px rgba(70, 90, 130, 0.18);
+}
+.swatch-glass::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    top: 5px;
+    height: 16px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.88);
+    box-shadow: inset 0 1px 0 #fff;
+}
+.swatch-glass i {
+    background: rgba(255, 255, 255, 0.68);
+    border: 1px solid rgba(150, 170, 210, 0.72);
+    border-radius: 4px;
+    box-shadow: inset 0 1px 0 #fff;
+}
+.swatch-glass i:first-child {
+    background: linear-gradient(180deg, #7fa8f5, #4a78d6);
+    border-color: #3f6cc4;
+}

@@ -1,4 +1,4 @@
-import type { AppearanceMode, Palette } from './interfaceThemes';
+import type { AppearanceMode, Palette } from '../contract';
 
 /** Neutral workbench foundations, informed by VS Code's Dark/Light Modern themes.
  * Control roles remain independent from syntax and Diff data colors. */
@@ -17,6 +17,16 @@ export function getIdeControlVariables(mode: AppearanceMode): Record<string, str
         '--ide-primary': p.accent, '--ide-focus': p.accent, '--theme-accent': c.link, '--theme-on-accent': c.onPrimary, '--theme-danger': c.danger, '--theme-success': c.success, '--theme-warning': c.warning,
         '--json-tool-border-strong': c.controlBorder, '--json-tool-button-bg': c.button, '--json-tool-button-border': c.controlBorder,
         '--json-tool-button-text': p.text, '--json-tool-button-hover-bg': c.hover, '--json-tool-button-hover-border': c.controlBorder,
+        '--toolbar-hover-bg': c.hover, '--toolbar-hover-fg': p.text,
+        '--toolbar-active-bg': c.pressed, '--toolbar-active-fg': p.text,
+        '--toolbar-hover-shadow': 'none',
+        '--toolbar-active-shadow': mode === 'dark' ? 'inset 0 1px 3px rgba(0,0,0,.35)' : 'inset 0 1px 2px rgba(0,0,0,.12)',
+        '--toolbar-primary-hover-bg': c.primaryHover, '--toolbar-primary-hover-fg': c.onPrimary,
+        '--toolbar-primary-active-bg': c.primaryPressed, '--toolbar-primary-active-fg': c.onPrimary,
+        '--toolbar-primary-hover-shadow': 'none',
+        '--toolbar-primary-active-shadow': mode === 'dark' ? 'inset 0 1px 3px rgba(0,0,0,.45)' : 'inset 0 1px 3px rgba(0,0,0,.18)',
+        '--toolbar-active-transform': 'none',
+        '--toolbar-border': p.border, '--toolbar-divider': p.border, '--toolbar-primary-border': p.accent,
         '--json-tool-input-bg': c.input, '--json-tool-input-border': c.controlBorder, '--json-tool-input-hover-border': p.accent,
         '--json-tool-transfer-fg': p.text, '--json-tool-resizer-grip': c.controlBorder,
         '--json-tool-archive-drag': p.selected, '--json-tool-archive-scrollbar': c.controlBorder, '--json-tool-archive-scrollbar-hover': p.muted,

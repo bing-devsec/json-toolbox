@@ -6,10 +6,10 @@
             <div class="diff-cell diff-cell-left diff-header-cell">
                 <span v-if="comparison" class="repair-side-label">{{ settingsTxt.repairOriginal }}</span>
                 <div class="panel-actions diff-panel-actions">
-                    <el-button v-if="!comparison" @click="diffMode.diffFormatJSON('left')" size="small" type="primary" plain>
+                    <el-button v-if="!comparison" class="diff-format-button" @click="diffMode.diffFormatJSON('left')" size="small" type="primary" plain>
                         <span>{{ settingsTxt.diffPanelFormat }}</span>
                     </el-button>
-                    <el-button v-if="!comparison" @click="diffMode.diffSortJSON('left')" size="small" type="primary" plain>
+                    <el-button v-if="!comparison" @click="diffMode.diffSortJSON('left')" size="small" type="info" plain>
                         <span>{{ settingsTxt.diffPanelSort }}</span>
                     </el-button>
                     <el-button @click="diffMode.diffCopy('left')" size="small" type="success" plain>
@@ -19,11 +19,11 @@
                         <span>{{ settingsTxt.diffPanelClear }}</span>
                     </el-button>
                     <el-upload v-if="!comparison" class="upload-json" accept=".json" :auto-upload="false" :show-file-list="false" :on-change="diffMode.diffHandleUpload('left')">
-                        <el-button size="small" type="info" plain>
+                        <el-button class="file-transfer-button" size="small" type="primary" plain>
                             <span>{{ settingsTxt.diffPanelUpload }}</span>
                         </el-button>
                     </el-upload>
-                    <el-button @click="diffMode.diffDownload('left')" size="small" type="info" plain>
+                    <el-button class="file-transfer-button" @click="diffMode.diffDownload('left')" size="small" type="primary" plain>
                         <span>{{ settingsTxt.diffPanelDownload }}</span>
                     </el-button>
                 </div>
@@ -32,10 +32,10 @@
             <div class="diff-cell diff-cell-right diff-header-cell">
                 <span v-if="comparison" class="repair-side-label">{{ settingsTxt.repairResult }}</span>
                 <div class="panel-actions diff-panel-actions">
-                    <el-button v-if="!comparison" @click="diffMode.diffFormatJSON('right')" size="small" type="primary" plain>
+                    <el-button v-if="!comparison" class="diff-format-button" @click="diffMode.diffFormatJSON('right')" size="small" type="primary" plain>
                         <span>{{ settingsTxt.diffPanelFormat }}</span>
                     </el-button>
-                    <el-button v-if="!comparison" @click="diffMode.diffSortJSON('right')" size="small" type="primary" plain>
+                    <el-button v-if="!comparison" @click="diffMode.diffSortJSON('right')" size="small" type="info" plain>
                         <span>{{ settingsTxt.diffPanelSort }}</span>
                     </el-button>
                     <el-button @click="diffMode.diffCopy('right')" size="small" type="success" plain>
@@ -45,11 +45,11 @@
                         <span>{{ settingsTxt.diffPanelClear }}</span>
                     </el-button>
                     <el-upload v-if="!comparison" class="upload-json" accept=".json" :auto-upload="false" :show-file-list="false" :on-change="diffMode.diffHandleUpload('right')">
-                        <el-button size="small" type="info" plain>
+                        <el-button class="file-transfer-button" size="small" type="primary" plain>
                             <span>{{ settingsTxt.diffPanelUpload }}</span>
                         </el-button>
                     </el-upload>
-                    <el-button @click="diffMode.diffDownload('right')" size="small" type="info" plain>
+                    <el-button class="file-transfer-button" @click="diffMode.diffDownload('right')" size="small" type="primary" plain>
                         <span>{{ settingsTxt.diffPanelDownload }}</span>
                     </el-button>
                 </div>
@@ -141,7 +141,7 @@ onMounted(() => {
 .repair-side-label { margin-right: auto; padding: 0 12px; font-weight: 600; white-space: nowrap; }
 
 /* Diff 颜色变量：亮色保持清晰语义，暗色收敛到石墨灰体系内，避免占位块像浅色贴片。 */
-.json-tool-root {
+body[data-interface-style="default"] .json-tool-root {
     --json-tool-diff-delete-bg: rgba(215, 58, 73, 0.11);
     --json-tool-diff-insert-bg: rgba(102, 184, 255, 0.16);
     --json-tool-diff-inline-delete: rgba(215, 58, 73, 0.26);
@@ -158,7 +158,7 @@ onMounted(() => {
     --json-tool-diff-sync-btn-active-color: #d48a12;
 }
 
-.json-tool-root.theme-dark {
+body[data-interface-style="default"] .json-tool-root.theme-dark {
     --json-tool-diff-delete-bg: rgba(102, 58, 60, 0.26);
     --json-tool-diff-insert-bg: rgba(56, 88, 132, 0.24);
     --json-tool-diff-inline-delete: rgba(134, 68, 72, 0.48);
@@ -339,15 +339,15 @@ onMounted(() => {
     border-radius: 2px;
 }
 
-.json-tool-root.theme-dark .diff-navigation-marker-bar {
+body[data-interface-style="default"] .json-tool-root.theme-dark .diff-navigation-marker-bar {
     background: var(--theme-accent, #79b8ff);
 }
 
 .diff-editor-row .diff-navigation-marker[data-side='left'] .diff-navigation-marker-bar {
-    background: #f56c6c;
+    background: var(--theme-danger, #f56c6c);
 }
 
-.json-tool-root.theme-dark .diff-navigation-marker[data-side='left'] .diff-navigation-marker-bar {
+body[data-interface-style="default"] .json-tool-root.theme-dark .diff-navigation-marker[data-side='left'] .diff-navigation-marker-bar {
     background: #ff8a8a;
 }
 

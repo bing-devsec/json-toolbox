@@ -235,7 +235,7 @@ export const SETTINGS_TXT_ZH = {
     msgUnescapeIllegalRejected: '检测到非法转义序列，为避免数据损坏，已拒绝去除转义操作',
     msgUnescapeInvalidJsonRejected: '输入不是合法 JSON，为避免猜测结构导致数据损坏，已拒绝去除转义操作',
     msgLongLineWrapForced: (chars: string) =>
-        `检测到超过 ${chars} 个字符的超长行。为避免页面崩溃，已自动开启换行并锁定开关；输入区和预览区都不再包含超长行后，将恢复你原来的设置`,
+        `检测到超过 ${chars} 字符的超长行，已临时开启换行并锁定开关以防页面崩溃；超长行移除后自动恢复。`,
     msgEditorNotInit: '编辑器未初始化，请稍候再试',
     firstUseGuideTitle: '一键载入示例 JSON，快速体验工具功能',
     firstUseGuideDesc: '示例覆盖 JSON5、undefined、# 注释、大整数、排序数组和递归转义 JSON；点击后会写入编辑区并自动格式化到预览区。',
@@ -639,7 +639,7 @@ export const SETTINGS_TXT_EN: SettingsTxt = {
     msgUnescapeIllegalRejected: 'Illegal escape sequences detected — unescape was rejected to avoid data corruption',
     msgUnescapeInvalidJsonRejected: 'Input is not valid JSON — unescape was rejected to avoid guessing structure and corrupting data',
     msgLongLineWrapForced: (chars: string) =>
-        `A line longer than ${chars} characters was detected. Wrapping was enabled and locked to prevent a page crash; your previous setting will return after neither editor contains a very long line`,
+        `Line over ${chars} characters detected. Wrapping is temporarily on and locked to prevent a crash; it restores automatically once the long line is removed.`,
     msgEditorNotInit: 'Editor not initialized, please try again',
     firstUseGuideTitle: 'Load a sample JSON and see what the tool can do',
     firstUseGuideDesc:

@@ -80,7 +80,11 @@ body[data-interface-style="ide"] .panel-title { font-weight: 500; color: var(--j
 body[data-interface-style="ide"] .monaco-editor .margin { background: var(--json-tool-gutter-bg) !important; box-shadow: inset -1px 0 0 var(--json-tool-border); }
 body[data-interface-style="ide"] :is(.el-dialog.el-dialog .el-dialog__header, .el-message-box.el-message-box .el-message-box__header) { background: var(--theme-header) !important; border-color: var(--json-tool-border) !important; }
 body[data-interface-style="ide"] :is(.el-dialog__footer, .dialog-footer, .el-message-box__btns) { border-color: var(--json-tool-border) !important; }
-body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper :is(.el-dialog__header, .el-dialog__footer) { border: 0 !important; }
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper .el-dialog__header { border: 0 !important; }
+body[data-interface-style="ide"] .el-dialog.settings-dialog-wrapper .el-dialog__footer {
+    border: 0 !important;
+    border-top: 1px solid var(--json-tool-border) !important;
+}
 body[data-interface-style="ide"] :is(.dialog-title, .section-title, .rule-name-label, .field-path-label, .field-label, .saved-rule-name, .affix-row-label, .affix-section-title, .form-value-text, .form-compact-line, .path-help-content) { color: var(--json-tool-text) !important; }
 body[data-interface-style="ide"] :is(.priority-hint, .saved-rule-meta, .affix-hint, .switch-card-desc) { color: var(--json-tool-text-muted) !important; }
 body[data-interface-style="ide"] .el-dialog :is(.rule-item, .field-path-item, .saved-rule-item, .affix-section, .form-value-quote--compact) { background: var(--json-tool-surface-soft) !important; border-color: var(--json-tool-border) !important; }
@@ -107,3 +111,62 @@ body[data-interface-style="ide"] .el-select:has(.el-select__wrapper.is-disabled)
 body[data-interface-style="ide"] .el-checkbox.is-disabled .el-checkbox__label { color: var(--ide-disabled) !important; }
 body[data-interface-style="ide"] .el-checkbox__input.is-disabled .el-checkbox__inner { background: var(--ide-disabled-background); border-color: var(--ide-disabled-border); }
 body[data-interface-style="ide"] .el-dialog .saved-rule-item:hover { background: var(--ide-hover) !important; }
+
+
+/* Archive title actions stay quiet; the sidebar header is not a toolbar. */
+body[data-interface-style="ide"] .archive-sidebar-header .archive-header-action {
+    border-radius: var(--archive-action-radius) !important;
+    background: transparent !important; border-color: transparent !important; box-shadow: none !important;
+    color: var(--json-tool-text-muted) !important;
+}
+body[data-interface-style="ide"] .archive-sidebar-header .archive-header-action:hover:not(:disabled):not(.is-disabled) {
+    background: var(--ide-hover) !important; color: var(--json-tool-text) !important;
+}
+body[data-interface-style="ide"] .archive-sidebar-header .archive-header-action:active:not(:disabled):not(.is-disabled) {
+    background: var(--ide-pressed) !important;
+}
+body[data-interface-style="ide"] .archive-sidebar-header .archive-header-action.danger:hover:not(:disabled):not(.is-disabled) {
+    background: var(--ide-danger-background) !important; color: var(--theme-danger) !important;
+}
+body[data-interface-style="ide"] .archive-sidebar-header .archive-header-action:disabled {
+    background: transparent !important; border-color: transparent !important; color: var(--ide-disabled) !important; opacity: 1 !important;
+}
+
+/* Path help is a text link, not a button: no fill, border or hover background. */
+body[data-interface-style="ide"] .el-button.path-help-toggle-btn {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: var(--theme-accent) !important;
+}
+body[data-interface-style="ide"] .el-button.path-help-toggle-btn:hover:not(:disabled):not(.is-disabled),
+body[data-interface-style="ide"] .el-button.path-help-toggle-btn:active:not(:disabled):not(.is-disabled) {
+    background: transparent !important;
+    color: var(--theme-accent) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Semantic action colors: copy = success, upload/download = accent, diff format = primary. */
+body[data-interface-style="ide"] :is(.panel-actions, .diff-panel-actions) .el-button--success,
+body[data-interface-style="ide"] :is(.panel-actions, .diff-panel-actions) .el-button--success:hover:not(:disabled):not(.is-disabled) {
+    color: var(--theme-success) !important;
+    border-color: color-mix(in srgb, var(--theme-success) 45%, var(--json-tool-border)) !important;
+}
+body[data-interface-style="ide"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button,
+body[data-interface-style="ide"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:hover:not(:disabled):not(.is-disabled) {
+    color: var(--theme-accent) !important;
+    border-color: color-mix(in srgb, var(--theme-accent) 45%, var(--json-tool-border)) !important;
+}
+body[data-interface-style="ide"] .diff-panel-actions .diff-format-button,
+body[data-interface-style="ide"] .diff-panel-actions .diff-format-button:hover:not(:disabled):not(.is-disabled) {
+    color: var(--theme-accent) !important;
+    border-color: color-mix(in srgb, var(--theme-accent) 45%, var(--json-tool-border)) !important;
+}
+
+body[data-interface-style="ide"] :is(.panel-actions, .diff-panel-actions) .el-button--danger,
+body[data-interface-style="ide"] :is(.panel-actions, .diff-panel-actions) .el-button--danger:hover:not(:disabled):not(.is-disabled) {
+    color: var(--theme-danger) !important;
+    border-color: color-mix(in srgb, var(--theme-danger) 45%, var(--json-tool-border)) !important;
+}
+

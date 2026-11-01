@@ -190,7 +190,12 @@ body[data-interface-style="paper"] .json-tool-root .collapse-control :is(.el-sel
 body[data-interface-style="paper"] .json-tool-root .collapse-control:has(.level-select .el-select__wrapper.is-disabled) { background: var(--paper-disabled-background); border-color: var(--paper-disabled-border); }
 body[data-interface-style="paper"] .json-tool-root .collapse-control :is(.el-select__wrapper.is-disabled, .el-button.level-action-button:disabled) { background: var(--paper-disabled-background) !important; color: var(--paper-disabled-foreground) !important; }
 body[data-interface-style="paper"] .json-tool-root .collapse-control .level-select:has(.el-select__wrapper.is-disabled) :is(.el-select__placeholder, .el-select__caret) { color: var(--paper-disabled-foreground) !important; }
-body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper :is(.el-dialog__header, .el-dialog__footer) { border: 0 !important; box-shadow: none !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .el-dialog__header { border: 0 !important; box-shadow: none !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .el-dialog__footer {
+    border: 0 !important;
+    border-top: 1px solid var(--json-tool-border) !important;
+    box-shadow: none !important;
+}
 .language-settings { margin-bottom: 20px; }
 
 /* Autocomplete is teleported to body; highlighted paths use the same selection roles. */
@@ -206,3 +211,46 @@ body[data-interface-style="paper"] .json-tool-root.theme-dark .monaco-editor .ma
     background-color: var(--json-tool-gutter-bg) !important;
     box-shadow: inset -1px 0 0 var(--json-tool-border);
 }
+
+
+/* Archive title actions stay quiet; the sidebar header is not a toolbar. */
+body[data-interface-style="paper"] .archive-sidebar-header .archive-header-action {
+    border-radius: var(--archive-action-radius) !important;
+    background: transparent !important; border-color: transparent !important; box-shadow: none !important;
+    color: var(--json-tool-text-muted) !important;
+}
+body[data-interface-style="paper"] .archive-sidebar-header .archive-header-action:hover:not(:disabled):not(.is-disabled) {
+    background: var(--paper-neutral-hover-background) !important; color: var(--json-tool-text) !important;
+}
+body[data-interface-style="paper"] .archive-sidebar-header .archive-header-action:active:not(:disabled):not(.is-disabled) {
+    background: var(--paper-neutral-active-background) !important;
+}
+body[data-interface-style="paper"] .archive-sidebar-header .archive-header-action.danger:hover:not(:disabled):not(.is-disabled) {
+    background: var(--paper-danger-bg) !important; color: var(--theme-danger) !important;
+}
+body[data-interface-style="paper"] .archive-sidebar-header .archive-header-action:disabled {
+    background: transparent !important; border-color: transparent !important; color: var(--paper-disabled-foreground) !important; opacity: 1 !important;
+}
+
+/* Path help is a text link, not a button: no fill, border or hover background. */
+body[data-interface-style="paper"] .el-button.path-help-toggle-btn {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: var(--theme-accent) !important;
+}
+body[data-interface-style="paper"] .el-button.path-help-toggle-btn:hover:not(:disabled):not(.is-disabled),
+body[data-interface-style="paper"] .el-button.path-help-toggle-btn:active:not(:disabled):not(.is-disabled) {
+    background: transparent !important;
+    color: var(--theme-accent) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Copy is the only success action in panel headers. */
+body[data-interface-style="paper"] :is(.panel-actions, .diff-panel-actions) .el-button--success,
+body[data-interface-style="paper"] :is(.panel-actions, .diff-panel-actions) .el-button--success:hover:not(:disabled):not(.is-disabled) {
+    color: var(--theme-success) !important;
+    border-color: color-mix(in srgb, var(--theme-success) 45%, var(--json-tool-border)) !important;
+}
+

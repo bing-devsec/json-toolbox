@@ -242,7 +242,7 @@
                                 <span>{{ settingsTxt.panelClear }}</span>
                             </el-button>
                             <el-upload class="upload-json" accept=".json" :auto-upload="false" :show-file-list="false" :disabled="repair.repairing.value" :on-change="handleFileUpload">
-                                <el-button size="small" type="primary" plain :disabled="repair.repairing.value">
+                                <el-button class="file-transfer-button" size="small" type="primary" plain :disabled="repair.repairing.value">
                                     <el-icon>
                                         <Upload />
                                     </el-icon>
@@ -343,11 +343,11 @@
                                 <span>{{ settingsTxt.panelCopy }}</span>
                             </el-button>
                             <el-button
-                                class="preview-download-button"
+                                class="preview-download-button file-transfer-button"
                                 @click="downloadOutput"
                                 :disabled="repair.repairing.value"
                                 size="small"
-                                type="info"
+                                type="primary"
                                 plain>
                                 <el-icon>
                                     <Download />
@@ -549,9 +549,7 @@ import { useTabId } from './composables/useTabId';
 import { useTabLifecycle } from './composables/useTabLifecycle';
 import { useJsonRepair } from './composables/useJsonRepair';
 import { useInterfaceTheme } from '../themes/useInterfaceTheme';
-import '../themes/interfaceThemes.css';
-import '../themes/paperControls.css';
-import '../themes/ideControls.css';
+import { clearEarlyTheme } from '../themes/early';
 import { useToolSettings } from './composables/useToolSettings';
 
 // 本地工具
@@ -830,6 +828,7 @@ const openRepairComparisonById = (comparisonId: string) => {
     return false;
 };
 
+clearEarlyTheme();
 const interfaceVariables = useInterfaceTheme(interfaceStyle, themeMode);
 
 const themeRootClass = computed(() => (themeMode.value === 'dark' ? 'theme-dark' : 'theme-light'));
@@ -4364,7 +4363,7 @@ const processInputFileUpload = async (file: File | null | undefined) => {
             reader.readAsText(file, 'utf-8');
         });
 
-        // 格式化JSON内容为2个空格缩进
+        // 保留上传文件的原始内容，不强制重新缩进
         let formattedContent = content;
 
         // 更新编辑器 - 将格式化后的内容展示到编辑区域
@@ -4920,7 +4919,7 @@ const transferToInput = (e: MouseEvent) => {
 
 /* 折叠信息文本样式 */
 :deep(.folding-info-text) {
-    color: #909399;
+    color: var(--json-tool-text-muted, #909399);
 }
 
 .json-tool-root {
@@ -4948,6 +4947,22 @@ const transferToInput = (e: MouseEvent) => {
     --json-tool-button-text: #606266;
     --json-tool-button-hover-bg: #f4f4f5;
     --json-tool-button-hover-border: #c8c9cc;
+    --toolbar-hover-bg: #79bbff;
+    --toolbar-hover-fg: #ffffff;
+    --toolbar-active-bg: #337ecc;
+    --toolbar-active-fg: #ffffff;
+    --toolbar-hover-shadow: none;
+    --toolbar-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18);
+    --toolbar-primary-hover-bg: #79bbff;
+    --toolbar-primary-hover-fg: #ffffff;
+    --toolbar-primary-active-bg: #337ecc;
+    --toolbar-primary-active-fg: #ffffff;
+    --toolbar-primary-hover-shadow: none;
+    --toolbar-primary-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.20);
+    --toolbar-active-transform: none;
+    --toolbar-border: #409eff;
+    --toolbar-divider: rgba(255, 255, 255, 0.5);
+    --toolbar-primary-border: #409eff;
     --json-tool-diff-nav-bg: rgba(244, 246, 248, 0.94);
     --json-tool-diff-nav-border: rgba(205, 212, 220, 0.92);
     --json-tool-diff-nav-divider: rgba(205, 212, 220, 0.92);
@@ -4961,7 +4976,7 @@ const transferToInput = (e: MouseEvent) => {
     transition: var(--json-tool-theme-transition);
 }
 
-.json-tool-root.theme-dark {
+body[data-interface-style="default"] .json-tool-root.theme-dark {
     --json-tool-bg: #181818;
     --json-tool-surface: #1f1f1f;
     --json-tool-surface-soft: #181818;
@@ -4985,6 +5000,23 @@ const transferToInput = (e: MouseEvent) => {
     --json-tool-button-text: #d4d4d4;
     --json-tool-button-hover-bg: #333333;
     --json-tool-button-hover-border: #4a4a4a;
+    --toolbar-hover-bg: #28658e;
+    --toolbar-hover-fg: #e8f4ff;
+    --toolbar-active-bg: #143a55;
+    --toolbar-active-fg: #e8f4ff;
+    --toolbar-hover-shadow: none;
+    --toolbar-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+    --toolbar-primary-hover-bg: #28658e;
+    --toolbar-primary-hover-fg: #e8f4ff;
+    --toolbar-primary-active-bg: #143a55;
+    --toolbar-primary-active-fg: #e8f4ff;
+    --toolbar-primary-hover-shadow: none;
+    --toolbar-primary-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+    --toolbar-active-transform: none;
+    --toolbar-border: #28658e;
+    --toolbar-divider: rgba(255, 255, 255, 0.28);
+    --toolbar-primary-border: #28658e;
+
     --json-tool-diff-nav-bg: rgba(40, 40, 40, 0.94);
     --json-tool-diff-nav-border: rgba(72, 72, 72, 0.96);
     --json-tool-diff-nav-divider: rgba(78, 78, 78, 0.96);
@@ -5014,7 +5046,7 @@ const transferToInput = (e: MouseEvent) => {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #f5f7fa;
+    background-color: var(--json-tool-bg, #f5f7fa);
     z-index: 2000;
     padding: 20px;
     text-align: center;
@@ -5025,13 +5057,13 @@ const transferToInput = (e: MouseEvent) => {
 
 .warning-icon {
     font-size: 48px;
-    color: #e6a23c;
+    color: var(--el-color-warning, #e6a23c);
     margin-bottom: 20px;
 }
 
 .warning-text {
     font-size: 16px;
-    color: #606266;
+    color: var(--json-tool-text-muted, #606266);
     line-height: 1.6;
     max-width: 80%;
     margin: 0 auto;
@@ -5165,7 +5197,7 @@ const transferToInput = (e: MouseEvent) => {
 .settings-tool-button {
     width: 32px;
     padding: 8px !important;
-    border-radius: 4px !important;
+    border-radius: var(--theme-radius, 4px) !important;
 }
 
 .tool-bar :deep(.el-button:not(.settings-tool-button)) {
@@ -5173,18 +5205,156 @@ const transferToInput = (e: MouseEvent) => {
 }
 
 .main-action-group > .data-convert-dropdown {
-    float: left;
     position: relative;
-}
-
-.main-action-group > .data-convert-dropdown:first-child :deep(.el-button) {
-    border-radius: var(--el-border-radius-base) !important;
 }
 
 .main-action-group > .data-convert-dropdown:not(:first-child) :deep(.el-button) {
     border-left-color: var(--el-button-divide-border-color) !important;
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
+}
+
+/* Joined toolbar group: only the outer edges keep the theme radius.
+   Middle buttons stay square, and adjacent borders overlap by 1px. */
+.main-action-group {
+    display: inline-flex;
+    align-items: stretch;
+}
+.tool-bar .main-action-group > .el-button,
+.tool-bar .main-action-group > .el-dropdown {
+    position: relative;
+    margin-left: -1px !important;
+    border-radius: 0 !important;
+}
+.tool-bar .main-action-group > :first-child {
+    margin-left: 0 !important;
+}
+.tool-bar .main-action-group > .el-dropdown :deep(.el-button) {
+    margin-left: 0 !important;
+    border-radius: 0 !important;
+}
+.tool-bar .main-action-group > .el-button:first-child,
+.tool-bar .main-action-group > .el-dropdown:first-child :deep(.el-button) {
+    border-top-left-radius: var(--theme-radius, var(--el-border-radius-base, 4px)) !important;
+    border-bottom-left-radius: var(--theme-radius, var(--el-border-radius-base, 4px)) !important;
+}
+.tool-bar .main-action-group > .el-button:last-child,
+.tool-bar .main-action-group > .el-dropdown:last-child :deep(.el-button) {
+    border-top-right-radius: var(--theme-radius, var(--el-border-radius-base, 4px)) !important;
+    border-bottom-right-radius: var(--theme-radius, var(--el-border-radius-base, 4px)) !important;
+}
+.tool-bar .main-action-group > .el-button:first-child:last-child,
+.tool-bar .main-action-group > .el-dropdown:first-child:last-child :deep(.el-button) {
+    border-radius: var(--theme-radius, var(--el-border-radius-base, 4px)) !important;
+}
+.tool-bar .main-action-group > .el-button:not(:disabled):not(.is-disabled),
+.tool-bar .main-action-group > .el-dropdown > .el-button:not(:disabled):not(.is-disabled) {
+    border-color: var(--toolbar-border) !important;
+}
+.tool-bar .main-action-group > .json-format-button:not(:disabled):not(.is-disabled) {
+    border-color: var(--toolbar-primary-border) !important;
+}
+.tool-bar .main-action-group > .el-button:not(:first-child):not(:disabled):not(.is-disabled),
+.tool-bar .main-action-group > .el-dropdown:not(:first-child) > .el-button:not(:disabled):not(.is-disabled) {
+    border-left-color: var(--toolbar-divider) !important;
+}
+.tool-bar .main-action-group > .el-button:not(:last-child):not(:disabled):not(.is-disabled),
+.tool-bar .main-action-group > .el-dropdown:not(:last-child) > .el-button:not(:disabled):not(.is-disabled) {
+    border-right-color: var(--toolbar-divider) !important;
+}
+
+/* Interaction never recolors the group's outer border or shared seams. */
+.tool-bar .main-action-group > .el-button:is(:hover, :active):not(:disabled):not(.is-disabled),
+.tool-bar .main-action-group > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled),
+.tool-bar .main-action-group > .el-dropdown:hover > .el-button:not(:disabled):not(.is-disabled),
+.tool-bar .main-action-group > .el-dropdown > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled) {
+    border-color: var(--toolbar-border) !important;
+}
+.tool-bar .main-action-group > .json-format-button:is(:hover, :active):not(:disabled):not(.is-disabled) {
+    border-color: var(--toolbar-primary-border) !important;
+}
+.tool-bar .main-action-group > .el-button:is(:hover, :active):not(:first-child):not(:disabled):not(.is-disabled),
+.tool-bar .main-action-group > .el-dropdown:not(:first-child):hover > .el-button:not(:disabled):not(.is-disabled),
+.tool-bar .main-action-group > .el-dropdown:not(:first-child) > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled) {
+    border-left-color: var(--toolbar-divider) !important;
+}
+.tool-bar .main-action-group > .el-button:is(:hover, :active):not(:last-child):not(:disabled):not(.is-disabled),
+.tool-bar .main-action-group > .el-dropdown:not(:last-child):hover > .el-button:not(:disabled):not(.is-disabled),
+.tool-bar .main-action-group > .el-dropdown:not(:last-child) > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled) {
+    border-right-color: var(--toolbar-divider) !important;
+}
+
+.tool-bar .main-action-group > .el-button,
+.tool-bar .main-action-group > .el-dropdown > .el-button {
+    transition: background-color .12s ease-out, color .12s ease-out, box-shadow .12s ease-out, transform .10s ease-out;
+}
+.tool-bar .main-action-group > .el-button:hover,
+.tool-bar .main-action-group > .el-button:focus,
+.tool-bar .main-action-group > .el-button:active {
+    z-index: auto !important;
+}
+
+/* Hover is a state layer, never an outline. Geometry and borders stay put. */
+.tool-bar .main-action-group > .el-button:not(.json-format-button):not(.is-disabled):hover,
+.tool-bar .main-action-group > .el-dropdown:hover > .el-button:not(.is-disabled) {
+    background: var(--toolbar-hover-bg) !important;
+    color: var(--toolbar-hover-fg) !important;
+    box-shadow: var(--toolbar-hover-shadow) !important;
+}
+
+/* Pressed state; the dropdown keeps this while its menu is open. */
+.tool-bar .main-action-group > .el-button:not(.json-format-button):not(.is-disabled):active,
+.tool-bar .main-action-group > .el-dropdown > .el-button:not(.is-disabled):active {
+    background: var(--toolbar-active-bg) !important;
+    color: var(--toolbar-active-fg) !important;
+    box-shadow: var(--toolbar-active-shadow) !important;
+    transform: var(--toolbar-active-transform, none);
+}
+.tool-bar .main-action-group > .el-dropdown > .el-button[aria-expanded="true"],
+.tool-bar .main-action-group > .el-dropdown:hover > .el-button[aria-expanded="true"] {
+    background: var(--toolbar-active-bg) !important;
+    color: var(--toolbar-active-fg) !important;
+    box-shadow: var(--toolbar-active-shadow) !important;
+}
+.tool-bar .main-action-group > .el-dropdown > .el-button .el-icon--right {
+    transition: transform .14s ease-out;
+}
+.tool-bar .main-action-group > .el-dropdown > .el-button[aria-expanded="true"] .el-icon--right {
+    transform: rotate(180deg);
+}
+
+/* Keyboard focus is a separate state from hover: a real 2px ring. */
+.tool-bar .main-action-group > .el-button:focus-visible,
+.tool-bar .main-action-group > .el-dropdown > .el-button:focus-visible {
+    outline: 2px solid var(--theme-accent, var(--el-color-primary)) !important;
+    outline-offset: 2px;
+}
+
+/* The primary format action keeps its stronger fill shift. */
+.tool-bar .main-action-group > .json-format-button:hover:not(:disabled):not(.is-loading) {
+    background: var(--toolbar-primary-hover-bg) !important;
+    color: var(--toolbar-primary-hover-fg) !important;
+    box-shadow: var(--toolbar-primary-hover-shadow) !important;
+}
+.tool-bar .main-action-group > .json-format-button:active:not(:disabled):not(.is-loading) {
+    background: var(--toolbar-primary-active-bg) !important;
+    color: var(--toolbar-primary-active-fg) !important;
+    box-shadow: var(--toolbar-primary-active-shadow) !important;
+    transform: var(--toolbar-active-transform, none);
+}
+.tool-bar .main-action-group > .el-button:active,
+.tool-bar .main-action-group > .el-dropdown > .el-button:active,
+.tool-bar .main-action-group > .el-button[aria-expanded="true"] {
+    transition-duration: .04s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tool-bar .main-action-group > .el-button,
+    .tool-bar .main-action-group > .el-dropdown > .el-button {
+        transition: none !important;
+    }
+    .tool-bar .main-action-group > .el-button:active,
+    .tool-bar .main-action-group > .el-dropdown > .el-button:active {
+        transform: none !important;
+    }
 }
 
 /* 层级控制优化 */
@@ -5198,19 +5368,19 @@ const transferToInput = (e: MouseEvent) => {
     /* 为“第 99 层”预留完整文字、箭头和边距，所有层级及语言保持同宽。 */
     width: 88px;
     flex-shrink: 0;
-    --json-tool-level-select-border: var(--el-color-success, #67c23a);
-    --json-tool-level-select-hover-border: var(--el-color-success-dark-2, #529b2e);
-    --json-tool-level-select-disabled-border: var(--el-color-success-light-5, #b3e19d);
+    --json-tool-level-select-border: var(--theme-accent, var(--el-color-success, #67c23a));
+    --json-tool-level-select-hover-border: color-mix(in srgb, var(--theme-accent, var(--el-color-success-dark-2, #529b2e)) 82%, var(--json-tool-text, #303133));
+    --json-tool-level-select-disabled-border: color-mix(in srgb, var(--theme-accent, var(--el-color-success-light-5, #b3e19d)) 42%, var(--json-tool-surface, #ffffff));
 }
 
-.json-tool-root.theme-dark .collapse-control .level-select {
+body[data-interface-style="default"] .json-tool-root.theme-dark .collapse-control .level-select {
     --json-tool-level-select-border: #327a4c;
     --json-tool-level-select-hover-border: #409a61;
 }
 
 .collapse-control .level-action-button {
     margin-left: -1px !important;
-    border-radius: 0 4px 4px 0 !important;
+    border-radius: 0 var(--theme-radius, 4px) var(--theme-radius, 4px) 0 !important;
     position: relative;
 }
 
@@ -5241,11 +5411,15 @@ const transferToInput = (e: MouseEvent) => {
 }
 
 :global(.level-select-dropdown .el-select-dropdown__item) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     overflow: visible;
     padding: 0 12px !important;
     text-overflow: clip;
     white-space: nowrap;
+    font-weight: 500 !important;
 }
 
 :global(.level-select-dropdown .el-select-dropdown__item span) {
@@ -5253,115 +5427,148 @@ const transferToInput = (e: MouseEvent) => {
     text-overflow: clip;
 }
 
-.json-tool-root.theme-dark :deep(.el-button) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button) {
     background-color: var(--json-tool-button-bg);
     border-color: var(--json-tool-button-border);
     color: var(--json-tool-button-text);
     box-shadow: none;
 }
 
-.json-tool-root.theme-dark :deep(.el-button:hover),
-.json-tool-root.theme-dark :deep(.el-button:focus) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button:hover),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button:focus) {
     background-color: var(--json-tool-button-hover-bg);
     border-color: var(--json-tool-button-hover-border);
     color: #f5f5f5;
 }
 
-.json-tool-root.theme-dark :deep(.el-button.is-disabled),
-.json-tool-root.theme-dark :deep(.el-button.is-disabled:hover),
-.json-tool-root.theme-dark :deep(.el-button.is-disabled:focus) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button.is-disabled),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button.is-disabled:hover),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button.is-disabled:focus) {
     background-color: #242424;
     border-color: #2f2f2f;
     color: #6f6f6f;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--primary) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--primary) {
     background-color: #1d4f73;
     border-color: #28658e;
     color: #e8f4ff;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--primary:hover),
-.json-tool-root.theme-dark :deep(.el-button--primary:focus) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--primary:hover),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--primary:focus) {
     background-color: #28658e;
     border-color: #3478a5;
     color: #ffffff;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--primary:active) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--primary:active) {
     background-color: #194765;
     border-color: #28658e;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--success) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--success) {
     background-color: #265b39;
     border-color: #327a4c;
     color: #e8fff0;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--success:hover),
-.json-tool-root.theme-dark :deep(.el-button--success:focus) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--success:hover),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--success:focus) {
     background-color: #327a4c;
     border-color: #409a61;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--warning) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--warning) {
     background-color: #765a18;
     border-color: #9a7420;
     color: #fff6d7;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--warning:hover),
-.json-tool-root.theme-dark :deep(.el-button--warning:focus) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--warning:hover),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--warning:focus) {
     background-color: #8b6a1d;
     border-color: #b48524;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--danger) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--danger) {
     background-color: #743333;
     border-color: #954343;
     color: #ffecec;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--danger:hover),
-.json-tool-root.theme-dark :deep(.el-button--danger:focus) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--danger:hover),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--danger:focus) {
     background-color: #8b3c3c;
     border-color: #ad4e4e;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--info) {
+:global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:not(:disabled):not(.is-disabled)) {
+    background-color: var(--el-color-info-light-9, #f4f4f5) !important;
+    border-color: var(--el-color-info-light-5, #d3d4d6) !important;
+    color: var(--el-color-info, #909399) !important;
+}
+:global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:hover:not(:disabled):not(.is-disabled)),
+:global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:focus:not(:disabled):not(.is-disabled)) {
+    background-color: var(--el-color-info-light-8, #e9e9eb) !important;
+    border-color: var(--el-color-info-light-3, #b1b3b8) !important;
+    color: var(--el-color-info, #909399) !important;
+}
+:global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:active:not(:disabled):not(.is-disabled)) {
+    background-color: var(--el-color-info-light-7, #dedfe0) !important;
+    border-color: var(--el-color-info-light-3, #b1b3b8) !important;
+    color: var(--el-color-info, #909399) !important;
+}
+:global(body[data-interface-style="default"].json-tool-theme-dark :is(.panel-actions, .diff-panel-actions) .file-transfer-button:not(:disabled):not(.is-disabled)) {
+    background-color: #3a3a3a !important;
+    border-color: #4a4a4a !important;
+    color: #e0e0e0 !important;
+}
+:global(body[data-interface-style="default"].json-tool-theme-dark :is(.panel-actions, .diff-panel-actions) .file-transfer-button:hover:not(:disabled):not(.is-disabled)),
+:global(body[data-interface-style="default"].json-tool-theme-dark :is(.panel-actions, .diff-panel-actions) .file-transfer-button:focus:not(:disabled):not(.is-disabled)) {
+    background-color: #464646 !important;
+    border-color: #5a5a5a !important;
+    color: #f0f0f0 !important;
+}
+:global(body[data-interface-style="default"].json-tool-theme-dark :is(.panel-actions, .diff-panel-actions) .file-transfer-button:active:not(:disabled):not(.is-disabled)) {
+    background-color: #2e2e2e !important;
+    border-color: #5a5a5a !important;
+    color: #e0e0e0 !important;
+}
+
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--info) {
     background-color: #3a3a3a;
     border-color: #4a4a4a;
     color: #e0e0e0;
 }
 
-.json-tool-root.theme-dark :deep(.el-button--info:hover),
-.json-tool-root.theme-dark :deep(.el-button--info:focus) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--info:hover),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--info:focus) {
     background-color: #464646;
     border-color: #5a5a5a;
 }
 
-.json-tool-root.theme-dark :deep(.el-button-group .el-button:not(:first-child)) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button-group .el-button:not(:first-child)) {
     border-left-color: rgba(255, 255, 255, 0.12);
 }
 
-.json-tool-root.theme-dark :deep(.el-select__wrapper) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select__wrapper) {
     background-color: var(--json-tool-button-bg);
     box-shadow: 0 0 0 1px var(--json-tool-button-border) inset;
 }
 
-.json-tool-root.theme-dark :deep(.el-select__wrapper:hover),
-.json-tool-root.theme-dark :deep(.el-select__wrapper.is-focused) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select__wrapper:hover),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select__wrapper.is-focused) {
     box-shadow: 0 0 0 1px var(--json-tool-button-hover-border) inset;
 }
 
-.json-tool-root.theme-dark :deep(.el-select__selected-item),
-.json-tool-root.theme-dark :deep(.el-select__placeholder),
-.json-tool-root.theme-dark :deep(.el-select .el-icon) {
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select__selected-item),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select__placeholder),
+body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select .el-icon) {
     color: var(--json-tool-button-text);
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) {
+:global(body[data-interface-style="default"].json-tool-theme-dark) {
     --json-tool-theme-transition: background-color 120ms ease, color 100ms ease, border-color 120ms ease;
     --json-tool-bg: #181818;
     --json-tool-surface: #1f1f1f;
@@ -5381,14 +5588,14 @@ const transferToInput = (e: MouseEvent) => {
     --json-tool-button-hover-border: #4a4a4a;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-overlay) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-overlay) {
     background-color: rgba(0, 0, 0, 0.64);
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message-box),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-popover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-popper.is-light) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dialog),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message-box),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-popover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-popper.is-light) {
     background: var(--json-tool-surface) !important;
     border: 1px solid var(--json-tool-border) !important;
     color: var(--json-tool-text) !important;
@@ -5396,9 +5603,9 @@ const transferToInput = (e: MouseEvent) => {
     transition: var(--json-tool-theme-transition) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-popper),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__popper),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown__popper) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-popper),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select__popper),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dropdown__popper) {
     --el-bg-color-overlay: var(--json-tool-surface);
     --el-fill-color-light: #2a2d35;
     --el-fill-color-lighter: #252525;
@@ -5413,13 +5620,13 @@ const transferToInput = (e: MouseEvent) => {
     transition: var(--json-tool-theme-transition) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-popper.is-light .el-popper__arrow::before) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-popper.is-light .el-popper__arrow::before) {
     background: var(--json-tool-surface) !important;
     border-color: var(--json-tool-border) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-notification) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-notification) {
     --el-message-bg-color: var(--json-tool-surface-raised);
     --el-message-border-color: var(--json-tool-border);
     --el-message-text-color: var(--json-tool-text);
@@ -5433,115 +5640,115 @@ const transferToInput = (e: MouseEvent) => {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message__content),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-notification__title) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message__content),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-notification__title) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-notification__content),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-notification__closeBtn) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-notification__content),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-notification__closeBtn) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message--success),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-message.el-message--success) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message--success),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-message.el-message--success) {
     background-color: rgba(38, 91, 57, 0.92) !important;
     border-color: rgba(50, 122, 76, 0.95) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message--warning),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-message.el-message--warning) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message--warning),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-message.el-message--warning) {
     background-color: rgba(118, 90, 24, 0.92) !important;
     border-color: rgba(154, 116, 32, 0.95) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message--error),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-message.el-message--error) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message--error),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-message.el-message--error) {
     background-color: rgba(116, 51, 51, 0.92) !important;
     border-color: rgba(149, 67, 67, 0.95) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message--info),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-message.el-message--info) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message--info),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-message.el-message--info) {
     background-color: rgba(36, 36, 36, 0.96) !important;
     border-color: var(--json-tool-border-strong) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message .el-message__icon) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message .el-message__icon) {
     filter: brightness(1.12);
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__header),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message-box__header) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dialog__header),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message-box__header) {
     border-bottom: 1px solid var(--json-tool-border) !important;
     background: linear-gradient(to bottom, #232323, #1f1f1f) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__body),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message-box__content) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dialog__body),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message-box__content) {
     color: var(--json-tool-text) !important;
     background: var(--json-tool-surface) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__footer),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message-box__btns) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dialog__footer),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message-box__btns) {
     border-top: 1px solid var(--json-tool-border) !important;
     background: var(--json-tool-surface) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .delete-archive-message-box .el-message-box__header),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .delete-archive-message-box .el-message-box__btns) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .delete-archive-message-box .el-message-box__header),
+:global(body[data-interface-style="default"].json-tool-theme-dark .delete-archive-message-box .el-message-box__btns) {
     border: 0 !important;
     background: var(--json-tool-surface) !important;
     box-shadow: none !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__title),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-message-box__title),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .dialog-title),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .dialog-title-with-close),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .section-title),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-name),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .saved-rule-name),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .field-path-label) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dialog__title),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-message-box__title),
+:global(body[data-interface-style="default"].json-tool-theme-dark .dialog-title),
+:global(body[data-interface-style="default"].json-tool-theme-dark .dialog-title-with-close),
+:global(body[data-interface-style="default"].json-tool-theme-dark .section-title),
+:global(body[data-interface-style="default"].json-tool-theme-dark .config-name),
+:global(body[data-interface-style="default"].json-tool-theme-dark .saved-rule-name),
+:global(body[data-interface-style="default"].json-tool-theme-dark .field-path-label) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-label),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-label-row .form-label),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-hint),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .field-label),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .rule-name-label),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .preview-label),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .preview-value),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-details),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-url),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-headers),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .saved-rule-meta),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .delete-confirm-text),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .empty-hint),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .textarea-counter) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .form-label),
+:global(body[data-interface-style="default"].json-tool-theme-dark .form-label-row .form-label),
+:global(body[data-interface-style="default"].json-tool-theme-dark .form-hint),
+:global(body[data-interface-style="default"].json-tool-theme-dark .field-label),
+:global(body[data-interface-style="default"].json-tool-theme-dark .rule-name-label),
+:global(body[data-interface-style="default"].json-tool-theme-dark .preview-label),
+:global(body[data-interface-style="default"].json-tool-theme-dark .preview-value),
+:global(body[data-interface-style="default"].json-tool-theme-dark .config-details),
+:global(body[data-interface-style="default"].json-tool-theme-dark .config-url),
+:global(body[data-interface-style="default"].json-tool-theme-dark .config-headers),
+:global(body[data-interface-style="default"].json-tool-theme-dark .saved-rule-meta),
+:global(body[data-interface-style="default"].json-tool-theme-dark .delete-confirm-text),
+:global(body[data-interface-style="default"].json-tool-theme-dark .empty-hint),
+:global(body[data-interface-style="default"].json-tool-theme-dark .textarea-counter) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .dialog-close-btn),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-close-btn),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__headerbtn .el-dialog__close) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .dialog-close-btn),
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-close-btn),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dialog__headerbtn .el-dialog__close) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .dialog-close-btn:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-close-btn:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dialog__headerbtn:hover .el-dialog__close) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .dialog-close-btn:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-close-btn:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dialog__headerbtn:hover .el-dialog__close) {
     background: var(--json-tool-button-hover-bg) !important;
     color: #f5f5f5 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__wrapper),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__inner),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__wrapper),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input-number__decrease),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input-number__increase) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input__wrapper),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-textarea__inner),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select__wrapper),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input-number__decrease),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input-number__increase) {
     --el-input-bg-color: var(--json-tool-input-bg);
     --el-input-text-color: var(--json-tool-text);
     --el-input-border-color: var(--json-tool-input-border);
@@ -5554,237 +5761,218 @@ const transferToInput = (e: MouseEvent) => {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__wrapper:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__inner:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__wrapper:hover) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input__wrapper:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-textarea__inner:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select__wrapper:hover) {
     box-shadow: 0 0 0 1px var(--json-tool-input-hover-border) inset !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__wrapper.is-focus),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input.is-focus .el-input__wrapper),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__inner:focus),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__wrapper.is-focused) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input__wrapper.is-focus),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input.is-focus .el-input__wrapper),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-textarea__inner:focus),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select__wrapper.is-focused) {
     background-color: var(--json-tool-input-bg) !important;
     box-shadow: 0 0 0 1px var(--el-color-primary) inset !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__inner),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__inner),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__selected-item),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select__placeholder),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input .el-icon),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select .el-icon),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input-number .el-icon) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input__inner),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-textarea__inner),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select__selected-item),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select__placeholder),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input .el-icon),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select .el-icon),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input-number .el-icon) {
     background-color: transparent !important;
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__inner:-webkit-autofill),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__inner:-webkit-autofill:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__inner:-webkit-autofill:focus) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input__inner:-webkit-autofill),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input__inner:-webkit-autofill:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input__inner:-webkit-autofill:focus) {
     -webkit-text-fill-color: var(--json-tool-text) !important;
     box-shadow: 0 0 0 1000px var(--json-tool-input-bg) inset !important;
     caret-color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__inner::placeholder),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__inner::placeholder) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input__inner::placeholder),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-textarea__inner::placeholder) {
     color: #71717a !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__count),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-input__count-inner),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea .el-input__count),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__word-limit),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-textarea__word-limit .el-input__count-inner) {
-    background: var(--json-tool-input-bg) !important;
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input__count),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-input__count-inner),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-textarea .el-input__count),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-textarea__word-limit),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-textarea__word-limit .el-input__count-inner) {
+    background: transparent !important;
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-alert) {
     background-color: var(--json-tool-surface-raised) !important;
     border: 1px solid var(--json-tool-border) !important;
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert--info) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-alert--info) {
     background-color: #242424 !important;
     border-color: #333333 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert__title),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert__content),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert__description) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-alert__title),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-alert__content),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-alert__description) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert__title strong) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-alert__title strong) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-alert__icon) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-alert__icon) {
     color: #9da0a6 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button) {
     background-color: var(--json-tool-button-bg) !important;
     border-color: var(--json-tool-button-border) !important;
     color: var(--json-tool-button-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button:focus) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button:focus) {
     background-color: var(--json-tool-button-hover-bg) !important;
     border-color: var(--json-tool-button-hover-border) !important;
     color: #f5f5f5 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--primary) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--primary) {
     background-color: #1d4f73 !important;
     border-color: #28658e !important;
     color: #e8f4ff !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--primary:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--primary:focus) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--primary:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--primary:focus) {
     background-color: #28658e !important;
     border-color: #3478a5 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain) {
-    background-color: rgba(245, 247, 250, 0.1) !important;
-    border-color: rgba(245, 247, 250, 0.2) !important;
-    color: rgba(245, 247, 250, 0.92) !important;
-}
-
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain:focus) {
-    background-color: rgba(245, 247, 250, 0.18) !important;
-    border-color: rgba(245, 247, 250, 0.3) !important;
-    color: #ffffff !important;
-}
-
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .preview-download-button.el-button--info.is-plain:active) {
-    background-color: rgba(245, 247, 250, 0.14) !important;
-    border-color: rgba(245, 247, 250, 0.24) !important;
-    color: rgba(245, 247, 250, 0.94) !important;
-}
-
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--success) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--success) {
     background-color: #265b39 !important;
     border-color: #327a4c !important;
     color: #e8fff0 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--success:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--success:focus) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--success:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--success:focus) {
     background-color: #327a4c !important;
     border-color: #409a61 !important;
     color: #ffffff !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--success:active) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--success:active) {
     background-color: #1f4a2f !important;
     border-color: #327a4c !important;
     color: #e8fff0 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--warning) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--warning) {
     background-color: #765a18 !important;
     border-color: #9a7420 !important;
     color: #fff6d7 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--danger) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--danger) {
     background-color: #743333 !important;
     border-color: #954343 !important;
     color: #ffecec !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--danger:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--danger:focus) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--danger:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--danger:focus) {
     background-color: #8b3c3c !important;
     border-color: #ad4e4e !important;
     color: #ffffff !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button--danger:active) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button--danger:active) {
     background-color: #5f2a2a !important;
     border-color: #8b3c3c !important;
     color: #ffecec !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button.is-disabled),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-button.is-disabled:hover) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button.is-disabled),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-button.is-disabled:hover) {
     background-color: #242424 !important;
     border-color: #2f2f2f !important;
     color: #6f6f6f !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-radio-button__inner),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-checkbox__inner) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-radio-button__inner),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-checkbox__inner) {
     background-color: var(--json-tool-input-bg) !important;
     border-color: var(--json-tool-input-border) !important;
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-radio-button__original-radio:checked + .el-radio-button__inner),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-checkbox__input.is-checked .el-checkbox__inner) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-radio-button__original-radio:checked + .el-radio-button__inner),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-checkbox__input.is-checked .el-checkbox__inner) {
     background-color: #1d4f73 !important;
     border-color: #28658e !important;
     color: #fff !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-checkbox__label),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-radio__label) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-checkbox__label),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-radio__label) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown-menu),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__wrap),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__list),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-autocomplete-suggestion),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-autocomplete-suggestion__wrap) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dropdown-menu),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__wrap),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__list),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-autocomplete-suggestion),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-autocomplete-suggestion__wrap) {
     background-color: var(--json-tool-surface) !important;
     border-color: var(--json-tool-border) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown-menu__item),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-autocomplete-suggestion li) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dropdown-menu__item),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__item),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-autocomplete-suggestion li) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown-menu__item:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown-menu__item:focus),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.is-hovering),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item:focus),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-autocomplete-suggestion li:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-autocomplete-suggestion li.highlighted) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dropdown-menu__item:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dropdown-menu__item:focus),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__item.hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__item.is-hovering),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__item:focus),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__item:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-autocomplete-suggestion li:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-autocomplete-suggestion li.highlighted) {
     background-color: #2a2d35 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.is-selected),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.selected),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-dropdown-menu__item.is-active) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__item.is-selected),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__item.selected),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-dropdown-menu__item.is-active) {
     background-color: rgba(64, 158, 255, 0.16) !important;
     color: #e8f4ff !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.is-disabled),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.is-disabled:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-select-dropdown__item.is-disabled.is-hovering) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__item.is-disabled),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__item.is-disabled:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-select-dropdown__item.is-disabled.is-hovering) {
     background-color: var(--json-tool-surface) !important;
     color: #6f6f6f !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table tr),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table th.el-table__cell),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table td.el-table__cell) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table tr),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table th.el-table__cell),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table td.el-table__cell) {
     --el-table-border-color: var(--json-tool-border);
     --el-table-border: 1px solid var(--json-tool-border);
     --el-table-text-color: var(--json-tool-text);
@@ -5797,86 +5985,86 @@ const transferToInput = (e: MouseEvent) => {
     border-color: var(--json-tool-border) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table::before),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table::after),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table__inner-wrapper::before),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table__inner-wrapper::after),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table--border::before),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table--border::after),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table__border-left-patch) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table::before),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table::after),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table__inner-wrapper::before),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table__inner-wrapper::after),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table--border::before),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table--border::after),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table__border-left-patch) {
     background-color: var(--json-tool-border) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell) {
     background-color: #2a2d35 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-empty__description),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-descriptions__label),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .el-descriptions__content) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-empty__description),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-descriptions__label),
+:global(body[data-interface-style="default"].json-tool-theme-dark .el-descriptions__content) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-value-quote--compact),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .empty-hint),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-preview),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-item),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .rule-item),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .field-path-item),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .saved-rule-item) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .form-value-quote--compact),
+:global(body[data-interface-style="default"].json-tool-theme-dark .empty-hint),
+:global(body[data-interface-style="default"].json-tool-theme-dark .config-preview),
+:global(body[data-interface-style="default"].json-tool-theme-dark .config-item),
+:global(body[data-interface-style="default"].json-tool-theme-dark .rule-item),
+:global(body[data-interface-style="default"].json-tool-theme-dark .field-path-item),
+:global(body[data-interface-style="default"].json-tool-theme-dark .saved-rule-item) {
     background-color: var(--json-tool-surface-raised) !important;
     border-color: var(--json-tool-border) !important;
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .config-item:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .saved-rule-item:hover) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .config-item:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .saved-rule-item:hover) {
     background-color: #2a2d35 !important;
     border-color: var(--json-tool-border-strong) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-compact-line),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .form-value-text),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-text),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .saved-rule-name) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .form-compact-line),
+:global(body[data-interface-style="default"].json-tool-theme-dark .form-value-text),
+:global(body[data-interface-style="default"].json-tool-theme-dark .path-text),
+:global(body[data-interface-style="default"].json-tool-theme-dark .saved-rule-name) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-type) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .path-type) {
     color: var(--json-tool-text-muted) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .delete-confirm) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .delete-confirm) {
     background-color: rgba(116, 51, 51, 0.32) !important;
     border-color: rgba(149, 67, 67, 0.72) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .field-path-delete-btn) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .field-path-delete-btn) {
     background-color: rgba(116, 51, 51, 0.42) !important;
     color: #ffb4b4 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .field-path-delete-btn:hover) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .field-path-delete-btn:hover) {
     background-color: rgba(139, 60, 60, 0.62) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) code),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) [style*='background: #fff']) {
+:global(body[data-interface-style="default"].json-tool-theme-dark code),
+:global(body[data-interface-style="default"].json-tool-theme-dark [style*='background: #fff']) {
     background: #2a2a2a !important;
     color: #d4d4d4 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) [style*='background-color: #fef0f0']) {
+:global(body[data-interface-style="default"].json-tool-theme-dark [style*='background-color: #fef0f0']) {
     background-color: rgba(116, 51, 51, 0.32) !important;
     color: #ffb4b4 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) [style*='color: #303133']) {
+:global(body[data-interface-style="default"].json-tool-theme-dark [style*='color: #303133']) {
     color: var(--json-tool-text) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) [style*='color: #606266']),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) [style*='color: #909399']) {
+:global(body[data-interface-style="default"].json-tool-theme-dark [style*='color: #606266']),
+:global(body[data-interface-style="default"].json-tool-theme-dark [style*='color: #909399']) {
     color: var(--json-tool-text-muted) !important;
 }
 
@@ -5950,7 +6138,7 @@ const transferToInput = (e: MouseEvent) => {
     background-color: var(--json-tool-resizer-grip, #c0c4cc);
 }
 
-.json-tool-root.theme-dark .resizer::after {
+body[data-interface-style="default"] .json-tool-root.theme-dark .resizer::after {
     background-color: var(--json-tool-border-strong);
 }
 
@@ -5966,10 +6154,10 @@ const transferToInput = (e: MouseEvent) => {
     background-color: var(--json-tool-surface-soft);
 }
 .resizer.resizer-locked-during-demo::after {
-    background-color: #dcdfe6;
+    background-color: var(--json-tool-resizer-grip, #dcdfe6);
 }
 
-.json-tool-root.theme-dark .resizer.resizer-locked-during-demo::after {
+body[data-interface-style="default"] .json-tool-root.theme-dark .resizer.resizer-locked-during-demo::after {
     background-color: var(--json-tool-border);
 }
 
@@ -6088,7 +6276,9 @@ const transferToInput = (e: MouseEvent) => {
 }
 
 .editor-wrapper--drag-active .monaco-editor-container {
-    background: linear-gradient(0deg, rgba(64, 158, 255, 0.04), rgba(64, 158, 255, 0.04)), #ffffff;
+    background:
+        linear-gradient(0deg, color-mix(in srgb, var(--theme-accent, #409eff) 4%, transparent), color-mix(in srgb, var(--theme-accent, #409eff) 4%, transparent)),
+        var(--json-tool-editor-bg, #ffffff);
 }
 
 .editor-drag-upload-overlay {
@@ -6202,34 +6392,34 @@ const transferToInput = (e: MouseEvent) => {
     outline: none;
 }
 
-.json-tool-root.theme-dark .first-use-guide {
+body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide {
     background:
         radial-gradient(circle at 50% 42%, rgba(67, 156, 219, 0.12), transparent 34%),
         linear-gradient(180deg, rgba(31, 31, 31, 0.78), rgba(31, 31, 31, 0.54));
 }
 
-.json-tool-root.theme-dark .first-use-guide-card {
+body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-card {
     border-color: rgba(255, 255, 255, 0.09);
     background: rgba(36, 36, 36, 0.96);
     box-shadow: 0 18px 54px rgba(0, 0, 0, 0.36);
 }
 
-.json-tool-root.theme-dark .first-use-guide-title {
+body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-title {
     color: #e8e8e8;
 }
 
-.json-tool-root.theme-dark .first-use-guide-desc {
+body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-desc {
     color: #a8abb2;
 }
 
-.json-tool-root.theme-dark .first-use-guide-skip {
+body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-skip {
     color: #d4d4d4;
     border-color: #3a3a3a;
     background: #2a2a2a;
 }
 
-.json-tool-root.theme-dark .first-use-guide-skip:hover,
-.json-tool-root.theme-dark .first-use-guide-skip:focus-visible {
+body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-skip:hover,
+body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-skip:focus-visible {
     color: #b9d7ff;
     border-color: #4f6f94;
     background: #26313d;
@@ -6462,8 +6652,8 @@ const transferToInput = (e: MouseEvent) => {
     box-shadow: 0 0 0 1px var(--json-tool-level-select-hover-border) inset !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper) {
     --el-input-border-color: var(--json-tool-level-select-border);
     --el-input-hover-border-color: var(--json-tool-level-select-hover-border);
     --el-input-focus-border-color: var(--json-tool-level-select-hover-border);
@@ -6471,10 +6661,10 @@ const transferToInput = (e: MouseEvent) => {
     box-shadow: 0 0 0 1px var(--json-tool-level-select-border) inset !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper.is-focus),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper.is-focused) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper.is-focus),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper.is-focused) {
     border-color: var(--json-tool-level-select-hover-border) !important;
     box-shadow: 0 0 0 1px var(--json-tool-level-select-hover-border) inset !important;
 }
@@ -6486,17 +6676,17 @@ const transferToInput = (e: MouseEvent) => {
     box-shadow: 0 0 0 1px var(--json-tool-level-select-disabled-border) inset !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select.is-disabled .el-input__wrapper),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select.is-disabled .el-select__wrapper),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper.is-disabled),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper.is-disabled) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select.is-disabled .el-input__wrapper),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select.is-disabled .el-select__wrapper),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-input__wrapper.is-disabled),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-select .el-select__wrapper.is-disabled) {
     border-color: var(--json-tool-button-border) !important;
     box-shadow: 0 0 0 1px var(--json-tool-button-border) inset !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled:hover),
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled:focus) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled:hover),
+:global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled:focus) {
     background-color: #203126 !important;
     border-color: var(--json-tool-level-select-border) !important;
     color: rgba(232, 255, 240, 0.56) !important;
@@ -6558,7 +6748,7 @@ const transferToInput = (e: MouseEvent) => {
     top: 7px;
     left: 50%;
     transform: translate(-50%, 0);
-    background-color: #e4e7ed;
+    background-color: var(--json-tool-transfer-bg, #e4e7ed);
     color: var(--json-tool-transfer-fg, #409eff);
     cursor: pointer;
     width: 20px;
@@ -6743,7 +6933,8 @@ const transferToInput = (e: MouseEvent) => {
     display: flex;
     flex-direction: column;
     background-color: var(--json-tool-surface-soft);
-    padding: 10px 5px;
+    padding: 0 0 10px;
+    container-type: inline-size;
     box-sizing: border-box;
     transition:
         width 0.1s ease,
@@ -6759,9 +6950,13 @@ const transferToInput = (e: MouseEvent) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--archive-header-gap, 0px);
-    padding-bottom: 6.5px;
+    gap: clamp(2px, var(--archive-header-gap, 0px), 6px);
+    height: 35px;
+    min-height: 35px;
+    padding: 0;
+    box-sizing: border-box;
     margin-bottom: 4px;
+    background: var(--json-tool-surface-header, transparent);
     border-bottom: 1px solid var(--json-tool-border);
     cursor: default;
     user-select: none;
@@ -6774,11 +6969,14 @@ const transferToInput = (e: MouseEvent) => {
 }
 
 .archive-header-action {
-    width: 18px;
-    height: 18px;
+    --archive-action-radius: 4px;
+    --archive-action-size: 30px;
+    width: var(--archive-action-size);
+    height: var(--archive-action-size);
     padding: 0;
+    box-sizing: border-box;
     border: none;
-    border-radius: 3px;
+    border-radius: var(--archive-action-radius);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -6793,8 +6991,13 @@ const transferToInput = (e: MouseEvent) => {
 }
 
 .archive-header-action :deep(.el-icon) {
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1;
+}
+
+.archive-header-action:focus-visible {
+    outline: 2px solid var(--theme-accent, #409eff);
+    outline-offset: 1px;
 }
 
 .archive-header-action:hover:not(:disabled) {
@@ -6812,6 +7015,23 @@ const transferToInput = (e: MouseEvent) => {
     cursor: not-allowed;
     opacity: 0.8;
     pointer-events: none;
+}
+
+@container (max-width: 114px) {
+    .archive-sidebar-header {
+        gap: 2px;
+    }
+    .archive-sidebar-header .archive-header-action {
+        --archive-action-size: 26px;
+    }
+    .archive-header-action :deep(.el-icon) {
+        font-size: 15px;
+    }
+}
+@container (max-width: 90px) {
+    .archive-sidebar-header {
+        gap: 1px;
+    }
 }
 
 /* 存档侧边栏分割线 */
@@ -6836,6 +7056,8 @@ const transferToInput = (e: MouseEvent) => {
 .archive-list {
     flex: 1;
     overflow-y: auto;
+    padding: 0 5px;
+    box-sizing: border-box;
     scrollbar-width: none;
     scrollbar-color: transparent transparent;
 }
