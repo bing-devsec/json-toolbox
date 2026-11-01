@@ -1,0 +1,23 @@
+/* Shared geometry for every theme. The toolbar binding owns the viewport bounds. */
+.json-tool-message.el-message {
+    position: fixed !important;
+    height: 32px;
+    padding: 0 12px !important;
+    top: var(--json-tool-message-center-y, 22px) !important;
+    right: var(--json-tool-message-right, 15px) !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
+    max-width: min(var(--json-tool-message-width, calc(100vw - 30px)), calc(100vw - 30px));
+    z-index: 9999 !important;
+    /* A notice can move the toolbar instantly; do not animate behind its new position. */
+    transition-property: opacity !important;
+}
+.json-tool-message.el-message .el-message__content {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.json-tool-message.el-message .el-message__icon {
+    flex-shrink: 0;
+}

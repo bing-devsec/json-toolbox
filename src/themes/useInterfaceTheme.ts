@@ -1,13 +1,11 @@
 import { computed, onBeforeUnmount, watch, type Ref } from 'vue';
-import { getInterfaceVariables, getInterfaceControlSystem, type AppearanceMode, type InterfaceStyle } from './interfaceThemes';
+import { getInterfaceVariables, type AppearanceMode, type InterfaceStyle } from './registry';
 
-/** Scope variables to the workbench and body (Element Plus teleports menus/dialogs there).
- * Does not touch models, editor options, font metrics or JSON processing. */
+/** Applies only the variables a theme returns. It owns no colors or rules. */
 export function useInterfaceTheme(style: Ref<InterfaceStyle>, mode: Ref<AppearanceMode>) {
     const variables = computed(() => getInterfaceVariables(style.value, mode.value));
     const body = document.body;
     const previousStyle = body.getAttribute('data-interface-style');
-    const previousControls = body.getAttribute('data-theme-controls');
     const previousVariables = new Map<string, string>();
     let applied: string[] = [];
     const restoreVariables = () => {
@@ -21,7 +19,6 @@ export function useInterfaceTheme(style: Ref<InterfaceStyle>, mode: Ref<Appearan
     watch([style, variables], () => {
         restoreVariables();
         body.dataset.interfaceStyle = style.value;
-        body.dataset.themeControls = getInterfaceControlSystem(style.value);
         for (const [key, value] of Object.entries(variables.value)) {
             if (!previousVariables.has(key)) previousVariables.set(key, body.style.getPropertyValue(key));
             body.style.setProperty(key, value);
@@ -32,8 +29,6 @@ export function useInterfaceTheme(style: Ref<InterfaceStyle>, mode: Ref<Appearan
         restoreVariables();
         if (previousStyle === null) body.removeAttribute('data-interface-style');
         else body.setAttribute('data-interface-style', previousStyle);
-        if (previousControls === null) body.removeAttribute('data-theme-controls');
-        else body.setAttribute('data-theme-controls', previousControls);
     });
     return variables;
 }

@@ -1,6 +1,7 @@
 <template>
-    <div class="extension-shell" :aria-busy="loadStatus === 'loading' || loadStatus === 'slow'">
-        <div v-if="captureId && captureNoticeVisible" class="capture-notice" :class="{ 'is-error': captureState.phase === 'error' }" :role="captureState.phase === 'error' ? 'alert' : 'status'">
+    <main class="extension-shell" :aria-busy="viewportEligible && (loadStatus === 'loading' || loadStatus === 'slow')">
+        <SmallScreenNotice v-if="!viewportEligible" :locale="locale" />
+        <div v-if="viewportEligible && captureId && captureNoticeVisible" class="capture-notice" :class="{ 'is-error': captureState.phase === 'error' }" :role="captureState.phase === 'error' ? 'alert' : 'status'">
             <span class="capture-notice-copy">
                 <span>{{ captureNotice }}</span>
                 <span v-if="captureState.sourceDisplayUrl" class="capture-source" :title="captureState.sourceDisplayUrl">{{ captureState.sourceDisplayUrl }}</span>
@@ -9,10 +10,10 @@
             <button v-if="captureState.phase !== 'reading'" type="button" :disabled="returningToSource" @click="viewOriginal">{{ locale === 'en' ? 'Return to response URL' : '返回响应页面' }}</button>
             <button v-if="captureState.phase === 'imported'" type="button" :aria-label="locale === 'en' ? 'Dismiss import notice' : '关闭导入提示'" @click="captureNoticeVisible = false">×</button>
         </div>
-        <component v-if="workbench && captureReadSettled" :is="workbench" class="extension-workbench" :locale="locale" :external-import="captureState.request"
+        <component v-if="workbench && captureReadSettled" v-show="viewportEligible" :is="workbench" class="extension-workbench" :locale="locale" :external-import="captureState.request"
             @switch-locale="switchLocale" @external-imported="onExternalImported" @external-import-failed="onExternalImportFailed"
             @successful-use="onSuccessfulUse" @review-blocked="workbenchReviewBlocked = $event" />
-        <template v-else>
+        <template v-else-if="viewportEligible">
             <JsonToolEditorSkeleton :label="loadingLabel" />
             <div v-if="loadStatus === 'error'" class="extension-load-state is-error" role="alert">
                 <p>{{ errorLabel }}</p>
@@ -20,12 +21,14 @@
             </div>
         </template>
         <ExtensionReviewInvitation v-if="reviewUsage" :locale="locale" :usage="reviewUsage" :blocked="reviewBlocked" />
-    </div>
+    </main>
 </template>
 
 <script setup lang="ts">
 import { computed, defineAsyncComponent, markRaw, onBeforeUnmount, ref, shallowRef, watch } from 'vue';
 import JsonToolEditorSkeleton from './components/JsonToolEditorSkeleton.vue';
+import SmallScreenNotice from './components/SmallScreenNotice.vue';
+import { observeWorkbenchViewport } from './components/utils/workbenchViewport';
 import { createJsonToolLoadController, type JsonToolLoadStatus } from './components/utils/jsonToolLoadController';
 import { loadJsonToolWorkbench } from './components/utils/loadJsonToolWorkbench';
 import { readImport, ackImport, returnToSource, captureErrorMessage } from './extension/captureClient';
@@ -109,10 +112,10 @@ const viewOriginal = async () => {
     catch (error) { sourceReturnError.value = error; }
     finally { returningToSource.value = false; }
 };
-void captureSession?.load();
 onBeforeUnmount(() => captureSession?.dispose());
 const workbench = shallowRef<Awaited<ReturnType<typeof loadJsonToolWorkbench>> | null>(null);
 const loadStatus = ref<JsonToolLoadStatus>('loading');
+const viewportEligible = ref(false);
 const reviewUsage = shallowRef<ReviewUsageSignal | null>(null);
 const workbenchReviewBlocked = ref(true);
 let reviewSequence = 0;
@@ -135,8 +138,14 @@ const loader = createJsonToolLoadController({
 });
 // A new document also clears the browser's failed module-import graph.
 const reloadPage = () => window.location.reload();
-void loader.start();
-onBeforeUnmount(() => loader.dispose());
+const stopViewport = observeWorkbenchViewport(window, {
+    onChange: wide => { viewportEligible.value = wide; },
+    onFirstWide: () => {
+        void loader.start();
+        void captureSession?.load();
+    },
+});
+onBeforeUnmount(() => { stopViewport(); loader.dispose(); });
 
 const switchLocale = () => {
     locale.value = locale.value === 'zh' ? 'en' : 'zh';
@@ -144,6 +153,9 @@ const switchLocale = () => {
 watch(locale, (value) => {
     document.documentElement.lang = value === 'en' ? 'en' : 'zh-CN';
     document.title = value === 'en' ? 'JSON Toolbox' : 'JSON 工具箱';
+    document.querySelector('meta[name="description"]')?.setAttribute('content', value === 'en'
+        ? 'Format, edit, compare and convert JSON locally. JSON Toolbox keeps your data on your device and supports large JSON files.'
+        : 'JSON 工具箱：在本地格式化、编辑、对比、转换和脱敏 JSON，支持大型 JSON 文件，数据在设备上处理。');
     try {
         localStorage.setItem(LOCALE_KEY, value);
     } catch {

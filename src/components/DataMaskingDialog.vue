@@ -174,7 +174,7 @@
                                 <div class="field-paths-list">
                                     <div v-for="(fieldPathConfig, pathIndex) in currentRule.fieldPaths" :key="pathIndex" class="field-path-item">
                                         <div class="field-path-header">
-                                            <span class="field-path-label">{{ maskTxt.fieldPathLabel(pathIndex + 1) }}</span>
+                                            <label class="field-path-label" :for="`mask-field-path-${pathIndex}`">{{ maskTxt.fieldPathLabel(pathIndex + 1) }}</label>
                                             <div class="field-path-header-right">
                                                 <span class="field-path-priority">{{ maskTxt.priorityLabel(currentRule.fieldPaths.length - pathIndex) }}</span>
                                                 <el-button
@@ -194,6 +194,8 @@
                                         <div class="rule-field">
                                             <el-autocomplete
                                                 ref="fieldPathAutocompleteRef"
+                                                :id="`mask-field-path-${pathIndex}`"
+                                                :aria-label="maskTxt.fieldPathLabel(pathIndex + 1)"
                                                 v-model="fieldPathConfig.fieldPath"
                                                 :fetch-suggestions="queryFieldPaths"
                                                 :placeholder="maskTxt.fieldPathPlaceholder"
@@ -209,7 +211,7 @@
                                                 @keyup.enter="(event: KeyboardEvent) => handleFieldPathEnter(event, pathIndex)">
                                                 <template #default="{ item }">
                                                     <div class="autocomplete-item">
-                                                        <span class="path-text">{{ item.value }}</span>
+                                                        <span class="path-text" :title="item.value">{{ item.value }}</span>
                                                         <span v-if="item.itemCount !== undefined" class="path-type">{{ item.itemCount }} items</span>
                                                         <span v-else-if="item.keyCount !== undefined" class="path-type">{{ item.keyCount }} keys</span>
                                                     </div>
@@ -3088,7 +3090,7 @@ watch(
     border-radius: 4px;
 }
 
-:global(body.json-tool-theme-dark .field-path-priority) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .field-path-priority) {
     color: #cfd6e4 !important;
     background-color: #2d2f34 !important;
     border-color: #43454a !important;
@@ -3365,54 +3367,54 @@ watch(
     color: var(--theme-accent, #409eff);
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-alert.el-alert--info {
+:global(body[data-interface-style="default"].json-tool-theme-dark) .path-help-alert.el-alert--info {
     background-color: #252526;
     border-color: #3b3d41;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-alert:deep(.el-alert__icon) {
+:global(body[data-interface-style="default"].json-tool-theme-dark) .path-help-alert:deep(.el-alert__icon) {
     color: #8ab4f8;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-panel {
+:global(body[data-interface-style="default"].json-tool-theme-dark) .path-help-panel {
     background-color: rgba(255, 255, 255, 0.02);
     border-left-color: #4c8ed9;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-help-content) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .path-help-content) {
     color: #b8c0cc !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-help-content p) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .path-help-content p) {
     color: #b8c0cc !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-help-content > div > p:first-child) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .path-help-content > div > p:first-child) {
     color: #8ab4f8 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .path-help-content > div > p:last-child) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .path-help-content > div > p:last-child) {
     color: #a4acb8 !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-alert:deep(.el-alert__title) code {
+:global(body[data-interface-style="default"].json-tool-theme-dark) .path-help-alert:deep(.el-alert__title) code {
     background-color: #2d2f34;
     border-color: #4a4d52;
     color: #d7dce4;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn,
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn:hover,
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn:focus,
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn:active {
+:global(body[data-interface-style="default"].json-tool-theme-dark) .path-help-toggle-btn,
+:global(body[data-interface-style="default"].json-tool-theme-dark) .path-help-toggle-btn:hover,
+:global(body[data-interface-style="default"].json-tool-theme-dark) .path-help-toggle-btn:focus,
+:global(body[data-interface-style="default"].json-tool-theme-dark) .path-help-toggle-btn:active {
     background-color: #2d2f34 !important;
     border-color: #43454a !important;
     color: #d7dce4 !important;
     border-radius: 4px;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn:hover,
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"])) .path-help-toggle-btn:focus-visible {
+:global(body[data-interface-style="default"].json-tool-theme-dark) .path-help-toggle-btn:hover,
+:global(body[data-interface-style="default"].json-tool-theme-dark) .path-help-toggle-btn:focus-visible {
     background-color: #34363b !important;
     border-color: #4d5056 !important;
     color: #eef2f8 !important;
@@ -3428,6 +3430,7 @@ watch(
 
 .path-text {
     flex: 1;
+    min-width: 0;
     font-size: 13px;
     color: var(--json-tool-text, #303133);
     overflow: hidden;

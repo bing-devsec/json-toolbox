@@ -1,6 +1,6 @@
 import type { ReviewChoice, ReviewClient, ReviewUsageSignal } from './reviewClient';
-export const REVIEW_AFTER_USE_DELAY_MS = 10_000;
-export const REVIEW_IDLE_DELAY_MS = 5_000;
+export const REVIEW_AFTER_USE_DELAY_MS = 1_000;
+export const REVIEW_IDLE_DELAY_MS = 1_000;
 export interface ReviewEnvironment { visible: boolean; focused: boolean; blocked: boolean }
 
 /** One local UI session, with an independent backend lease for cross-tab exclusion. */

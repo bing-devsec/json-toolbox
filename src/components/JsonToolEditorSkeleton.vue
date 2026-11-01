@@ -45,9 +45,9 @@ const lineWidths = ['38%', '72%', '55%', '85%', '46%', '63%', '30%', '78%'];
     width: 100%;
     height: 100%;
     min-height: 480px;
-    background: #fff;
-    border: 1px solid var(--el-border-color-lighter, #ebeef5);
-    border-radius: 6px;
+    background: var(--json-tool-surface, #fff);
+    border: 1px solid var(--json-tool-border, var(--el-border-color-lighter, #ebeef5));
+    border-radius: var(--theme-radius, 6px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -60,15 +60,15 @@ const lineWidths = ['38%', '72%', '55%', '85%', '46%', '63%', '30%', '78%'];
     align-items: center;
     gap: 10px;
     padding: 0 14px;
-    border-bottom: 1px solid var(--el-border-color-lighter, #ebeef5);
-    background: var(--el-fill-color-light, #f5f7fa);
+    border-bottom: 1px solid var(--json-tool-border, var(--el-border-color-lighter, #ebeef5));
+    background: var(--json-tool-surface-soft, var(--el-fill-color-light, #f5f7fa));
 }
 
 .sk-btn {
     width: 30px;
     height: 22px;
     border-radius: 4px;
-    background: linear-gradient(90deg, #e8eaed 25%, #f2f4f6 50%, #e8eaed 75%);
+    background: linear-gradient(90deg, var(--json-tool-border, #e8eaed) 25%, var(--json-tool-surface-soft, #f2f4f6) 50%, var(--json-tool-border, #e8eaed) 75%);
     background-size: 200% 100%;
     animation: skeleton-loading 1.4s infinite;
 }
@@ -96,7 +96,7 @@ const lineWidths = ['38%', '72%', '55%', '85%', '46%', '63%', '30%', '78%'];
 
 .sk-divider {
     width: 1px;
-    background: var(--el-border-color-lighter, #ebeef5);
+    background: var(--json-tool-border, var(--el-border-color-lighter, #ebeef5));
 }
 
 .sk-gutter {
@@ -105,7 +105,7 @@ const lineWidths = ['38%', '72%', '55%', '85%', '46%', '63%', '30%', '78%'];
     flex-direction: column;
     gap: 8px;
     padding: 12px 8px;
-    background: var(--el-fill-color-lighter, #fafafa);
+    background: var(--json-tool-surface-soft, var(--el-fill-color-lighter, #fafafa));
     align-items: flex-end;
 }
 
@@ -113,7 +113,7 @@ const lineWidths = ['38%', '72%', '55%', '85%', '46%', '63%', '30%', '78%'];
     width: 16px;
     height: 12px;
     border-radius: 2px;
-    background: #eef0f2;
+    background: var(--json-tool-border, #eef0f2);
 }
 
 .sk-code {
@@ -128,7 +128,7 @@ const lineWidths = ['38%', '72%', '55%', '85%', '46%', '63%', '30%', '78%'];
 .sk-codeline {
     height: 12px;
     border-radius: 2px;
-    background: linear-gradient(90deg, #eef0f2 25%, #f6f8fa 50%, #eef0f2 75%);
+    background: linear-gradient(90deg, var(--json-tool-border, #eef0f2) 25%, var(--json-tool-surface-soft, #f6f8fa) 50%, var(--json-tool-border, #eef0f2) 75%);
     background-size: 200% 100%;
     animation: skeleton-loading 1.6s infinite;
 }
@@ -141,4 +141,11 @@ const lineWidths = ['38%', '72%', '55%', '85%', '46%', '63%', '30%', '78%'];
         background-position: -200% 0;
     }
 }
+body[data-interface-style="default"].json-tool-theme-dark .editor-skeleton { background: #1f1f1f; border-color: #2b2b2b; }
+body[data-interface-style="default"].json-tool-theme-dark .sk-toolbar { background: #181818; border-bottom-color: #2b2b2b; }
+body[data-interface-style="default"].json-tool-theme-dark .sk-btn { background: linear-gradient(90deg, #2b2b2b 25%, #333333 50%, #2b2b2b 75%); }
+body[data-interface-style="default"].json-tool-theme-dark .sk-divider { background: #2b2b2b; }
+body[data-interface-style="default"].json-tool-theme-dark .sk-gutter { background: #181818; }
+body[data-interface-style="default"].json-tool-theme-dark .sk-lineno { background: #2b2b2b; }
+body[data-interface-style="default"].json-tool-theme-dark .sk-codeline { background: linear-gradient(90deg, #2b2b2b 25%, #333333 50%, #2b2b2b 75%); }
 </style>

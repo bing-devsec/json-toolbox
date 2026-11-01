@@ -18,12 +18,14 @@
         </div>
 
         <div class="form-item">
-            <label class="form-label" @mousedown.prevent @click.prevent>{{ settingsTxt.fieldSortRootPathLabel }}</label>
+            <label class="form-label" for="sort-root-path-input">{{ settingsTxt.fieldSortRootPathLabel }}</label>
             <el-autocomplete
                 id="sort-root-path-input"
+                :aria-label="settingsTxt.fieldSortRootPathLabel"
                 v-model="sortRootPathModel"
                 :fetch-suggestions="queryRootPaths"
                 popper-class="sort-path-autocomplete"
+                fit-input-width
                 :placeholder="settingsTxt.fieldSortRootPathPlaceholder"
                 clearable
                 @select="handleRootPathSelect"
@@ -31,7 +33,7 @@
                 @keydown="handleRootPathKeydown">
                 <template #default="{ item }">
                     <div class="autocomplete-item">
-                        <span class="path-text">{{ item.value }}</span>
+                        <span class="path-text" :title="item.value">{{ item.value }}</span>
                         <span v-if="item.type" class="path-type">{{ getTypeLabel(item.type) }}</span>
                     </div>
                 </template>
@@ -40,12 +42,14 @@
         </div>
 
         <div class="form-item">
-            <label class="form-label" @mousedown.prevent @click.prevent>{{ settingsTxt.fieldSortFieldLabel }}</label>
+            <label class="form-label" for="sort-field-name-input">{{ settingsTxt.fieldSortFieldLabel }}</label>
             <el-autocomplete
                 id="sort-field-name-input"
+                :aria-label="settingsTxt.fieldSortFieldLabel"
                 v-model="sortFieldNameModel"
                 :fetch-suggestions="queryFieldPathsFromScope"
                 popper-class="sort-path-autocomplete"
+                fit-input-width
                 :trigger-on-focus="true"
                 :placeholder="settingsTxt.fieldSortFieldPlaceholder"
                 clearable
@@ -54,7 +58,7 @@
                 @keydown="handleFieldPathKeydown">
                 <template #default="{ item }">
                     <div class="autocomplete-item">
-                        <span class="path-text">{{ item.value }}</span>
+                        <span class="path-text" :title="item.value">{{ item.value }}</span>
                         <span v-if="item.type" class="path-type">{{ getTypeLabel(item.type) }}</span>
                     </div>
                 </template>
@@ -307,9 +311,12 @@ const sortFieldNameModel = computed({
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    min-width: 0;
 }
 
 .path-text {
+    flex: 1 1 auto;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -330,14 +337,14 @@ const sortFieldNameModel = computed({
     border: 1px solid var(--json-tool-border, #dcdfe6) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover.el-popover) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover.el-popover) {
     background: #1f1f1f !important;
     border-color: #2b2b2b !important;
     color: #cccccc !important;
     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5) !important;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .el-popper__arrow::before) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .el-popper__arrow::before) {
     background: #1f1f1f !important;
     border-color: #2b2b2b !important;
 }
@@ -367,7 +374,7 @@ const sortFieldNameModel = computed({
     background: var(--json-tool-surface-header, transparent);
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-guide-header) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-guide-header) {
     border-bottom-color: #2b2b2b !important;
     background: linear-gradient(to bottom, #232323, #1f1f1f) !important;
 }
@@ -379,7 +386,7 @@ const sortFieldNameModel = computed({
     font-weight: 600;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-guide-header h3) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-guide-header h3) {
     color: #cccccc !important;
 }
 
@@ -394,7 +401,7 @@ const sortFieldNameModel = computed({
     line-height: 1.6;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-guide-content p) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-guide-content p) {
     color: #9da0a6 !important;
 }
 
@@ -407,7 +414,7 @@ const sortFieldNameModel = computed({
     color: var(--json-tool-text-muted, #606266);
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-current-settings) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-current-settings) {
     background: #242424 !important;
     border-color: #333333 !important;
     color: #cccccc !important;
@@ -420,7 +427,7 @@ const sortFieldNameModel = computed({
     font-weight: 600;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-current-settings strong) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-current-settings strong) {
     color: #f0f0f0 !important;
 }
 
@@ -443,7 +450,7 @@ const sortFieldNameModel = computed({
     min-width: 68px;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-settings-label) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-settings-label) {
     color: #9da0a6 !important;
 }
 
@@ -456,7 +463,7 @@ const sortFieldNameModel = computed({
     background: var(--theme-selected, transparent);
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-current-settings code) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-current-settings code) {
     background: #303030 !important;
     color: #d4d4d4 !important;
 }
@@ -467,7 +474,7 @@ const sortFieldNameModel = computed({
     border-top: 1px solid var(--json-tool-border, #f5f7fa);
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .demo-guide-footer) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-guide-footer) {
     border-top-color: #2b2b2b !important;
     background: #1f1f1f !important;
 }
@@ -491,7 +498,7 @@ const sortFieldNameModel = computed({
     transition: background-color 0.3s;
 }
 
-:global(body.json-tool-theme-dark:not([data-theme-controls="semantic"]) .demo-guide-popover .step-dot) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .step-dot) {
     background: #4a4a4a !important;
 }
 

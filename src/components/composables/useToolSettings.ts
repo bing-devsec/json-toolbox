@@ -8,7 +8,7 @@
 // - 暴露 markInitialized() 给 onMounted 末尾调用，正式开启持久化。
 
 import { ref, watch, type Ref } from 'vue';
-import { normalizeInterfaceStyle, type InterfaceStyle } from '../../themes/interfaceThemes';
+import { normalizeInterfaceStyle, type InterfaceStyle } from '../../themes/ids';
 
 const SETTINGS_STORAGE_KEY = 'json-tool-settings';
 
@@ -67,7 +67,7 @@ const defaultSettings: PersistedSettings = {
     syncScrollEnabled: true,
     showMinimap: false,
     enableDiagnostics: true,
-    indentSize: 2,
+    indentSize: 4,
     encodingMode: false,
     arrayNewLine: true,
     repairOnFormat: false,

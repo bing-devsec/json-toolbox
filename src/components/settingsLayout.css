@@ -1,7 +1,8 @@
 /* Shared layout for card-based settings. Theme files continue to own colors. */
 .el-dialog.settings-dialog-wrapper {
     display: flex; flex-direction: column; max-width: calc(100vw - 32px);
-    max-height: calc(100dvh - 48px); margin: 24px auto !important;
+    /* Align the dialog top with the editor header boundary (toolbar height 43px). */
+    max-height: calc(100dvh - 67px); margin: 43px auto 24px !important;
 }
 .el-dialog.settings-dialog-wrapper > :is(.el-dialog__header, .el-dialog__footer) { flex: 0 0 auto; }
 .el-dialog.settings-dialog-wrapper > .el-dialog__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }

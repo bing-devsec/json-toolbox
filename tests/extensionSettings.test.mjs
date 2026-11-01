@@ -38,6 +38,15 @@ async function withSettings(saved, action) {
     }
 }
 
+test('fresh installs default to four-space formatting indent while explicit choices are preserved', async () => {
+    await withSettings(null, async settings => {
+        assert.equal(settings.indentSize.value, 4);
+    });
+    await withSettings({ indentSize: 2 }, async settings => {
+        assert.equal(settings.indentSize.value, 2);
+    });
+});
+
 test('extension update preserves valid older preferences and starts with repair disabled', async () => {
     await withSettings({
         fontSize: 14, indentSize: 4, wordWrap: false, themeMode: 'dark', sortMethod: 'length',

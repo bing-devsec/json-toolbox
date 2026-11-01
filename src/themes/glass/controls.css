@@ -1,0 +1,397 @@
+/* Glass controls. Every color comes from glass tokens through variables. */
+
+body[data-interface-style="glass"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn) {
+    --glass-control-bg: var(--glass-neutral-bg);
+    --glass-control-fg: var(--glass-neutral-fg);
+    --glass-control-border: var(--glass-neutral-border);
+    --glass-control-hover-bg: var(--glass-neutral-hover-bg);
+    --glass-control-hover-border: var(--glass-neutral-hover-border);
+    --glass-control-active-bg: var(--glass-neutral-active-bg);
+    --glass-control-disabled-bg: var(--glass-neutral-disabled-bg);
+    --glass-control-disabled-fg: var(--glass-neutral-disabled-fg);
+    --glass-control-disabled-border: var(--glass-neutral-disabled-border);
+    background: var(--glass-control-bg) !important;
+    color: var(--glass-control-fg) !important;
+    border: 1px solid var(--glass-control-border) !important;
+    border-radius: var(--glass-radius-small) !important;
+    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow-soft) !important;
+    filter: none !important;
+    font-weight: 500;
+}
+
+body[data-interface-style="glass"] .el-button.el-button--primary {
+    --glass-control-bg: var(--glass-primary-bg);
+    --glass-control-fg: var(--glass-primary-fg);
+    --glass-control-border: var(--glass-primary-border);
+    --glass-control-hover-bg: var(--glass-primary-hover-bg);
+    --glass-control-hover-border: var(--glass-primary-hover-border);
+    --glass-control-active-bg: var(--glass-primary-active-bg);
+    --glass-control-disabled-bg: var(--glass-primary-disabled-bg);
+    --glass-control-disabled-fg: var(--glass-primary-disabled-fg);
+    --glass-control-disabled-border: var(--glass-primary-disabled-border);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-primary-shadow) !important;
+}
+
+body[data-interface-style="glass"] :is(.tool-bar .el-button--primary:not(.json-format-button), .panel-actions .el-button--primary, .el-button.transfer-button) {
+    --glass-control-bg: var(--glass-secondary-bg);
+    --glass-control-fg: var(--glass-secondary-fg);
+    --glass-control-border: var(--glass-secondary-border);
+    --glass-control-hover-bg: var(--glass-secondary-hover-bg);
+    --glass-control-hover-border: var(--glass-secondary-hover-border);
+    --glass-control-active-bg: var(--glass-secondary-active-bg);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow-soft) !important;
+}
+
+body[data-interface-style="glass"] :is(.el-button.el-button--danger, .archive-header-action.danger) {
+    --glass-control-bg: var(--glass-danger-bg);
+    --glass-control-fg: var(--glass-danger-fg);
+    --glass-control-border: var(--glass-danger-border);
+    --glass-control-hover-bg: var(--glass-danger-hover-bg);
+    --glass-control-hover-border: var(--glass-danger-hover-border);
+    --glass-control-active-bg: var(--glass-danger-active-bg);
+}
+
+body[data-interface-style="glass"] :is(.el-button--success, .el-button--info, .el-button--warning) {
+    --glass-control-bg: var(--glass-neutral-bg);
+    --glass-control-fg: var(--glass-neutral-fg);
+    --glass-control-border: var(--glass-neutral-border);
+}
+
+body[data-interface-style="glass"] .el-button.el-button--success { color: var(--glass-success-fg) !important; }
+body[data-interface-style="glass"] .el-button.el-button--warning { color: var(--glass-warning-fg) !important; }
+body[data-interface-style="glass"] .el-button.el-button--info { color: var(--json-tool-text-muted) !important; }
+
+body[data-interface-style="glass"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):hover:not(:disabled):not(.is-disabled) {
+    background: var(--glass-control-hover-bg) !important;
+    border-color: var(--glass-control-hover-border) !important;
+}
+
+body[data-interface-style="glass"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):active:not(:disabled):not(.is-disabled) {
+    background: var(--glass-control-active-bg) !important;
+}
+
+body[data-interface-style="glass"] :is(.el-button.el-button.is-disabled, .el-button:disabled, .archive-header-action:disabled, .diff-nav-action:disabled, .diff-sync-btn:disabled, .panel-action:disabled) {
+    background: var(--glass-control-disabled-bg) !important;
+    color: var(--glass-control-disabled-fg) !important;
+    border-color: var(--glass-control-disabled-border) !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+}
+
+body[data-interface-style="glass"] :is(button, [role="button"]):focus-visible {
+    outline: 2px solid var(--glass-focus) !important;
+    outline-offset: 2px;
+}
+
+body[data-interface-style="glass"] .el-button.transfer-button svg { color: inherit !important; }
+body[data-interface-style="glass"] .main-action-group > .data-convert-dropdown:not(:first-child) .el-button {
+    margin-left: 0 !important;
+    border-left: 1px solid var(--glass-divider) !important;
+}
+body[data-interface-style="glass"] .el-button-group > .el-button:not(:first-child) {
+    border-left-color: var(--glass-divider) !important;
+}
+
+/* Inputs, selects and keyboard focus */
+body[data-interface-style="glass"] :is(.el-select__wrapper.el-select__wrapper, .el-input__wrapper.el-input__wrapper, .el-textarea__inner) {
+    background: var(--glass-input) !important;
+    color: var(--json-tool-text) !important;
+    border: 0 !important;
+    border-radius: var(--glass-radius-small) !important;
+    box-shadow: inset 0 0 0 1px var(--glass-input-border) !important;
+}
+body[data-interface-style="glass"] :is(.el-select__wrapper.is-focused, .el-input__wrapper.is-focus, .el-textarea__inner:focus) {
+    box-shadow: inset 0 0 0 1px var(--glass-focus), 0 0 0 3px color-mix(in srgb, var(--glass-focus) 20%, transparent) !important;
+}
+body[data-interface-style="glass"] :is(.el-input__inner, .el-textarea__inner)::placeholder { color: var(--json-tool-text-muted) !important; }
+body[data-interface-style="glass"] :is(.el-select__placeholder, .el-select__selected-item, .el-select__caret) { color: var(--json-tool-text) !important; }
+body[data-interface-style="glass"] :is(.el-select-dropdown__item.is-selected, .el-select-dropdown__item.is-hovering, .el-dropdown-menu__item:hover, .el-autocomplete-suggestion li:is(:hover, .highlighted)) {
+    background: var(--glass-selected-bg) !important;
+    color: var(--glass-selected-fg) !important;
+}
+body[data-interface-style="glass"] .el-autocomplete-suggestion li:is(:hover, .highlighted) :is(.path-text, .path-type) {
+    color: var(--glass-selected-fg) !important;
+}
+
+/* Selection controls */
+body[data-interface-style="glass"] .el-checkbox__inner {
+    background: var(--glass-input);
+    border-color: var(--glass-input-border);
+    border-radius: 4px;
+}
+body[data-interface-style="glass"] :is(.el-checkbox__input.is-checked, .el-checkbox__input.is-indeterminate) .el-checkbox__inner {
+    background: var(--theme-accent);
+    border-color: var(--theme-accent);
+}
+body[data-interface-style="glass"] .el-checkbox__input.is-checked .el-checkbox__inner::after { border-color: var(--glass-on-accent); }
+body[data-interface-style="glass"] .el-checkbox__input.is-indeterminate .el-checkbox__inner::before { background: var(--glass-on-accent); }
+body[data-interface-style="glass"] .el-checkbox__input:not(.is-disabled):has(input:focus-visible) .el-checkbox__inner {
+    outline: 2px solid var(--glass-focus);
+    outline-offset: 2px;
+}
+body[data-interface-style="glass"] .el-radio__inner {
+    background: var(--glass-input);
+    border-color: var(--glass-input-border);
+}
+body[data-interface-style="glass"] .el-radio__input.is-checked .el-radio__inner {
+    background: var(--theme-accent);
+    border-color: var(--theme-accent);
+}
+body[data-interface-style="glass"] .el-radio__input.is-checked .el-radio__inner::after { background: var(--glass-on-accent); }
+body[data-interface-style="glass"] .el-radio__input.is-checked + .el-radio__label { color: var(--json-tool-text) !important; }
+body[data-interface-style="glass"] .el-radio:has(input:focus-visible) { outline: 2px solid var(--glass-focus); outline-offset: 2px; }
+body[data-interface-style="glass"] .el-switch__core {
+    background: var(--glass-input) !important;
+    border-color: var(--glass-input-border) !important;
+}
+body[data-interface-style="glass"] .el-switch:not(.is-checked) .el-switch__core {
+    background: var(--glass-switch-track) !important;
+    border-color: var(--glass-switch-track-border) !important;
+}
+body[data-interface-style="glass"] .el-switch .el-switch__action {
+    background-color: var(--glass-switch-thumb) !important;
+    border: 1px solid var(--glass-switch-thumb-border) !important;
+    box-shadow: var(--glass-switch-thumb-shadow) !important;
+    box-sizing: border-box;
+}
+body[data-interface-style="glass"] .el-switch.is-checked .el-switch__core {
+    background: var(--theme-accent) !important;
+    border-color: var(--theme-accent) !important;
+}
+body[data-interface-style="glass"] .el-switch.is-checked .el-switch__action {
+    background-color: var(--glass-on-accent) !important;
+    border-color: var(--glass-switch-thumb-border) !important;
+}
+body[data-interface-style="glass"] .el-switch.is-disabled .el-switch__action { opacity: .65; }
+body[data-interface-style="glass"] .el-switch.is-disabled .el-switch__core {
+    background: var(--glass-neutral-disabled-bg) !important;
+    border-color: var(--glass-neutral-disabled-border) !important;
+}
+
+/* Folding is one compound glass pill, not two separate controls. */
+body[data-interface-style="glass"] .json-tool-root .collapse-control {
+    height: 32px;
+    box-sizing: border-box;
+    gap: 0;
+    background: var(--glass-neutral-bg) !important;
+    border: 1px solid var(--glass-chrome-border) !important;
+    border-radius: var(--glass-radius-small) !important;
+    box-shadow: inset 0 1px 0 var(--glass-highlight);
+    overflow: hidden;
+}
+body[data-interface-style="glass"] .json-tool-root .collapse-control :is(.el-select__wrapper, .el-input__wrapper, .el-button.level-action-button) {
+    height: 30px;
+    min-height: 30px;
+    box-sizing: border-box;
+    margin: 0 !important;
+    background: transparent !important;
+    color: var(--glass-neutral-fg) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+body[data-interface-style="glass"] .json-tool-root .collapse-control .level-action-button::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 7px;
+    bottom: 7px;
+    width: 1px;
+    background: var(--glass-divider);
+    pointer-events: none;
+}
+body[data-interface-style="glass"] .json-tool-root .collapse-control :is(.el-select__wrapper:not(.is-disabled):hover, .level-action-button:not(:disabled):hover) {
+    background: var(--glass-neutral-hover-bg) !important;
+}
+body[data-interface-style="glass"] .json-tool-root .collapse-control:has(.el-select__wrapper.is-disabled) {
+    background: var(--glass-neutral-disabled-bg) !important;
+    border-color: var(--glass-neutral-disabled-border) !important;
+}
+body[data-interface-style="glass"] .json-tool-root .collapse-control :is(.el-select__wrapper.is-disabled, .level-action-button:disabled) {
+    background: transparent !important;
+    color: var(--glass-neutral-disabled-fg) !important;
+}
+body[data-interface-style="glass"] .collapse-control .level-select:has(.is-disabled) :is(.el-select__selected-item, .el-select__caret) {
+    color: var(--glass-neutral-disabled-fg) !important;
+}
+
+/* Settings dialog: translucent cards on a denser glass sheet. */
+body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .settings-dialog-content :is(.el-collapse-item__header, .el-collapse-item__wrap, .el-collapse-item__content) {
+    background: transparent !important;
+    border-color: var(--glass-divider) !important;
+}
+body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .settings-dialog-content .el-collapse-item__header:is(:hover, .is-active) {
+    background: var(--glass-panel-soft) !important;
+}
+body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card {
+    background: var(--glass-panel-soft) !important;
+    border-color: var(--glass-chrome-border) !important;
+    border-radius: var(--glass-radius-small);
+    transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card:hover {
+    background: var(--glass-card-hover) !important;
+    border-color: var(--glass-card-hover-border) !important;
+    box-shadow: var(--glass-card-hover-shadow);
+}
+body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered {
+    background: var(--glass-neutral-bg) !important;
+    border-color: var(--glass-neutral-border) !important;
+    border-radius: var(--glass-radius-small);
+    color: var(--json-tool-text);
+}
+body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered:not(.is-disabled):not(.is-checked):hover {
+    background: var(--glass-neutral-hover-bg) !important;
+}
+body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked {
+    background: var(--glass-selected-bg) !important;
+    border-color: var(--glass-focus) !important;
+}
+body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-checked .el-radio__label {
+    color: var(--glass-selected-fg) !important;
+}
+body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio:has(input:focus-visible) {
+    outline: 2px solid var(--glass-focus);
+    outline-offset: 2px;
+}
+body[data-interface-style="glass"] .appearance-mode button[aria-pressed="true"] {
+    background: var(--glass-selected-bg);
+    color: var(--glass-selected-fg);
+    border-color: var(--glass-focus);
+}
+body[data-interface-style="glass"] .appearance-style-card[aria-pressed="true"] {
+    border-color: var(--glass-focus);
+    box-shadow: inset 0 0 0 1px var(--glass-focus), var(--glass-shadow-soft);
+    background: var(--glass-panel-soft);
+}
+
+/* Masking dialog and teleported suggestions */
+body[data-interface-style="glass"] :is(.rule-item, .saved-rule-item, .affix-section, .path-help-panel, .form-value-quote--compact) {
+    background: var(--glass-card-surface) !important;
+    border-color: var(--glass-chrome-border) !important;
+    border-radius: var(--glass-radius-small);
+}
+/* Nested path group: border only, so it does not stack a second milky fill. */
+body[data-interface-style="glass"] .field-path-item {
+    background: transparent !important;
+    border-color: var(--glass-chrome-border) !important;
+    border-radius: var(--glass-radius-small);
+}
+/* The rule form is static; only the saved-rule card is clickable and gets hover. */
+body[data-interface-style="glass"] .saved-rule-item:hover {
+    background: var(--glass-card-hover) !important;
+    border-color: var(--glass-card-hover-border) !important;
+}
+body[data-interface-style="glass"] .el-button.path-help-toggle-btn {
+    background: transparent !important;
+    color: var(--theme-accent) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+body[data-interface-style="glass"] .el-button.path-help-toggle-btn:hover:not(:disabled):not(.is-disabled) {
+    background: transparent !important;
+    color: var(--theme-accent) !important;
+}
+body[data-interface-style="glass"] :is(.field-path-priority, .path-help-content code) {
+    background: var(--glass-selected-bg) !important;
+    color: var(--glass-selected-fg) !important;
+    border-color: var(--glass-chrome-border) !important;
+}
+body[data-interface-style="glass"] .path-help-panel {
+    border-left: 2px solid var(--theme-accent) !important;
+}
+body[data-interface-style="glass"] .el-dialog .el-alert {
+    background: var(--glass-card-surface) !important;
+    border-color: var(--glass-chrome-border) !important;
+    color: var(--json-tool-text) !important;
+}
+body[data-interface-style="glass"] .el-dialog :is(.dialog-title, .section-title, .rule-name-label, .field-path-label, .field-label, .saved-rule-name, .affix-row-label, .affix-section-title) {
+    color: var(--json-tool-text) !important;
+}
+body[data-interface-style="glass"] .el-dialog :is(.priority-hint, .saved-rule-meta, .affix-hint) {
+    color: var(--json-tool-text-muted) !important;
+}
+
+/* Sort dialog, demo and Diff chrome */
+body[data-interface-style="glass"] .sort-direction-card,
+body[data-interface-style="glass"] .sort-option-card {
+    background: var(--glass-neutral-bg) !important;
+    border-color: var(--glass-neutral-border) !important;
+    border-radius: var(--glass-radius-small);
+}
+body[data-interface-style="glass"] .sort-direction-card.is-active,
+body[data-interface-style="glass"] .sort-option-card.is-active {
+    background: var(--glass-selected-bg) !important;
+    border-color: var(--glass-focus) !important;
+}
+body[data-interface-style="glass"] .step-dot.active {
+    background: var(--theme-accent) !important;
+}
+body[data-interface-style="glass"] .diff-sync-btn-group.is-active .diff-sync-btn {
+    background: var(--glass-selected-bg) !important;
+    color: var(--glass-selected-fg) !important;
+}
+body[data-interface-style="glass"] .diff-cell-center {
+    background: var(--json-tool-diff-center-bg) !important;
+    border-color: var(--json-tool-diff-center-border) !important;
+}
+body[data-interface-style="glass"] :is(.error-warning-icon, .error-nav-count) {
+    color: var(--theme-danger) !important;
+}
+body[data-interface-style="glass"] .el-dialog .delete-confirm {
+    background: color-mix(in srgb, var(--theme-danger) 10%, var(--glass-panel)) !important;
+    border-color: var(--glass-danger-border) !important;
+}
+body[data-interface-style="glass"] .el-dialog :is(.delete-warning-icon, .delete-confirm-text, .add-field-path-error) {
+    color: var(--theme-danger) !important;
+}
+
+
+/* Archive title actions stay quiet; the sidebar header is not a toolbar. */
+body[data-interface-style="glass"] .archive-sidebar-header .archive-header-action {
+    border-radius: var(--archive-action-radius) !important;
+    background: transparent !important; border-color: transparent !important; box-shadow: none !important;
+    color: var(--json-tool-text-muted) !important;
+}
+body[data-interface-style="glass"] .archive-sidebar-header .archive-header-action:hover:not(:disabled):not(.is-disabled) {
+    background: var(--glass-neutral-hover-bg) !important; border-color: var(--glass-chrome-border) !important; color: var(--json-tool-text) !important;
+}
+body[data-interface-style="glass"] .archive-sidebar-header .archive-header-action:active:not(:disabled):not(.is-disabled) {
+    background: var(--glass-neutral-active-bg) !important;
+}
+body[data-interface-style="glass"] .archive-sidebar-header .archive-header-action.danger:hover:not(:disabled):not(.is-disabled) {
+    background: color-mix(in srgb, var(--theme-danger) 12%, var(--glass-panel)) !important;
+    border-color: color-mix(in srgb, var(--theme-danger) 34%, transparent) !important;
+    color: var(--theme-danger) !important;
+}
+body[data-interface-style="glass"] .archive-sidebar-header .archive-header-action:disabled {
+    background: transparent !important; border-color: transparent !important; color: var(--glass-neutral-disabled-fg) !important; opacity: 1 !important;
+}
+
+/* File transfer and diff format are the accent actions; sort stays neutral. */
+body[data-interface-style="glass"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button,
+body[data-interface-style="glass"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:hover:not(:disabled):not(.is-disabled),
+body[data-interface-style="glass"] .diff-panel-actions .diff-format-button,
+body[data-interface-style="glass"] .diff-panel-actions .diff-format-button:hover:not(:disabled):not(.is-disabled) {
+    color: var(--theme-accent) !important;
+    border-color: color-mix(in srgb, var(--theme-accent) 45%, var(--json-tool-border)) !important;
+}
+
+body[data-interface-style="glass"] :is(.panel-actions, .diff-panel-actions) .el-button--success,
+body[data-interface-style="glass"] :is(.panel-actions, .diff-panel-actions) .el-button--success:hover:not(:disabled):not(.is-disabled) {
+    border-color: color-mix(in srgb, var(--theme-success) 45%, var(--json-tool-border)) !important;
+}
+
+/* Keep focus immediate: these frames never animate their geometry or focus shadow. */
+body[data-interface-style="glass"] .json-tool-root .collapse-control .el-select__wrapper {
+    transition-property: background-color, color;
+}
+
+/* Keyboard focus stays inside the compound control; pointer clicks add no ring. */
+body[data-interface-style="glass"] .json-tool-root[data-keyboard-navigation="true"] .collapse-control .el-select__wrapper:has(input:focus-visible) {
+    box-shadow: inset 0 0 0 2px var(--glass-focus) !important;
+}
+body[data-interface-style="glass"] .json-tool-root .collapse-control .level-action-button:focus-visible {
+    outline: 2px solid var(--glass-focus) !important;
+    outline-offset: -3px;
+}

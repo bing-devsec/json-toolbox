@@ -131,7 +131,7 @@ onBeforeUnmount(() => {
 .review-invitation button:hover { color: var(--el-color-primary, #409eff); border-color: var(--el-color-primary, #409eff); }
 .review-invitation button:focus-visible { outline: 2px solid var(--el-color-primary, #409eff); outline-offset: 2px; }
 .review-invitation button:disabled { cursor: default; opacity: .6; }
-.review-invitation .review-primary { background: var(--el-color-primary, #409eff); border-color: var(--el-color-primary, #409eff); color: #fff; }
+.review-invitation .review-primary { background: var(--el-color-primary, #409eff); border-color: var(--el-color-primary, #409eff); color: var(--theme-on-accent, #fff); }
 .review-invitation .review-never { margin-left: auto; border-color: transparent; padding-right: 0; }
 .review-invitation .review-close { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; border: 0; padding: 3px; background: transparent; }
 .review-close svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }

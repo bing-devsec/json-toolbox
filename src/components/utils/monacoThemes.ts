@@ -1,4 +1,4 @@
-import { interfaceStyles, getInterfacePalette, normalizeInterfaceStyle } from '../../themes/interfaceThemes';
+import { interfaceStyles, getInterfacePalette, normalizeInterfaceStyle } from '../../themes/registry';
 import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 export const JSON_TOOL_LIGHT_THEME = 'json-tool-light-theme';

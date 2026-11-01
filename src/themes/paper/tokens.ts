@@ -1,6 +1,8 @@
 /** Paper's semantic control contract. Every state is explicit, in both modes.
  * Copy/download are neutral actions. Success/warning colors describe feedback,
  * not arbitrary categories of toolbar buttons. Icons always inherit control text. */
+import type { Palette } from '../contract';
+
 export interface ControlColors {
     background: string; foreground: string; border: string;
     hoverBackground: string; hoverForeground: string; hoverBorder: string;
@@ -33,6 +35,17 @@ export const paperControls = {
     },
 } as const;
 
+export const paperLight: Palette = {
+    bg: '#eae5da', surface: '#faf7ef', soft: '#f1ecdf', text: '#3d3931', muted: '#706657',
+    border: '#d6cdbd', borderStrong: '#958674', accent: '#805735', editor: '#fffcf4',
+    selected: '#eee2ca', header: '#f6f1e5', radius: '2px', shadow: 'none',
+};
+export const paperDark: Palette = {
+    bg: '#25231f', surface: '#302d27', soft: '#292720', text: '#e9e0cf', muted: '#bfb39e',
+    border: '#5b5447', borderStrong: '#8e806c', accent: '#d7b88c', editor: '#292720',
+    gutter: '#353127', selected: '#514634', header: '#353127', radius: '2px', shadow: 'none',
+};
+
 export function getPaperControlVariables(mode: 'light' | 'dark'): Record<string, string> {
     const tokens = paperControls[mode];
     const variables: Record<string, string> = {};
@@ -60,6 +73,17 @@ export function getPaperControlVariables(mode: 'light' | 'dark'): Record<string,
         '--el-color-warning': tokens.warning, '--el-color-warning-light-9': tokens.warningBackground,
         '--el-disabled-bg-color': tokens.disabled.background, '--el-disabled-text-color': tokens.disabled.foreground,
         '--el-disabled-border-color': tokens.disabled.border,
+        '--toolbar-hover-bg': tokens.secondary.hoverBackground, '--toolbar-hover-fg': tokens.secondary.hoverForeground,
+        '--toolbar-active-bg': tokens.secondary.activeBackground, '--toolbar-active-fg': tokens.secondary.activeForeground,
+        '--toolbar-hover-shadow': 'inset 0 1px 0 rgba(255,255,255,.28)',
+        '--toolbar-active-shadow': mode === 'dark' ? 'inset 0 1px 3px rgba(0,0,0,.30)' : 'inset 0 1px 2px rgba(61,57,49,.18)',
+        '--toolbar-primary-hover-bg': tokens.primary.hoverBackground, '--toolbar-primary-hover-fg': tokens.primary.hoverForeground,
+        '--toolbar-primary-active-bg': tokens.primary.activeBackground, '--toolbar-primary-active-fg': tokens.primary.activeForeground,
+        '--toolbar-primary-hover-shadow': 'none',
+        '--toolbar-primary-active-shadow': mode === 'dark' ? 'inset 0 1px 3px rgba(0,0,0,.34)' : 'inset 0 1px 2px rgba(61,57,49,.24)',
+        '--toolbar-active-transform': 'none',
+        '--toolbar-border': tokens.secondary.border, '--toolbar-divider': tokens.secondary.border,
+        '--toolbar-primary-border': tokens.primary.border,
     });
     return variables;
 }

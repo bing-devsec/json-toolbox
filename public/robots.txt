@@ -1,0 +1,3 @@
+# HTTP preview and web hosting. Packaged extension pages have no public crawlable origin.
+User-agent: *
+Allow: /

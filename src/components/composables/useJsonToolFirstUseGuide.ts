@@ -24,7 +24,6 @@ export const useJsonToolFirstUseGuide = (options: UseJsonToolFirstUseGuideOption
 
     const shouldShowFirstUseGuide = computed(
         () =>
-            options.editorsInitialized.value &&
             !options.isDiffMode.value &&
             !isFirstUseGuideDismissed.value &&
             !inputHasContent.value &&
@@ -56,7 +55,7 @@ export const useJsonToolFirstUseGuide = (options: UseJsonToolFirstUseGuideOption
 
     const loadFirstUseSample = () => {
         const inputEditor = options.getInputEditor();
-        if (!inputEditor) {
+        if (!options.editorsInitialized.value || !inputEditor) {
             options.showEditorNotInitError();
             return;
         }

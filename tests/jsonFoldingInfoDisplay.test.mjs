@@ -7,8 +7,9 @@ const bundle = await build({
     entryPoints: ['src/components/composables/useJsonFoldingInfoDisplay.ts'],
     bundle: true, platform: 'node', format: 'cjs', write: false,
     plugins: [{ name: 'monaco-options', setup(build) {
+        build.onResolve({ filter: /monacoRuntime$/ }, () => ({ path: 'runtime', namespace: 'mock' }));
         build.onResolve({ filter: /^monaco-editor\/esm\/vs\/editor\/editor\.api$/ }, () => ({ path: 'monaco', namespace: 'mock' }));
-        build.onLoad({ filter: /.*/, namespace: 'mock' }, () => ({ contents: 'export const editor = { EditorOption: { lineHeight: 1 } };' }));
+        build.onLoad({ filter: /.*/, namespace: 'mock' }, args => ({ contents: args.path === 'runtime' ? "import * as monacoApi from 'monaco-editor/esm/vs/editor/editor.api'; export {monacoApi};" : 'export const editor = { EditorOption: { lineHeight: 1 } };' }));
     } }],
 });
 
