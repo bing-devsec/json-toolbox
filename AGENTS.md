@@ -6,7 +6,7 @@
 
 涉及扩展主题开发、主题样式修复或跨主题验收时，同时对照 [临时主题核查](.agents/skills/blog-extension-theme-check/SKILL.md)；局部修改只检查相关项，不扩大为全工程审计。
 
-- 共享 JSON 语义不等于共享 Nuxt 应用外壳；对照同级 `portal-web` 的对应模块，按任务范围同步。
+- 共享 JSON 语义不等于共享 Nuxt 应用外壳；对照同级 `json-web` 的对应模块，按任务范围同步。
 - 保留 `scripts/check-local-only.mjs` 的本地处理与 CSP 约束，不能顺带引入博客 API、远程权限或 content scripts。
 - `npm test` 使用项目注册器；`npm run build` 包含类型检查、本地约束校验及构建元信息。
 - 只有需要安装包时再运行 `npm run package`、`npm run verify-package`，以当前源码生成的新包为证据。

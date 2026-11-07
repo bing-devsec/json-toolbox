@@ -48,10 +48,7 @@ const REQUIRED_VARIABLES = [
     '--theme-danger', '--theme-success', '--theme-warning',
     '--toolbar-hover-bg', '--toolbar-hover-fg', '--toolbar-active-bg', '--toolbar-active-fg',
     '--toolbar-hover-shadow', '--toolbar-active-shadow',
-    '--toolbar-primary-hover-bg', '--toolbar-primary-hover-fg',
-    '--toolbar-primary-active-bg', '--toolbar-primary-active-fg',
-    '--toolbar-primary-hover-shadow', '--toolbar-primary-active-shadow',
-    '--toolbar-active-transform', '--toolbar-border', '--toolbar-divider', '--toolbar-primary-border',
+    '--toolbar-active-transform', '--toolbar-border', '--toolbar-divider',
     '--el-color-primary', '--el-color-primary-light-3', '--el-color-primary-light-5',
     '--el-color-primary-light-7', '--el-color-primary-light-8', '--el-color-primary-light-9',
     '--el-color-danger', '--el-color-success', '--el-color-warning',
@@ -198,10 +195,15 @@ test('primary action materials stay readable in normal, hover and pressed states
         const normal = style === 'ide'
             ? [v['--ide-primary'], v['--ide-on-primary']]
             : [v[prefix + (style === 'paper' ? 'background' : 'bg')], v[prefix + (style === 'paper' ? 'foreground' : 'fg')]];
-        const states = [normal,
-            [v['--toolbar-primary-hover-bg'], v['--toolbar-primary-hover-fg']],
-            [v['--toolbar-primary-active-bg'], v['--toolbar-primary-active-fg']],
-        ];
+        // Dialog primary actions retain their own materials after toolbar actions are unified.
+        const interactions = style === 'default'
+            ? [[v['--el-color-primary-light-3'], v['--default-primary-fg']], [v['--el-color-primary-dark-2'], v['--default-primary-fg']]]
+            : style === 'ide'
+                ? [[v['--ide-primary-hover'], v['--ide-on-primary']], [v['--ide-primary-pressed'], v['--ide-on-primary']]]
+                : style === 'paper'
+                    ? [[v['--paper-primary-hover-background'], v['--paper-primary-hover-foreground']], [v['--paper-primary-active-background'], v['--paper-primary-active-foreground']]]
+                    : [[v[prefix + 'hover-bg'], v[prefix + 'fg']], [v[prefix + 'active-bg'], v[prefix + 'fg']]];
+        const states = [normal, ...interactions];
         for (const [index, [background, foreground]] of states.entries()) {
             assert.match(foreground, /^#[0-9a-f]{6}$/i, `${style}/${mode}/${index} foreground`);
             const stops = background.match(/#[0-9a-f]{6}\b/ig);

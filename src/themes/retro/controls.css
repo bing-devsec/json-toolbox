@@ -32,7 +32,7 @@ body[data-interface-style="retro"] .el-button.el-button--primary {
     box-shadow: inset 0 1px 0 var(--retro-title-highlight), var(--retro-primary-shadow) !important;
 }
 
-body[data-interface-style="retro"] :is(.tool-bar .el-button--primary:not(.json-format-button), .panel-actions .el-button--primary, .el-button.transfer-button) {
+body[data-interface-style="retro"] :is(.tool-bar .el-button--primary, .panel-actions .el-button--primary, .el-button.transfer-button) {
     --retro-control-bg: var(--retro-secondary-bg);
     --retro-control-fg: var(--retro-secondary-fg);
     --retro-control-border: var(--retro-secondary-border);
@@ -303,7 +303,7 @@ body[data-interface-style="retro"] .diff-cell-center {
 body[data-interface-style="retro"] .el-message.el-message {
     border: 1px solid var(--retro-border) !important;
     border-radius: 3px !important;
-    box-shadow: var(--retro-window-shadow) !important;
+    box-shadow: var(--retro-popover-shadow) !important;
 }
 body[data-interface-style="retro"] :is(.error-warning-icon, .error-nav-count) { color: var(--theme-danger) !important; }
 body[data-interface-style="retro"] .el-dialog .delete-confirm {
@@ -352,25 +352,6 @@ body[data-interface-style="retro"] .el-button.path-help-toggle-btn:active:not(:d
     color: var(--theme-accent) !important;
     border: 0 !important;
     box-shadow: none !important;
-}
-
-/* Diff's local formatting action is the accent action; sort stays neutral. */
-body[data-interface-style="retro"] .diff-panel-actions .diff-format-button,
-body[data-interface-style="retro"] .diff-panel-actions .diff-format-button:hover:not(:disabled):not(.is-disabled) {
-    color: var(--theme-accent) !important;
-    border-color: color-mix(in srgb, var(--theme-accent) 45%, var(--json-tool-border)) !important;
-}
-
-/* File transfer shares the accent with diff format. */
-body[data-interface-style="retro"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button,
-body[data-interface-style="retro"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:hover:not(:disabled):not(.is-disabled) {
-    color: var(--theme-accent) !important;
-    border-color: color-mix(in srgb, var(--theme-accent) 45%, var(--json-tool-border)) !important;
-}
-
-body[data-interface-style="retro"] :is(.panel-actions, .diff-panel-actions) .el-button--success,
-body[data-interface-style="retro"] :is(.panel-actions, .diff-panel-actions) .el-button--success:hover:not(:disabled):not(.is-disabled) {
-    border-color: color-mix(in srgb, var(--theme-success) 45%, var(--json-tool-border)) !important;
 }
 
 /* Keep focus immediate: these frames never animate their geometry or focus shadow. */

@@ -30,6 +30,7 @@ import type { DiffLineChange } from '../utils/diffEngine';
 import type { DiffLocaleState } from '../utils/jsonToolLocaleTransition';
 import { IDB_STORE_DIFF_DRAFTS, MAX_DIFF_SIDE_SIZE, MAX_DIFF_TAB_COUNT, idbCount, idbGet, idbPut } from '../utils/idb';
 import { buildDiffViewZoneSpecs, getDiffChangeTop, layoutOneDiffEditor, replaceDiffViewZones } from '../utils/diffMonaco';
+import { withPreservedDiffScroll } from '../utils/diffScroll';
 import { JSON_TOOL_EDITOR_HORIZONTAL_SCROLLBAR_THICKNESS, JSON_TOOL_EDITOR_SCROLLBAR_THICKNESS } from '../utils/editorScrollbar';
 import { getJsonToolWordWrapOptions } from '../utils/editorWordWrap';
 import { getAlignedDiffNavigationBounds, getDiffNavigationScrollTop, getVisibleDiffNavigationMarker, type DiffNavigationBounds } from '../utils/diffNavigation';
@@ -496,8 +497,19 @@ export const useDiffEditors = (opts: UseDiffEditorsOptions): UseDiffEditorsRetur
         diffLineChanges = changes;
         diffNavigationChanges = workerChanges?.navigationChanges ?? changes;
         diffCount.value = diffNavigationChanges.length;
-        clearDiffViewZones();
-        rebuildDiffViewZones(changes);
+        // Removing alignment gaps briefly shrinks the shorter editor and clamps
+        // its scroll position. Keep that intermediate layout out of scroll sync,
+        // then restore both viewports once the final alignment is in place.
+        const wasSyncingScroll = diffSyncingScroll;
+        diffSyncingScroll = true;
+        try {
+            withPreservedDiffScroll([leftEditor, rightEditor], () => {
+                clearDiffViewZones();
+                rebuildDiffViewZones(changes);
+            });
+        } finally {
+            diffSyncingScroll = wasSyncingScroll;
+        }
 
         // 分别在左右编辑器上打差异行高亮
         const leftDecos: monaco.editor.IModelDeltaDecoration[] = [];

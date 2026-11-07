@@ -117,20 +117,24 @@ test('ordinary browser previews keep the switch unavailable without sending exte
     assert.match(component.txt.value.unavailable, /本地编辑/);
 });
 
-test('response capture remains scoped to general settings while editor display preferences are separated', async () => {
+test('response capture stays available in browser integration while toolbar visibility is hidden in Diff', async () => {
     const dialog = parse(await readFile('src/components/SettingsDialog.vue', 'utf8')).descriptor;
     const template = dialog.template.content;
-    assert.doesNotMatch(template, /name="capture"|name="toolbar"|ExtensionCaptureSettings/);
-    const generalStart = template.indexOf('name="settings"');
-    const generalEnd = template.indexOf('</el-collapse-item>', generalStart);
-    const general = template.slice(generalStart, generalEnd);
+    const section = name => {
+        const start = template.indexOf(`name="${name}"`);
+        assert.ok(start !== -1, `missing ${name} settings section`);
+        return template.slice(start, template.indexOf('</el-collapse-item>', start));
+    };
     assert.equal((template.match(/<JsonResponseCaptureSwitch/g) ?? []).length, 1);
-    assert.match(general, /<JsonResponseCaptureSwitch v-if="visible && activeName === 'settings'"/);
-    assert.match(general, /v-model="buttonVisibilityModel.compress"/);
-    assert.doesNotMatch(general, /v-model="showMinimapModel"/);
-    const editorStart = template.indexOf('name="editor"');
-    const editorEnd = template.indexOf('</el-collapse-item>', editorStart);
-    assert.match(template.slice(editorStart, editorEnd), /v-model="showMinimapModel"/);
+    assert.match(template, /<el-collapse-item name="browser">/);
+    assert.match(section('browser'), /<JsonResponseCaptureSwitch v-if="visible && activeName === 'browser'"/);
+    assert.doesNotMatch(section('settings'), /JsonResponseCaptureSwitch|switchLocale/);
+    assert.match(template, /<el-collapse-item v-if="!isDiffMode" name="settings">/);
+    assert.match(section('settings'), /v-model="buttonVisibilityModel.compress"/);
+    assert.match(section('theme'), /@change="\$emit\('switchLocale'\)"/);
+    assert.ok(section('theme').indexOf('switchLocale') < section('theme').indexOf('<AppearanceSettings'));
+    assert.doesNotMatch(section('settings'), /v-model="showMinimapModel"/);
+    assert.match(section('editor'), /v-model="showMinimapModel"/);
     assert.match(descriptor.template.content, /:disabled="!available \|\| busy"/);
     assert.match(descriptor.template.content, /aria-labelledby/);
 });

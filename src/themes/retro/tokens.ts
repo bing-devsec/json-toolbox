@@ -1,4 +1,5 @@
 import type { AppearanceMode, Palette } from '../contract';
+import { getActionVariables } from '../actionTokens';
 
 /** Opaque representatives for contrast tests and Monaco. Material strings live below. */
 export const retroPalettes: Record<AppearanceMode, Palette> = {
@@ -92,6 +93,12 @@ const controls: Record<AppearanceMode, RetroControls> = {
     },
 };
 
+// Workbench action roles use readable text on every neutral control state.
+const actionColors = {
+    light: { primary: '#285F99', secondary: '#4E6379', success: '#356A32', danger: '#A63A2E' },
+    dark: { primary: '#AFD3FF', secondary: '#C2D1E0', success: '#AFDA9C', danger: '#FFB5AA' },
+} as const;
+
 const material: Record<AppearanceMode, Record<string, string>> = {
     light: {
         '--retro-desktop': 'linear-gradient(180deg, #3f6f9f, #22496f)',
@@ -124,8 +131,11 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--retro-link': '#0b5aa8',
         '--retro-dotted': '#c3d2e2',
         '--retro-radius': '4px',
-        '--retro-window-shadow': '0 3px 10px rgba(20,40,65,.28)',
-        '--retro-status-shadow': '0 -1px 2px rgba(0,0,0,.02)',
+        '--retro-workbench-shadow': '0 1px 2px rgba(20,40,65,.08)',
+        '--retro-popover-shadow': '0 1px 2px rgba(20,40,65,.10), 0 4px 10px rgba(20,40,65,.12)',
+        '--retro-dialog-shadow': '0 2px 4px rgba(20,40,65,.12), 0 8px 20px rgba(20,40,65,.16)',
+        '--retro-window-shadow': 'var(--retro-dialog-shadow)',
+        '--retro-status-shadow': 'none',
         '--retro-scrim': 'rgba(10,24,40,.48)',
         '--retro-guide-scrim': 'rgba(36,74,112,.14)',
         '--retro-on-accent': '#ffffff',
@@ -136,7 +146,8 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--json-tool-surface-status': 'var(--retro-status)',
         '--json-tool-border': 'var(--retro-border)',
         '--json-tool-toolbar-border': 'var(--retro-border)',
-        '--json-tool-shadow': 'var(--retro-window-shadow)',
+        '--json-tool-shadow': 'var(--retro-popover-shadow)',
+        '--el-box-shadow-light': 'var(--retro-popover-shadow)',
         '--json-tool-button-bg': 'var(--retro-face)',
         '--json-tool-button-border': 'var(--retro-border)',
         '--json-tool-button-text': '#1e334a',
@@ -192,8 +203,11 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--retro-link': '#8fc1ff',
         '--retro-dotted': '#33506d',
         '--retro-radius': '4px',
-        '--retro-window-shadow': '0 4px 14px rgba(0,0,0,.45)',
-        '--retro-status-shadow': '0 -1px 2px rgba(0,0,0,.02)',
+        '--retro-workbench-shadow': '0 1px 3px rgba(0,0,0,.16)',
+        '--retro-popover-shadow': '0 1px 2px rgba(0,0,0,.18), 0 4px 10px rgba(0,0,0,.22)',
+        '--retro-dialog-shadow': '0 2px 4px rgba(0,0,0,.20), 0 8px 20px rgba(0,0,0,.26)',
+        '--retro-window-shadow': 'var(--retro-dialog-shadow)',
+        '--retro-status-shadow': 'none',
         '--retro-scrim': 'rgba(2,8,16,.62)',
         '--retro-guide-scrim': 'rgba(2,8,16,.58)',
         '--retro-on-accent': '#0f1a2b',
@@ -204,7 +218,8 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--json-tool-surface-status': 'var(--retro-status)',
         '--json-tool-border': 'var(--retro-border)',
         '--json-tool-toolbar-border': 'var(--retro-border)',
-        '--json-tool-shadow': 'var(--retro-window-shadow)',
+        '--json-tool-shadow': 'var(--retro-popover-shadow)',
+        '--el-box-shadow-light': 'var(--retro-popover-shadow)',
         '--json-tool-button-bg': 'var(--retro-face)',
         '--json-tool-button-border': 'var(--retro-border)',
         '--json-tool-button-text': '#e8f2ff',
@@ -247,6 +262,14 @@ export function getRetroVariables(mode: AppearanceMode): Record<string, string> 
     const c = controls[mode], p = retroPalettes[mode];
     return {
         ...material[mode],
+        ...getActionVariables({
+            ...actionColors[mode],
+            surface: c.neutral.background, hover: c.neutral.hoverBackground, active: c.neutral.activeBackground,
+            border: c.neutral.border,
+            disabledForeground: c.neutral.disabledForeground,
+            disabledBackground: c.neutral.disabledBackground,
+            disabledBorder: c.neutral.disabledBorder,
+        }),
         ...roleVariables('neutral', c.neutral),
         ...roleVariables('secondary', c.secondary),
         ...roleVariables('primary', c.primary),
@@ -257,13 +280,8 @@ export function getRetroVariables(mode: AppearanceMode): Record<string, string> 
         '--toolbar-active-bg': c.secondary.activeBackground, '--toolbar-active-fg': c.secondary.foreground,
         '--toolbar-hover-shadow': 'inset 0 1px 0 rgba(255,255,255,.55), 0 1px 2px rgba(20,40,65,.18)',
         '--toolbar-active-shadow': 'inset 0 2px 3px rgba(20,40,65,.35)',
-        '--toolbar-primary-hover-bg': c.primary.hoverBackground, '--toolbar-primary-hover-fg': c.primary.foreground,
-        '--toolbar-primary-active-bg': c.primary.activeBackground, '--toolbar-primary-active-fg': c.primary.foreground,
-        '--toolbar-primary-hover-shadow': 'inset 0 1px 0 rgba(255,255,255,.40)',
-        '--toolbar-primary-active-shadow': 'inset 0 2px 3px rgba(20,40,65,.40)',
         '--toolbar-active-transform': 'translateY(1px)',
         '--toolbar-border': p.border, '--toolbar-divider': p.border,
-        '--toolbar-primary-border': c.primary.border,
         '--retro-focus': c.focus,
         '--retro-on-accent': c.onAccent,
         '--retro-selected': c.selectedBackground,

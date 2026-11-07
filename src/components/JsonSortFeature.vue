@@ -341,7 +341,6 @@ const sortFieldNameModel = computed({
     background: #1f1f1f !important;
     border-color: #2b2b2b !important;
     color: #cccccc !important;
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5) !important;
 }
 
 :global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .el-popper__arrow::before) {

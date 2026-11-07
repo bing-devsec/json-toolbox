@@ -35,3 +35,20 @@ Every appearance style is an isolated, self-contained module. Themes never impor
 Current status: all five styles are isolated. `default`, `ide` and `paper` are migrated; `glass` (soft-focus glass) and `retro` (2010 desktop client + portal content) are implemented as first versions and still being refined against browser screenshots.
 
 Each implemented theme folder contains `tokens.ts` (palettes, control roles, material strings), `base.css` (material and surface rules), `controls.css` (component states) and `swatch.css` (preview). `styles.ts` dispatches cached, retryable stylesheet imports; it contains no visual rules. Each theme owns a `styles.ts` entry for its base and controls. Only the saved theme loads at startup; opening Settings prepares all themes before switching becomes available. Preview swatches belong to AppearanceSettings and load with that dialog.
+
+## Action color roles
+
+`actionTokens.ts` maps each theme's own palette to shared action variables. `actions.css`
+consumes explicit `data-action-role` attributes on panel buttons; it owns only colors,
+while the theme retains geometry, focus and material shadows.
+
+- Main toolbar functions share the primary color (the classic theme keeps its solid blue fill).
+- Panel `primary`: Diff format and sort share one light-weight treatment.
+- Panel `secondary`: upload and download share one quiet file-transfer color.
+- Panel `success`: copy is green; panel `danger`: clear is red.
+- Normal, hover and pressed states retain role colors. Disabled actions use neutral tokens.
+- Normal editor, preview, Diff and repair comparison reuse these roles. Settings, folding,
+  fullscreen and dialog confirmation buttons retain their separate control roles.
+
+The website and extension mirror the action contract and palettes. Keep each theme's
+light/dark values in its own `tokens.ts`; do not add new component-level theme color patches.

@@ -1,16 +1,56 @@
-/* Shared geometry for every theme. The toolbar binding owns the viewport bounds. */
-.json-tool-message.el-message {
-    position: fixed !important;
-    height: 32px;
-    padding: 0 12px !important;
-    top: var(--json-tool-message-center-y, 22px) !important;
-    right: var(--json-tool-message-right, 15px) !important;
-    left: auto !important;
-    transform: translateY(-50%) !important;
+/* Anchor the stack once; closing messages fade before smoothly releasing their space. */
+.json-tool-message-stack {
+    --json-tool-message-height: 32px;
+    position: fixed;
+    top: calc(var(--json-tool-message-center-y, 22px) - var(--json-tool-message-height) / 2);
+    right: var(--json-tool-message-right, 15px);
+    width: max-content;
     max-width: min(var(--json-tool-message-width, calc(100vw - 30px)), calc(100vw - 30px));
-    z-index: 9999 !important;
-    /* A notice can move the toolbar instantly; do not animate behind its new position. */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 0;
+    border: 0;
+    pointer-events: none;
+    z-index: 9999;
+}
+.json-tool-message.el-message {
+    position: relative !important;
+    flex-shrink: 0;
+    min-height: 0;
+    margin-bottom: 16px;
+    height: var(--json-tool-message-height, 32px);
+    padding: 0 12px !important;
+    /* Ignore native offsets: its queue removes a message before it finishes fading. */
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    transform: none !important;
+    max-width: 100%;
+    pointer-events: auto;
     transition-property: opacity !important;
+}
+/* Fade in place first, then collapse both the row and its spacing. Keeping these
+   phases separate prevents survivors from moving through a still-visible message. */
+.json-tool-message-stack .json-tool-message.el-message.el-message-fade-leave-active {
+    overflow: hidden;
+    pointer-events: none;
+    transition-property: opacity, height, margin-bottom, border-top-width, border-bottom-width !important;
+    transition-duration: 120ms, 180ms, 180ms, 180ms, 180ms !important;
+    transition-delay: 0ms, 120ms, 120ms, 120ms, 120ms !important;
+    transition-timing-function: ease-out, ease-in-out, ease-in-out, ease-in-out, ease-in-out !important;
+}
+.json-tool-message-stack .json-tool-message.el-message.el-message-fade-leave-to {
+    height: 0;
+    margin-bottom: 0;
+    border-top-width: 0 !important;
+    border-bottom-width: 0 !important;
+}
+@media (prefers-reduced-motion: reduce) {
+    .json-tool-message-stack .json-tool-message.el-message.el-message-fade-leave-active {
+        transition-duration: 0s !important;
+        transition-delay: 0s !important;
+    }
 }
 .json-tool-message.el-message .el-message__content {
     min-width: 0;

@@ -1,4 +1,5 @@
 import type { AppearanceMode, Palette } from '../contract';
+import { getActionVariables } from '../actionTokens';
 
 /** Opaque representatives are used for contrast tests, Monaco and fallbacks.
  * The translucent material values live in the variables below. */
@@ -60,7 +61,7 @@ const controls: Record<AppearanceMode, GlassControls> = {
         },
         success: '#2f7d5c', warning: '#8a6218', focus: '#4168c8', onAccent: '#ffffff',
         selectedBackground: 'rgba(65,104,200,.14)', selectedForeground: '#24427f',
-        primaryShadow: '0 8px 20px rgba(65,104,200,.28)',
+        primaryShadow: '0 2px 5px rgba(65,104,200,.16)',
     },
     dark: {
         neutral: {
@@ -89,9 +90,15 @@ const controls: Record<AppearanceMode, GlassControls> = {
         },
         success: '#8fd0ae', warning: '#e0c07a', focus: '#a9c1ff', onAccent: '#0f1a2b',
         selectedBackground: 'rgba(120,155,220,.20)', selectedForeground: '#dce8ff',
-        primaryShadow: '0 8px 22px rgba(40,80,160,.36)',
+        primaryShadow: '0 2px 5px rgba(40,80,160,.22)',
     },
 };
+
+// Workbench action roles use readable text on every neutral control state.
+const actionColors = {
+    light: { primary: '#3156A6', secondary: '#4A617E', success: '#276B4B', danger: '#A23831' },
+    dark: { primary: '#D2DFFF', secondary: '#D5DFED', success: '#B9EFD0', danger: '#FFD6CE' },
+} as const;
 
 const material: Record<AppearanceMode, Record<string, string>> = {
     light: {
@@ -102,7 +109,7 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--glass-dialog-blur': '4px',
         '--glass-panel': 'rgba(255,255,255,.46)',
         '--glass-panel-soft': 'rgba(236,243,253,.50)',
-        '--glass-dialog': 'rgba(248,251,255,.56)',
+        '--glass-dialog': 'rgba(248,251,255,.84)',
         '--glass-dialog-border': 'rgba(120,140,180,.30)',
         '--glass-popover': 'rgba(250,252,255,.98)',
         '--glass-popover-border': 'rgba(120,140,180,.34)',
@@ -110,9 +117,14 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--glass-card-hover': 'rgba(216,230,250,.66)',
         '--glass-card-hover-border': 'rgba(120,150,200,.46)',
         '--glass-card-hover-shadow': '0 6px 18px rgba(66,94,140,.10)',
-        '--glass-shadow': '0 18px 44px rgba(51,73,110,.16)',
-        '--glass-shadow-soft': '0 8px 22px rgba(51,73,110,.14)',
-        '--glass-status-shadow': '0 -1px 2px rgba(0,0,0,.02)',
+        '--glass-workbench-shadow': '0 2px 8px rgba(51,73,110,.07)',
+        '--glass-control-shadow': '0 1px 2px rgba(51,73,110,.08)',
+        '--glass-control-hover-shadow': '0 2px 4px rgba(51,73,110,.10)',
+        '--glass-popover-shadow': '0 2px 6px rgba(51,73,110,.06), 0 8px 20px rgba(51,73,110,.12)',
+        '--glass-dialog-shadow': '0 3px 8px rgba(51,73,110,.07), 0 14px 36px rgba(51,73,110,.14)',
+        '--glass-shadow': 'var(--glass-dialog-shadow)',
+        '--glass-shadow-soft': 'var(--glass-popover-shadow)',
+        '--glass-status-shadow': 'none',
         '--glass-input': 'rgba(255,255,255,.66)',
         '--glass-switch-track': 'rgba(120,140,180,.28)',
         '--glass-switch-track-border': 'rgba(90,115,160,.42)',
@@ -129,7 +141,7 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--glass-selected-bg': 'rgba(65,104,200,.14)',
         '--glass-selected-fg': '#24427f',
         '--glass-on-accent': '#ffffff',
-        '--glass-primary-shadow': '0 8px 20px rgba(65,104,200,.28)',
+        '--glass-primary-shadow': '0 2px 5px rgba(65,104,200,.16)',
         '--json-tool-surface': 'var(--glass-panel)',
         '--json-tool-surface-soft': 'var(--glass-panel-soft)',
         '--json-tool-surface-raised': 'var(--glass-dialog)',
@@ -170,7 +182,7 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--glass-dialog-blur': '5px',
         '--glass-panel': 'rgba(26,39,60,.58)',
         '--glass-panel-soft': 'rgba(22,34,53,.42)',
-        '--glass-dialog': 'rgba(24,36,56,.60)',
+        '--glass-dialog': 'rgba(24,36,56,.88)',
         '--glass-dialog-border': 'rgba(150,175,215,.24)',
         '--glass-popover': 'rgba(19,30,47,.98)',
         '--glass-popover-border': 'rgba(150,175,215,.30)',
@@ -178,9 +190,14 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--glass-card-hover': 'rgba(54,73,101,.66)',
         '--glass-card-hover-border': 'rgba(150,175,215,.34)',
         '--glass-card-hover-shadow': '0 6px 18px rgba(0,0,0,.28)',
-        '--glass-shadow': '0 22px 50px rgba(0,0,0,.46)',
-        '--glass-shadow-soft': '0 8px 22px rgba(0,0,0,.28)',
-        '--glass-status-shadow': '0 -1px 2px rgba(0,0,0,.02)',
+        '--glass-workbench-shadow': '0 2px 10px rgba(0,0,0,.16)',
+        '--glass-control-shadow': '0 1px 3px rgba(0,0,0,.16)',
+        '--glass-control-hover-shadow': '0 2px 5px rgba(0,0,0,.20)',
+        '--glass-popover-shadow': '0 2px 6px rgba(0,0,0,.14), 0 8px 20px rgba(0,0,0,.22)',
+        '--glass-dialog-shadow': '0 3px 8px rgba(0,0,0,.16), 0 14px 36px rgba(0,0,0,.26)',
+        '--glass-shadow': 'var(--glass-dialog-shadow)',
+        '--glass-shadow-soft': 'var(--glass-popover-shadow)',
+        '--glass-status-shadow': 'none',
         '--glass-input': 'rgba(14,24,40,.62)',
         '--glass-switch-track': 'rgba(10,20,34,.62)',
         '--glass-switch-track-border': 'rgba(150,175,215,.26)',
@@ -197,7 +214,7 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--glass-selected-bg': 'rgba(120,155,220,.20)',
         '--glass-selected-fg': '#dce8ff',
         '--glass-on-accent': '#0f1a2b',
-        '--glass-primary-shadow': '0 8px 22px rgba(40,80,160,.36)',
+        '--glass-primary-shadow': '0 2px 5px rgba(40,80,160,.22)',
         '--json-tool-surface': 'var(--glass-panel)',
         '--json-tool-surface-soft': 'var(--glass-panel-soft)',
         '--json-tool-surface-raised': 'var(--glass-dialog)',
@@ -248,6 +265,15 @@ export function getGlassVariables(mode: AppearanceMode): Record<string, string> 
     const c = controls[mode];
     return {
         ...material[mode],
+        ...getActionVariables({
+            ...actionColors[mode],
+            surface: c.neutral.background, hover: c.neutral.hoverBackground, active: c.neutral.activeBackground,
+            border: c.neutral.border,
+            disabledForeground: c.neutral.disabledForeground,
+            disabledBackground: c.neutral.disabledBackground,
+            disabledBorder: c.neutral.disabledBorder,
+        }),
+        '--el-box-shadow-light': 'var(--glass-popover-shadow)',
         ...roleVariables('neutral', c.neutral),
         ...roleVariables('secondary', c.secondary),
         ...roleVariables('primary', c.primary),
@@ -256,15 +282,10 @@ export function getGlassVariables(mode: AppearanceMode): Record<string, string> 
         '--glass-warning-fg': c.warning,
         '--toolbar-hover-bg': c.secondary.hoverBackground, '--toolbar-hover-fg': c.secondary.foreground,
         '--toolbar-active-bg': c.secondary.activeBackground, '--toolbar-active-fg': c.secondary.foreground,
-        '--toolbar-hover-shadow': 'inset 0 1px 0 var(--glass-highlight), var(--glass-shadow-soft)',
+        '--toolbar-hover-shadow': 'inset 0 1px 0 var(--glass-highlight), var(--glass-control-hover-shadow)',
         '--toolbar-active-shadow': mode === 'dark' ? 'inset 0 1px 0 rgba(255,255,255,.12), inset 0 2px 4px rgba(0,0,0,.32)' : 'inset 0 1px 0 rgba(255,255,255,.35), inset 0 2px 4px rgba(45,66,100,.16)',
-        '--toolbar-primary-hover-bg': c.primary.hoverBackground, '--toolbar-primary-hover-fg': c.primary.foreground,
-        '--toolbar-primary-active-bg': c.primary.activeBackground, '--toolbar-primary-active-fg': c.primary.foreground,
-        '--toolbar-primary-hover-shadow': 'inset 0 1px 0 var(--glass-highlight), var(--glass-primary-shadow)',
-        '--toolbar-primary-active-shadow': 'inset 0 1px 3px rgba(20,35,60,.26), var(--glass-primary-shadow)',
         '--toolbar-active-transform': 'none',
         '--toolbar-border': c.neutral.border, '--toolbar-divider': 'var(--glass-divider)',
-        '--toolbar-primary-border': c.primary.border,
         '--glass-focus': c.focus,
         '--glass-on-accent': c.onAccent,
         '--glass-selected-bg': c.selectedBackground,

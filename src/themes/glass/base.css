@@ -1,4 +1,4 @@
-/* Isolated adaptation layer for ide. No other theme selectors are allowed here. */
+/* Isolated glass material and elevation. No other theme selectors are allowed here. */
 body[data-interface-style="glass"] {
     color: var(--json-tool-text);
     background: var(--json-tool-bg);
@@ -133,12 +133,15 @@ body[data-interface-style="glass"] {
 
 body[data-interface-style="glass"] .json-tool-container {
     background: transparent;
+    box-shadow: var(--glass-workbench-shadow);
 }
+
+body[data-interface-style="glass"] .json-tool-container.fullscreen { box-shadow: none; }
 
 body[data-interface-style="glass"] :is(.tool-bar-wrapper, .panel-header) {
     background: var(--glass-chrome) !important;
     border-color: var(--glass-chrome-border) !important;
-    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow-soft);
+    box-shadow: none;
     backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
 }
@@ -149,9 +152,9 @@ body[data-interface-style="glass"] .tool-bar {
 
 body[data-interface-style="glass"] .editor-status-bar {
     background: var(--json-tool-surface-status) !important;
-    border-top: 0 !important;
+    border-top-color: var(--glass-divider) !important;
     color: var(--json-tool-text-muted) !important;
-    box-shadow: inset 0 1px 0 var(--glass-divider), var(--glass-status-shadow);
+    box-shadow: var(--glass-status-shadow);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
 }
@@ -163,17 +166,6 @@ body[data-interface-style="glass"] .archive-sidebar {
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
 }
-body[data-interface-style="glass"] .archive-sidebar::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 1px;
-    background: var(--glass-chrome-border);
-    pointer-events: none;
-    z-index: 2;
-}
 
 body[data-interface-style="glass"] .archive-item.is-active {
     background: var(--glass-selected-bg) !important;
@@ -184,17 +176,7 @@ body[data-interface-style="glass"] .editor-panel {
     background: transparent;
     border: 0;
     border-radius: 0;
-    box-shadow: var(--glass-shadow-soft);
-}
-/* Visual frame only: borders must never change panel content geometry. */
-body[data-interface-style="glass"] .editor-panel::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--glass-chrome-border);
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: 3;
+    box-shadow: none;
 }
 
 /* Docked panes are square; only floating surfaces keep the soft radius. */
@@ -217,13 +199,13 @@ body[data-interface-style="glass"] .resizer::after {
 
 body[data-interface-style="glass"] .monaco-editor .margin {
     background: var(--json-tool-gutter-bg) !important;
-    box-shadow: inset -1px 0 0 var(--glass-divider);
 }
 
 /* Modal sheets need a denser frosted surface than the surrounding chrome.
    Blur is bounded by the panel, keeping the form readable over JSON text. */
 body[data-interface-style="glass"] :is(.el-dialog, .el-message-box) {
     background: var(--glass-dialog) !important;
+    box-shadow: var(--glass-dialog-shadow) !important;
     border-color: var(--glass-dialog-border) !important;
     backdrop-filter: blur(var(--glass-dialog-blur));
     -webkit-backdrop-filter: blur(var(--glass-dialog-blur));
@@ -231,11 +213,16 @@ body[data-interface-style="glass"] :is(.el-dialog, .el-message-box) {
     overflow: hidden;
 }
 
+/* Element dialogs have no border; keep their contour inside the existing box. */
+body[data-interface-style="glass"] .el-dialog {
+    box-shadow: inset 0 0 0 1px var(--glass-dialog-border), var(--glass-dialog-shadow) !important;
+}
+
 body[data-interface-style="glass"] :is(.el-popover.el-popper, .el-select__popper, .el-dropdown__popper) {
     background: var(--glass-popover) !important;
     border: 1px solid var(--glass-popover-border) !important;
     border-radius: var(--glass-radius) !important;
-    box-shadow: var(--glass-shadow) !important;
+    box-shadow: var(--glass-popover-shadow) !important;
     backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(1.2);
     -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(1.2);
 }
@@ -254,11 +241,11 @@ body[data-interface-style="glass"] .el-select__popper .el-select-dropdown {
 
 body[data-interface-style="glass"] :is(.el-dialog__header, .el-message-box__header) {
     background: var(--glass-chrome) !important;
-    border-bottom: 1px solid var(--glass-divider) !important;
+    border-bottom-color: var(--glass-divider) !important;
 }
 
 body[data-interface-style="glass"] :is(.el-dialog__footer, .el-message-box__btns) {
-    border-top: 1px solid var(--glass-divider) !important;
+    border-top-color: var(--glass-divider) !important;
 }
 
 /* A flat scrim avoids stacking a full-screen blur over the editor. */
@@ -328,7 +315,7 @@ body[data-interface-style="glass"] .folding-info-text {
 /* App-level surfaces outside the workbench (capture notice, review invitation). */
 body[data-interface-style="glass"] .capture-notice {
     background: var(--glass-panel-soft) !important;
-    border-bottom: 1px solid var(--glass-divider) !important;
+    border-bottom-color: var(--glass-divider) !important;
     color: var(--json-tool-text) !important;
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -367,4 +354,3 @@ body[data-interface-style="glass"] .review-invitation :is(.review-icon, .review-
 body[data-interface-style="glass"] .review-invitation p.review-error { color: var(--theme-danger) !important; }
 
 
-/* Bordered editor panels start 1px lower; the title actions follow the same line. */

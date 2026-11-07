@@ -1,4 +1,5 @@
 import type { AppearanceMode, Palette } from '../contract';
+import { getActionVariables } from '../actionTokens';
 
 /** Neutral workbench foundations, informed by VS Code's Dark/Light Modern themes.
  * Control roles remain independent from syntax and Diff data colors. */
@@ -10,10 +11,33 @@ export const ideControls = {
     light: { link: '#005FB8', button: '#F3F3F3', hover: '#E8E8E8', pressed: '#DADADA', input: '#FFFFFF', controlBorder: '#868686', primaryHover: '#0258A8', primaryPressed: '#034C91', onPrimary: '#FFFFFF', onSelected: '#1F1F1F', danger: '#B42318', dangerBackground: '#FDE7E9', disabled: '#767676', disabledBackground: '#F3F3F3', disabledBorder: '#D0D0D0', code: '#E8E8E8', success: '#237B4B', successBackground: '#E9F4ED', warning: '#795E26', warningBackground: '#FFF4CE' },
     dark: { link: '#4DAAFC', button: '#2B2B2B', hover: '#3C3C3C', pressed: '#454545', input: '#313131', controlBorder: '#7A7A7A', primaryHover: '#026EC1', primaryPressed: '#005A9E', onPrimary: '#FFFFFF', onSelected: '#FFFFFF', danger: '#F48771', dangerBackground: '#4B2727', disabled: '#777777', disabledBackground: '#252525', disabledBorder: '#3C3C3C', code: '#313131', success: '#89D185', successBackground: '#1E3624', warning: '#CCA700', warningBackground: '#3A3018' },
 } as const;
+// Docked surfaces stay flat; only temporary UI rises above the workbench.
+const ideElevation = {
+    light: {
+        popover: '0 2px 4px rgba(0, 0, 0, .06), 0 5px 14px rgba(0, 0, 0, .08)',
+        dialog: '0 3px 6px rgba(0, 0, 0, .08), 0 10px 26px rgba(0, 0, 0, .12)',
+    },
+    dark: {
+        popover: '0 2px 4px rgba(0, 0, 0, .16), 0 5px 14px rgba(0, 0, 0, .20)',
+        dialog: '0 3px 6px rgba(0, 0, 0, .18), 0 10px 26px rgba(0, 0, 0, .26)',
+    },
+} as const;
 export function getIdeControlVariables(mode: AppearanceMode): Record<string, string> {
-    const p = idePalettes[mode], c = ideControls[mode];
+    const p = idePalettes[mode], c = ideControls[mode], e = ideElevation[mode];
     return {
         ...Object.fromEntries(Object.entries(c).map(([key, value]) => [`--ide-${key.replace(/[A-Z]/g, ch => '-' + ch.toLowerCase())}`, value])),
+        // Action labels keep their role color across the neutral pressed surface.
+        ...getActionVariables({
+            primary: mode === 'dark' ? '#70B9F7' : c.link,
+            secondary: mode === 'dark' ? '#B5B5B5' : '#5F5F5F',
+            success: mode === 'dark' ? c.success : '#206C42',
+            danger: mode === 'dark' ? '#FF9B88' : c.danger,
+            surface: c.button, hover: c.hover, active: c.pressed, border: c.controlBorder,
+            disabledForeground: c.disabled, disabledBackground: c.disabledBackground, disabledBorder: c.disabledBorder,
+        }),
+        '--ide-popover-shadow': e.popover, '--ide-dialog-shadow': e.dialog,
+        '--json-tool-shadow': 'var(--ide-popover-shadow)',
+        '--el-box-shadow-light': 'var(--ide-popover-shadow)',
         '--ide-primary': p.accent, '--ide-focus': p.accent, '--theme-accent': c.link, '--theme-on-accent': c.onPrimary, '--theme-danger': c.danger, '--theme-success': c.success, '--theme-warning': c.warning,
         '--json-tool-border-strong': c.controlBorder, '--json-tool-button-bg': c.button, '--json-tool-button-border': c.controlBorder,
         '--json-tool-button-text': p.text, '--json-tool-button-hover-bg': c.hover, '--json-tool-button-hover-border': c.controlBorder,
@@ -21,12 +45,8 @@ export function getIdeControlVariables(mode: AppearanceMode): Record<string, str
         '--toolbar-active-bg': c.pressed, '--toolbar-active-fg': p.text,
         '--toolbar-hover-shadow': 'none',
         '--toolbar-active-shadow': mode === 'dark' ? 'inset 0 1px 3px rgba(0,0,0,.35)' : 'inset 0 1px 2px rgba(0,0,0,.12)',
-        '--toolbar-primary-hover-bg': c.primaryHover, '--toolbar-primary-hover-fg': c.onPrimary,
-        '--toolbar-primary-active-bg': c.primaryPressed, '--toolbar-primary-active-fg': c.onPrimary,
-        '--toolbar-primary-hover-shadow': 'none',
-        '--toolbar-primary-active-shadow': mode === 'dark' ? 'inset 0 1px 3px rgba(0,0,0,.45)' : 'inset 0 1px 3px rgba(0,0,0,.18)',
         '--toolbar-active-transform': 'none',
-        '--toolbar-border': p.border, '--toolbar-divider': p.border, '--toolbar-primary-border': p.accent,
+        '--toolbar-border': p.border, '--toolbar-divider': p.border,
         '--json-tool-input-bg': c.input, '--json-tool-input-border': c.controlBorder, '--json-tool-input-hover-border': p.accent,
         '--json-tool-transfer-fg': p.text, '--json-tool-resizer-grip': c.controlBorder,
         '--json-tool-archive-drag': p.selected, '--json-tool-archive-scrollbar': c.controlBorder, '--json-tool-archive-scrollbar-hover': p.muted,

@@ -93,7 +93,7 @@ export const useJsonToolSettingsDialog = (ctx: UseJsonToolSettingsDialogCtx) => 
 
     const openSettingsDialog = () => {
         settingsDialogVisible.value = true;
-        if (ctx.isDiffMode.value && ['unescape', 'archive'].includes(String(settingsCollapseActiveNames.value))) {
+        if (ctx.isDiffMode.value && ['settings', 'unescape', 'archive'].includes(String(settingsCollapseActiveNames.value))) {
             settingsCollapseActiveNames.value = '';
             return;
         }

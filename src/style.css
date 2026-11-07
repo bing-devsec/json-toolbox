@@ -9,7 +9,7 @@ html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
 }
-/* 沿用原网站 assets/base.css 的基础字体与渲染设置。 */
+/* 保留基础排版；字体平滑与当前 Web 端一致，交由浏览器默认渲染。 */
 body, th, td, button, input, select, textarea {
     font-size: 14px;
     color: #333;
@@ -18,9 +18,23 @@ body, th, td, button, input, select, textarea {
         sans-serif;
     font-feature-settings: 'tnum';
     font-variant-numeric: tabular-nums;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
+/* Default depth belongs to the workbench as a whole and to temporary overlays.
+   Docked panes share one plane, so their seams do not accumulate shadows. */
+body[data-interface-style="default"] .json-tool-container {
+    box-shadow: var(--default-workbench-shadow);
+}
+body[data-interface-style="default"] .json-tool-container.fullscreen,
+body[data-interface-style="default"] .editor-panel {
+    box-shadow: none;
+}
+body[data-interface-style="default"] :is(.el-popper, .el-popover, .el-select__popper, .el-dropdown__popper, .el-message, .el-notification) {
+    box-shadow: var(--default-popover-shadow) !important;
+}
+body[data-interface-style="default"] :is(.el-dialog, .el-message-box) {
+    box-shadow: var(--default-dialog-shadow) !important;
+}
+
 /* Word-limit counters must inherit the input surface, not paint a second block. */
 .el-input__count,
 .el-input__count .el-input__count-inner,
@@ -29,6 +43,15 @@ body, th, td, button, input, select, textarea {
 .el-textarea__word-limit,
 .el-textarea__word-limit .el-input__count-inner {
     background: transparent !important;
+}
+
+/* Structural separators are one CSS pixel in every theme and mode.
+   Keep these global: Element teleports dialogs outside the workbench. */
+body :is(.el-dialog__header, .el-message-box__header) {
+    border-bottom: 1px solid var(--json-tool-border, #e4e7ed);
+}
+body :is(.el-dialog__footer, .el-message-box__btns) {
+    border-top: 1px solid var(--json-tool-border, #e4e7ed);
 }
 
 /* Element's default close button is pinned to the dialog top; center it

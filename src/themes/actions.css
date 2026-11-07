@@ -1,0 +1,30 @@
+/* Shared action semantics. Theme tokens own colors; theme controls retain geometry,
+   shadows and focus. Explicit roles also cover the repair comparison pane. */
+.json-tool-root .panel-actions [data-action-role="primary"] { --action-fg: var(--action-primary-fg); }
+.json-tool-root .panel-actions [data-action-role="secondary"] { --action-fg: var(--action-secondary-fg); }
+.json-tool-root .panel-actions [data-action-role="success"] { --action-fg: var(--action-success-fg); }
+.json-tool-root .panel-actions [data-action-role="danger"] { --action-fg: var(--action-danger-fg); }
+
+/* State specificity is intentional: lazy theme sheets and legacy Element variants
+   must not change the meaning of an action after hover, focus or a theme switch. */
+.json-tool-root .editor-container .panel-actions .el-button[data-action-role]:not(:disabled):not(.is-disabled) {
+    color: var(--action-fg) !important;
+    background: var(--action-panel-bg) !important;
+    border-color: color-mix(in srgb, var(--action-fg) 40%, var(--action-panel-border)) !important;
+}
+.json-tool-root .editor-container .panel-actions .el-button[data-action-role]:hover:not(:disabled):not(.is-disabled) {
+    background: var(--action-panel-hover-bg) !important;
+    color: var(--action-fg) !important;
+    border-color: color-mix(in srgb, var(--action-fg) 40%, var(--action-panel-border)) !important;
+}
+.json-tool-root .editor-container .panel-actions .el-button[data-action-role]:active:not(:disabled):not(.is-disabled) {
+    background: var(--action-panel-active-bg) !important;
+    color: var(--action-fg) !important;
+    border-color: color-mix(in srgb, var(--action-fg) 40%, var(--action-panel-border)) !important;
+}
+.json-tool-root .json-tool-container .editor-container .panel-actions .el-button[data-action-role]:is(:disabled, .is-disabled) {
+    color: var(--action-disabled-fg) !important;
+    background: var(--action-disabled-bg) !important;
+    border-color: var(--action-disabled-border) !important;
+    opacity: 1 !important;
+}

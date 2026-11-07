@@ -17,58 +17,66 @@
             <el-collapse v-model="activeNameModel" accordion>
                 <el-collapse-item name="theme">
                     <template #title><div class="settings-collapse-title"><el-icon class="column-title-icon"><Setting /></el-icon><span>{{ sectionCopy.theme.title }}</span><span class="settings-section-current">{{ currentThemeSummary }}</span></div></template>
-                    <div class="settings-collapse-content"><AppearanceSettings :locale="locale" :interface-style="interfaceStyle" :theme-mode="themeMode" @update:interface-style="$emit('update:interfaceStyle', $event)" @update:theme-mode="$emit('update:themeMode', $event)" /></div>
+                    <div class="settings-collapse-content interface-settings-content">
+                        <div class="switch-card">
+                            <div class="switch-card-head">
+                                <span class="switch-card-title">{{ sectionCopy.language }}</span>
+                                <el-radio-group :model-value="locale ?? 'zh'" class="switch-card-radio-group" :aria-label="sectionCopy.language" @change="$emit('switchLocale')">
+                                    <el-radio value="zh" border>简体中文</el-radio>
+                                    <el-radio value="en" border>English</el-radio>
+                                </el-radio-group>
+                            </div>
+                            <span class="switch-card-desc">{{ sectionCopy.languageDescription }}</span>
+                        </div>
+                        <AppearanceSettings :locale="locale" :interface-style="interfaceStyle" :theme-mode="themeMode" @update:interface-style="$emit('update:interfaceStyle', $event)" @update:theme-mode="$emit('update:themeMode', $event)" />
+                    </div>
                 </el-collapse-item>
 
-                <el-collapse-item name="settings">
+                <el-collapse-item v-if="!isDiffMode" name="settings">
                     <template #title>
                         <div class="settings-collapse-title"><el-icon class="column-title-icon"><Setting /></el-icon><span>{{ settingsTxt.sectionGeneral }}</span></div>
                     </template>
-                    <div class="settings-collapse-content">
-                        <div class="settings-switch-grid">
-                            <div class="switch-card">
-                                <div class="switch-card-head">
-                                    <span class="switch-card-title">{{ sectionCopy.language }}</span>
-                                    <el-radio-group :model-value="locale ?? 'zh'" class="switch-card-radio-group" :aria-label="sectionCopy.language" @change="$emit('switchLocale')">
-                                        <el-radio value="zh" border>简体中文</el-radio>
-                                        <el-radio value="en" border>English</el-radio>
-                                    </el-radio-group>
+                    <div class="settings-collapse-content toolbar-settings-options">
+                        <div class="settings-subsection">
+                            <div class="settings-subsection-title">{{ settingsTxt.menuVisibilityTitle }}</div>
+                            <div class="button-visibility-list">
+                                <!-- 本地数据处理 -->
+                                <div class="button-visibility-item">
+                                    <el-checkbox v-model="buttonVisibilityModel.compress">{{ settingsTxt.btnCompress }}</el-checkbox>
                                 </div>
-                                <span class="switch-card-desc">{{ sectionCopy.languageDescription }}</span>
+                                <div class="button-visibility-item">
+                                    <el-checkbox v-model="buttonVisibilityModel.escape">{{ settingsTxt.btnEscape }}</el-checkbox>
+                                </div>
+                                <div class="button-visibility-item">
+                                    <el-checkbox v-model="buttonVisibilityModel.unescape">{{ settingsTxt.btnUnescape }}</el-checkbox>
+                                </div>
+                                <div class="button-visibility-item">
+                                    <el-checkbox v-model="buttonVisibilityModel.dataConvert">{{ settingsTxt.btnDataConvert }}</el-checkbox>
+                                </div>
+                                <!-- 第二行：数据处理与管理 -->
+                                <div class="button-visibility-item">
+                                    <el-checkbox v-model="buttonVisibilityModel.masking">{{ settingsTxt.btnMasking }}</el-checkbox>
+                                </div>
+                                <div class="button-visibility-item">
+                                    <el-checkbox v-model="buttonVisibilityModel.sort">{{ settingsTxt.btnSort }}</el-checkbox>
+                                </div>
+                                <div class="button-visibility-item">
+                                    <el-checkbox v-model="buttonVisibilityModel.archive">{{ settingsTxt.btnArchive }}</el-checkbox>
+                                </div>
+                                <div class="button-visibility-item">
+                                    <el-checkbox v-model="buttonVisibilityModel.diff">{{ settingsTxt.btnDiff }}</el-checkbox>
+                                </div>
                             </div>
-                            <JsonResponseCaptureSwitch v-if="visible && activeName === 'settings'" :locale="locale" />
                         </div>
-                        <div v-if="!isDiffMode" class="general-toolbar-options"><div class="settings-subsection">
-                                <div class="settings-subsection-title">{{ settingsTxt.menuVisibilityTitle }}</div>
-                                <div class="button-visibility-list">
-                                    <!-- 本地数据处理 -->
-                                    <div class="button-visibility-item">
-                                        <el-checkbox v-model="buttonVisibilityModel.compress">{{ settingsTxt.btnCompress }}</el-checkbox>
-                                    </div>
-                                    <div class="button-visibility-item">
-                                        <el-checkbox v-model="buttonVisibilityModel.escape">{{ settingsTxt.btnEscape }}</el-checkbox>
-                                    </div>
-                                    <div class="button-visibility-item">
-                                        <el-checkbox v-model="buttonVisibilityModel.unescape">{{ settingsTxt.btnUnescape }}</el-checkbox>
-                                    </div>
-                                    <div class="button-visibility-item">
-                                        <el-checkbox v-model="buttonVisibilityModel.dataConvert">{{ settingsTxt.btnDataConvert }}</el-checkbox>
-                                    </div>
-                                    <!-- 第二行：数据处理与管理 -->
-                                    <div class="button-visibility-item">
-                                        <el-checkbox v-model="buttonVisibilityModel.masking">{{ settingsTxt.btnMasking }}</el-checkbox>
-                                    </div>
-                                    <div class="button-visibility-item">
-                                        <el-checkbox v-model="buttonVisibilityModel.sort">{{ settingsTxt.btnSort }}</el-checkbox>
-                                    </div>
-                                    <div class="button-visibility-item">
-                                        <el-checkbox v-model="buttonVisibilityModel.archive">{{ settingsTxt.btnArchive }}</el-checkbox>
-                                    </div>
-                                    <div class="button-visibility-item">
-                                        <el-checkbox v-model="buttonVisibilityModel.diff">{{ settingsTxt.btnDiff }}</el-checkbox>
-                                    </div>
-                                </div>
-                            </div></div>
+                    </div>
+                </el-collapse-item>
+
+                <el-collapse-item name="browser">
+                    <template #title>
+                        <div class="settings-collapse-title"><el-icon class="column-title-icon"><Setting /></el-icon><span>{{ sectionCopy.browser.title }}</span></div>
+                    </template>
+                    <div class="settings-collapse-content">
+                        <JsonResponseCaptureSwitch v-if="visible && activeName === 'browser'" :locale="locale" />
                     </div>
                 </el-collapse-item>
 

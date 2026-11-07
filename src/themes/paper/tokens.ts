@@ -1,7 +1,8 @@
 /** Paper's semantic control contract. Every state is explicit, in both modes.
- * Copy/download are neutral actions. Success/warning colors describe feedback,
- * not arbitrary categories of toolbar buttons. Icons always inherit control text. */
+ * Toolbar/process actions use brown, file transfer uses warm gray, copy uses green,
+ * and clearing uses red. Icons always inherit their action's text color. */
 import type { Palette } from '../contract';
+import { getActionVariables } from '../actionTokens';
 
 export interface ControlColors {
     background: string; foreground: string; border: string;
@@ -46,8 +47,21 @@ export const paperDark: Palette = {
     gutter: '#353127', selected: '#514634', header: '#353127', radius: '2px', shadow: 'none',
 };
 
+// Keep the paper canvas flat; only loose sheets and menus cast a quiet contact shadow.
+const paperElevation = {
+    light: {
+        popover: '0 1px 2px rgba(61,57,49,.06), 0 3px 10px rgba(61,57,49,.07)',
+        dialog: '0 2px 4px rgba(61,57,49,.06), 0 8px 22px rgba(61,57,49,.10)',
+    },
+    dark: {
+        popover: '0 1px 3px rgba(0,0,0,.16), 0 4px 12px rgba(0,0,0,.16)',
+        dialog: '0 2px 5px rgba(0,0,0,.16), 0 10px 26px rgba(0,0,0,.22)',
+    },
+} as const;
+
 export function getPaperControlVariables(mode: 'light' | 'dark'): Record<string, string> {
     const tokens = paperControls[mode];
+    const elevation = paperElevation[mode];
     const variables: Record<string, string> = {};
     const cssName = (name: string) => name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
     for (const role of ['neutral', 'secondary', 'primary', 'danger'] as const) {
@@ -55,6 +69,19 @@ export function getPaperControlVariables(mode: 'light' | 'dark'): Record<string,
     }
     for (const [state, value] of Object.entries(tokens.disabled)) variables[`--paper-disabled-${state}`] = value;
     Object.assign(variables, {
+        ...getActionVariables({
+            primary: tokens.secondary.foreground,
+            secondary: mode === 'dark' ? '#BFB39E' : '#696052',
+            success: tokens.success, danger: tokens.danger.foreground,
+            surface: tokens.neutral.background, hover: tokens.neutral.hoverBackground,
+            active: tokens.neutral.activeBackground, border: tokens.neutral.border,
+            disabledForeground: tokens.disabled.foreground,
+            disabledBackground: tokens.disabled.background, disabledBorder: tokens.disabled.border,
+        }),
+        '--paper-popover-shadow': elevation.popover,
+        '--paper-dialog-shadow': elevation.dialog,
+        '--json-tool-shadow': 'var(--paper-popover-shadow)',
+        '--el-box-shadow-light': 'var(--paper-popover-shadow)',
         '--paper-focus': tokens.focus,
         '--paper-fold-background': tokens.selectedBackground, '--paper-fold-foreground': tokens.selectedForeground,
         '--paper-fold-border': tokens.focus, '--paper-fold-hover-background': tokens.secondary.hoverBackground,
@@ -77,13 +104,8 @@ export function getPaperControlVariables(mode: 'light' | 'dark'): Record<string,
         '--toolbar-active-bg': tokens.secondary.activeBackground, '--toolbar-active-fg': tokens.secondary.activeForeground,
         '--toolbar-hover-shadow': 'inset 0 1px 0 rgba(255,255,255,.28)',
         '--toolbar-active-shadow': mode === 'dark' ? 'inset 0 1px 3px rgba(0,0,0,.30)' : 'inset 0 1px 2px rgba(61,57,49,.18)',
-        '--toolbar-primary-hover-bg': tokens.primary.hoverBackground, '--toolbar-primary-hover-fg': tokens.primary.hoverForeground,
-        '--toolbar-primary-active-bg': tokens.primary.activeBackground, '--toolbar-primary-active-fg': tokens.primary.activeForeground,
-        '--toolbar-primary-hover-shadow': 'none',
-        '--toolbar-primary-active-shadow': mode === 'dark' ? 'inset 0 1px 3px rgba(0,0,0,.34)' : 'inset 0 1px 2px rgba(61,57,49,.24)',
         '--toolbar-active-transform': 'none',
         '--toolbar-border': tokens.secondary.border, '--toolbar-divider': tokens.secondary.border,
-        '--toolbar-primary-border': tokens.primary.border,
     });
     return variables;
 }

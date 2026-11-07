@@ -11,16 +11,29 @@ const POSITION_VARIABLES = [
 ] as const;
 
 type MessageType = 'success' | 'error' | 'warning' | 'info';
-let currentMessage: { handler?: MessageHandler } | undefined;
+const activeMessages = new Set<{ handler?: MessageHandler }>();
 let releaseToolbar: (() => void) | undefined;
 let refreshToolbar: (() => void) | undefined;
 let messageDocument: Document | undefined;
+let messageStack: HTMLElement | undefined;
 
-/** One feedback slot in the toolbar; a new result replaces the previous result. */
-const closeCurrentMessage = () => {
-    const previous = currentMessage;
-    currentMessage = undefined;
-    previous?.handler?.close();
+/** Keep fading DOM nodes in flow until Element Plus removes them after the transition. */
+const getMessageStack = () => {
+    if (messageStack) return messageStack;
+    const ownerDocument = messageDocument ?? (typeof document === 'undefined' ? undefined : document);
+    if (!ownerDocument) return undefined;
+    const stack = ownerDocument.createElement('div');
+    stack.className = 'json-tool-message-stack';
+    (ownerDocument.body).appendChild(stack);
+    messageStack = stack;
+    return stack;
+};
+
+/** Release only this workbench's messages; each active result has its own lifetime. */
+const closeActiveMessages = () => {
+    const previous = [...activeMessages];
+    activeMessages.clear();
+    previous.forEach(entry => entry.handler?.close());
 };
 
 /** Keep messages on body (above dialogs), anchored to the toolbar's viewport bounds.
@@ -65,7 +78,9 @@ export const bindJsonToolMessageToolbar = (toolbar: HTMLElement): (() => void) =
             if (value) style.setProperty(name, value);
             else style.removeProperty(name);
         }
-        closeCurrentMessage();
+        closeActiveMessages();
+        messageStack?.remove();
+        messageStack = undefined;
         refreshToolbar = undefined;
         messageDocument = undefined;
         if (releaseToolbar === dispose) releaseToolbar = undefined;
@@ -79,19 +94,17 @@ export const bindJsonToolMessageToolbar = (toolbar: HTMLElement): (() => void) =
 
 export const globalNotify = (type: MessageType, message: string, duration?: number) => {
     refreshToolbar?.();
-    closeCurrentMessage();
     const entry: { handler?: MessageHandler } = {};
-    currentMessage = entry;
+    activeMessages.add(entry);
     entry.handler = ElMessage({
         message: h('span', { title: message }, message),
         type,
         ...(duration === undefined ? {} : { duration }),
         placement: 'top-right',
-        appendTo: messageDocument?.body,
+        appendTo: getMessageStack(),
         customClass: MESSAGE_CUSTOM_CLASS,
         onClose: () => {
-            // The previous message can finish closing after its replacement was created.
-            if (currentMessage === entry) currentMessage = undefined;
+            activeMessages.delete(entry);
         },
     });
 };

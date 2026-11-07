@@ -23,7 +23,7 @@ body[data-interface-style="paper"] .el-button.el-button--primary {
     --paper-control-active-foreground: var(--paper-primary-active-foreground);
     --paper-control-active-border: var(--paper-primary-active-border);
 }
-body[data-interface-style="paper"] :is(.tool-bar .el-button--primary:not(.json-format-button), .panel-actions .el-button--primary, .el-button.transfer-button) {
+body[data-interface-style="paper"] :is(.tool-bar .el-button--primary, .panel-actions .el-button--primary, .el-button.transfer-button) {
     --paper-control-background: var(--paper-secondary-background);
     --paper-control-foreground: var(--paper-secondary-foreground);
     --paper-control-border: var(--paper-secondary-border);
@@ -162,6 +162,8 @@ body[data-interface-style="paper"] .json-tool-root .collapse-control {
     height: 32px; box-sizing: border-box; gap: 0;
     border: 1px solid var(--paper-fold-border);
     border-radius: var(--theme-radius);
+    /* Clip square child fills to the outer frame, including disabled and hover states. */
+    overflow: hidden;
     background: var(--paper-fold-background);
 }
 body[data-interface-style="paper"] .json-tool-root .collapse-control :is(.el-select__wrapper, .el-input__wrapper, .el-button.level-action-button) {
@@ -190,10 +192,8 @@ body[data-interface-style="paper"] .json-tool-root .collapse-control :is(.el-sel
 body[data-interface-style="paper"] .json-tool-root .collapse-control:has(.level-select .el-select__wrapper.is-disabled) { background: var(--paper-disabled-background); border-color: var(--paper-disabled-border); }
 body[data-interface-style="paper"] .json-tool-root .collapse-control :is(.el-select__wrapper.is-disabled, .el-button.level-action-button:disabled) { background: var(--paper-disabled-background) !important; color: var(--paper-disabled-foreground) !important; }
 body[data-interface-style="paper"] .json-tool-root .collapse-control .level-select:has(.el-select__wrapper.is-disabled) :is(.el-select__placeholder, .el-select__caret) { color: var(--paper-disabled-foreground) !important; }
-body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .el-dialog__header { border: 0 !important; box-shadow: none !important; }
+body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .el-dialog__header { box-shadow: none !important; }
 body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .el-dialog__footer {
-    border: 0 !important;
-    border-top: 1px solid var(--json-tool-border) !important;
     box-shadow: none !important;
 }
 .language-settings { margin-bottom: 20px; }
@@ -209,7 +209,6 @@ body[data-interface-style="paper"] :is(.field-path-autocomplete, .sort-path-auto
 /* Keep the dark paper gutter distinct without changing editor geometry or hit targets. */
 body[data-interface-style="paper"] .json-tool-root.theme-dark .monaco-editor .margin {
     background-color: var(--json-tool-gutter-bg) !important;
-    box-shadow: inset -1px 0 0 var(--json-tool-border);
 }
 
 
@@ -245,13 +244,6 @@ body[data-interface-style="paper"] .el-button.path-help-toggle-btn:active:not(:d
     color: var(--theme-accent) !important;
     border: 0 !important;
     box-shadow: none !important;
-}
-
-/* Copy is the only success action in panel headers. */
-body[data-interface-style="paper"] :is(.panel-actions, .diff-panel-actions) .el-button--success,
-body[data-interface-style="paper"] :is(.panel-actions, .diff-panel-actions) .el-button--success:hover:not(:disabled):not(.is-disabled) {
-    color: var(--theme-success) !important;
-    border-color: color-mix(in srgb, var(--theme-success) 45%, var(--json-tool-border)) !important;
 }
 
 /* Keep focus immediate: these frames never animate their geometry or focus shadow. */

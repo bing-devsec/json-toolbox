@@ -236,14 +236,14 @@
                                 '--panel-actions-opacity': showInputActions ? 1 : 0,
                                 '--panel-actions-pointer-events': showInputActions ? 'auto' : 'none',
                             }">
-                            <el-button @click="clearInput(true)" size="small" type="danger" plain :disabled="repair.repairing.value">
+                            <el-button data-action-role="danger" @click="clearInput(true)" size="small" type="danger" plain :disabled="repair.repairing.value">
                                 <el-icon>
                                     <Delete />
                                 </el-icon>
                                 <span>{{ settingsTxt.panelClear }}</span>
                             </el-button>
                             <el-upload class="upload-json" accept=".json" :auto-upload="false" :show-file-list="false" :disabled="repair.repairing.value" :on-change="handleFileUpload">
-                                <el-button class="file-transfer-button" size="small" type="primary" plain :disabled="repair.repairing.value">
+                                <el-button data-action-role="secondary" class="file-transfer-button" size="small" type="info" plain :disabled="repair.repairing.value">
                                     <el-icon>
                                         <Upload />
                                     </el-icon>
@@ -337,18 +337,19 @@
                                 '--panel-actions-opacity': showOutputActions ? 1 : 0,
                                 '--panel-actions-pointer-events': showOutputActions ? 'auto' : 'none',
                             }">
-                            <el-button @click="copyOutput" size="small" type="success" plain :disabled="repair.repairing.value">
+                            <el-button data-action-role="success" @click="copyOutput" size="small" type="success" plain :disabled="repair.repairing.value">
                                 <el-icon>
                                     <CopyDocument />
                                 </el-icon>
                                 <span>{{ settingsTxt.panelCopy }}</span>
                             </el-button>
                             <el-button
+                                data-action-role="secondary"
                                 class="preview-download-button file-transfer-button"
                                 @click="downloadOutput"
                                 :disabled="repair.repairing.value"
                                 size="small"
-                                type="primary"
+                                type="info"
                                 plain>
                                 <el-icon>
                                     <Download />
@@ -541,6 +542,7 @@ import { useJsonRepair } from './composables/useJsonRepair';
 import { useInterfaceTheme } from '../themes/useInterfaceTheme';
 import { clearEarlyTheme } from '../themes/early';
 import { preloadThemeStyles } from '../themes/styles';
+import '../themes/actions.css';
 import { useToolSettings } from './composables/useToolSettings';
 
 // 本地工具
@@ -4970,16 +4972,9 @@ const transferToInput = (e: MouseEvent) => {
     --toolbar-active-fg: #ffffff;
     --toolbar-hover-shadow: none;
     --toolbar-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18);
-    --toolbar-primary-hover-bg: #79bbff;
-    --toolbar-primary-hover-fg: #ffffff;
-    --toolbar-primary-active-bg: #337ecc;
-    --toolbar-primary-active-fg: #ffffff;
-    --toolbar-primary-hover-shadow: none;
-    --toolbar-primary-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.20);
     --toolbar-active-transform: none;
     --toolbar-border: #409eff;
     --toolbar-divider: rgba(255, 255, 255, 0.5);
-    --toolbar-primary-border: #409eff;
     --json-tool-diff-nav-bg: rgba(244, 246, 248, 0.94);
     --json-tool-diff-nav-border: rgba(205, 212, 220, 0.92);
     --json-tool-diff-nav-divider: rgba(205, 212, 220, 0.92);
@@ -5023,16 +5018,9 @@ body[data-interface-style="default"] .json-tool-root.theme-dark {
     --toolbar-active-fg: #e8f4ff;
     --toolbar-hover-shadow: none;
     --toolbar-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
-    --toolbar-primary-hover-bg: #28658e;
-    --toolbar-primary-hover-fg: #e8f4ff;
-    --toolbar-primary-active-bg: #143a55;
-    --toolbar-primary-active-fg: #e8f4ff;
-    --toolbar-primary-hover-shadow: none;
-    --toolbar-primary-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
     --toolbar-active-transform: none;
     --toolbar-border: #28658e;
     --toolbar-divider: rgba(255, 255, 255, 0.28);
-    --toolbar-primary-border: #28658e;
 
     --json-tool-diff-nav-bg: rgba(40, 40, 40, 0.94);
     --json-tool-diff-nav-border: rgba(72, 72, 72, 0.96);
@@ -5189,72 +5177,72 @@ body[data-interface-style="default"] .json-tool-root.theme-dark {
 }
 
 /* Joined toolbar group: only the outer edges keep the theme radius.
-   Middle buttons stay square, and adjacent borders overlap by 1px. */
+   Middle buttons stay square, and adjacent borders overlap by 1px.
+   The root keeps group geometry above locally scoped theme button skins,
+   regardless of lazy stylesheet insertion order. */
 .main-action-group {
     display: inline-flex;
     align-items: stretch;
 }
-.tool-bar .main-action-group > .el-button,
-.tool-bar .main-action-group > .el-dropdown {
+.json-tool-root .tool-bar .main-action-group > .el-button,
+.json-tool-root .tool-bar .main-action-group > .el-dropdown {
     position: relative;
     margin-left: -1px !important;
+    /* Element also applies margin-right: -1px; keep only one border overlap. */
+    margin-right: 0 !important;
     border-radius: 0 !important;
 }
-.tool-bar .main-action-group > :first-child {
+.json-tool-root .tool-bar .main-action-group > :first-child {
     margin-left: 0 !important;
 }
-.tool-bar .main-action-group > .el-dropdown :deep(.el-button) {
+.json-tool-root .tool-bar .main-action-group > .el-dropdown :deep(.el-button) {
     margin-left: 0 !important;
     border-radius: 0 !important;
 }
-.tool-bar .main-action-group > .el-button:first-child,
-.tool-bar .main-action-group > .el-dropdown:first-child :deep(.el-button) {
+.json-tool-root .tool-bar .main-action-group > .el-button:first-child,
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:first-child :deep(.el-button) {
     border-top-left-radius: var(--theme-radius, var(--el-border-radius-base, 4px)) !important;
     border-bottom-left-radius: var(--theme-radius, var(--el-border-radius-base, 4px)) !important;
 }
-.tool-bar .main-action-group > .el-button:last-child,
-.tool-bar .main-action-group > .el-dropdown:last-child :deep(.el-button) {
+.json-tool-root .tool-bar .main-action-group > .el-button:last-child,
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:last-child :deep(.el-button) {
     border-top-right-radius: var(--theme-radius, var(--el-border-radius-base, 4px)) !important;
     border-bottom-right-radius: var(--theme-radius, var(--el-border-radius-base, 4px)) !important;
 }
-.tool-bar .main-action-group > .el-button:first-child:last-child,
-.tool-bar .main-action-group > .el-dropdown:first-child:last-child :deep(.el-button) {
+.json-tool-root .tool-bar .main-action-group > .el-button:first-child:last-child,
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:first-child:last-child :deep(.el-button) {
     border-radius: var(--theme-radius, var(--el-border-radius-base, 4px)) !important;
 }
-.tool-bar .main-action-group > .el-button:not(:disabled):not(.is-disabled),
-.tool-bar .main-action-group > .el-dropdown > .el-button:not(:disabled):not(.is-disabled) {
+.json-tool-root .tool-bar .main-action-group > .el-button:not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-dropdown > .el-button:not(:disabled):not(.is-disabled) {
+    background: var(--toolbar-main-bg, var(--action-panel-bg)) !important;
+    color: var(--toolbar-main-fg, var(--action-primary-fg)) !important;
     border-color: var(--toolbar-border) !important;
 }
-.tool-bar .main-action-group > .json-format-button:not(:disabled):not(.is-disabled) {
-    border-color: var(--toolbar-primary-border) !important;
-}
-.tool-bar .main-action-group > .el-button:not(:first-child):not(:disabled):not(.is-disabled),
-.tool-bar .main-action-group > .el-dropdown:not(:first-child) > .el-button:not(:disabled):not(.is-disabled) {
+.json-tool-root .tool-bar .main-action-group > .el-button:not(:first-child):not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:not(:first-child) > .el-button:not(:disabled):not(.is-disabled) {
     border-left-color: var(--toolbar-divider) !important;
 }
-.tool-bar .main-action-group > .el-button:not(:last-child):not(:disabled):not(.is-disabled),
-.tool-bar .main-action-group > .el-dropdown:not(:last-child) > .el-button:not(:disabled):not(.is-disabled) {
+.json-tool-root .tool-bar .main-action-group > .el-button:not(:last-child):not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:not(:last-child) > .el-button:not(:disabled):not(.is-disabled) {
     border-right-color: var(--toolbar-divider) !important;
 }
 
 /* Interaction never recolors the group's outer border or shared seams. */
-.tool-bar .main-action-group > .el-button:is(:hover, :active):not(:disabled):not(.is-disabled),
-.tool-bar .main-action-group > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled),
-.tool-bar .main-action-group > .el-dropdown:hover > .el-button:not(:disabled):not(.is-disabled),
-.tool-bar .main-action-group > .el-dropdown > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled) {
+.json-tool-root .tool-bar .main-action-group > .el-button:is(:hover, :active):not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:hover > .el-button:not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-dropdown > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled) {
     border-color: var(--toolbar-border) !important;
 }
-.tool-bar .main-action-group > .json-format-button:is(:hover, :active):not(:disabled):not(.is-disabled) {
-    border-color: var(--toolbar-primary-border) !important;
-}
-.tool-bar .main-action-group > .el-button:is(:hover, :active):not(:first-child):not(:disabled):not(.is-disabled),
-.tool-bar .main-action-group > .el-dropdown:not(:first-child):hover > .el-button:not(:disabled):not(.is-disabled),
-.tool-bar .main-action-group > .el-dropdown:not(:first-child) > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled) {
+.json-tool-root .tool-bar .main-action-group > .el-button:is(:hover, :active):not(:first-child):not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:not(:first-child):hover > .el-button:not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:not(:first-child) > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled) {
     border-left-color: var(--toolbar-divider) !important;
 }
-.tool-bar .main-action-group > .el-button:is(:hover, :active):not(:last-child):not(:disabled):not(.is-disabled),
-.tool-bar .main-action-group > .el-dropdown:not(:last-child):hover > .el-button:not(:disabled):not(.is-disabled),
-.tool-bar .main-action-group > .el-dropdown:not(:last-child) > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled) {
+.json-tool-root .tool-bar .main-action-group > .el-button:is(:hover, :active):not(:last-child):not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:not(:last-child):hover > .el-button:not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:not(:last-child) > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled) {
     border-right-color: var(--toolbar-divider) !important;
 }
 
@@ -5269,25 +5257,25 @@ body[data-interface-style="default"] .json-tool-root.theme-dark {
 }
 
 /* Hover is a state layer, never an outline. Geometry and borders stay put. */
-.tool-bar .main-action-group > .el-button:not(.json-format-button):not(.is-disabled):hover,
-.tool-bar .main-action-group > .el-dropdown:hover > .el-button:not(.is-disabled) {
+.json-tool-root .tool-bar .main-action-group > .el-button:not(:disabled):not(.is-disabled):hover,
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:hover > .el-button:not(:disabled):not(.is-disabled) {
     background: var(--toolbar-hover-bg) !important;
-    color: var(--toolbar-hover-fg) !important;
+    color: var(--toolbar-main-hover-fg, var(--action-primary-fg)) !important;
     box-shadow: var(--toolbar-hover-shadow) !important;
 }
 
 /* Pressed state; the dropdown keeps this while its menu is open. */
-.tool-bar .main-action-group > .el-button:not(.json-format-button):not(.is-disabled):active,
-.tool-bar .main-action-group > .el-dropdown > .el-button:not(.is-disabled):active {
+.json-tool-root .tool-bar .main-action-group > .el-button:not(:disabled):not(.is-disabled):active,
+.json-tool-root .tool-bar .main-action-group > .el-dropdown > .el-button:not(:disabled):not(.is-disabled):active {
     background: var(--toolbar-active-bg) !important;
-    color: var(--toolbar-active-fg) !important;
+    color: var(--toolbar-main-active-fg, var(--action-primary-fg)) !important;
     box-shadow: var(--toolbar-active-shadow) !important;
     transform: var(--toolbar-active-transform, none);
 }
-.tool-bar .main-action-group > .el-dropdown > .el-button[aria-expanded="true"],
-.tool-bar .main-action-group > .el-dropdown:hover > .el-button[aria-expanded="true"] {
+.json-tool-root .tool-bar .main-action-group > .el-dropdown > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled),
+.json-tool-root .tool-bar .main-action-group > .el-dropdown:hover > .el-button[aria-expanded="true"]:not(:disabled):not(.is-disabled) {
     background: var(--toolbar-active-bg) !important;
-    color: var(--toolbar-active-fg) !important;
+    color: var(--toolbar-main-active-fg, var(--action-primary-fg)) !important;
     box-shadow: var(--toolbar-active-shadow) !important;
 }
 .tool-bar .main-action-group > .el-dropdown > .el-button .el-icon--right {
@@ -5304,18 +5292,6 @@ body[data-interface-style="default"] .json-tool-root.theme-dark {
     outline-offset: 2px;
 }
 
-/* The primary format action keeps its stronger fill shift. */
-.tool-bar .main-action-group > .json-format-button:hover:not(:disabled):not(.is-loading) {
-    background: var(--toolbar-primary-hover-bg) !important;
-    color: var(--toolbar-primary-hover-fg) !important;
-    box-shadow: var(--toolbar-primary-hover-shadow) !important;
-}
-.tool-bar .main-action-group > .json-format-button:active:not(:disabled):not(.is-loading) {
-    background: var(--toolbar-primary-active-bg) !important;
-    color: var(--toolbar-primary-active-fg) !important;
-    box-shadow: var(--toolbar-primary-active-shadow) !important;
-    transform: var(--toolbar-active-transform, none);
-}
 .tool-bar .main-action-group > .el-button:active,
 .tool-bar .main-action-group > .el-dropdown > .el-button:active,
 .tool-bar .main-action-group > .el-button[aria-expanded="true"] {
@@ -5479,38 +5455,7 @@ body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button
     border-color: #ad4e4e;
 }
 
-:global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:not(:disabled):not(.is-disabled)) {
-    background-color: var(--el-color-info-light-9, #f4f4f5) !important;
-    border-color: var(--el-color-info-light-5, #d3d4d6) !important;
-    color: var(--default-file-transfer-fg, var(--el-color-info, #909399)) !important;
-}
-:global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:hover:not(:disabled):not(.is-disabled)),
-:global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:focus:not(:disabled):not(.is-disabled)) {
-    background-color: var(--el-color-info-light-8, #e9e9eb) !important;
-    border-color: var(--el-color-info-light-3, #b1b3b8) !important;
-    color: var(--default-file-transfer-fg, var(--el-color-info, #909399)) !important;
-}
-:global(body[data-interface-style="default"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:active:not(:disabled):not(.is-disabled)) {
-    background-color: var(--el-color-info-light-7, #dedfe0) !important;
-    border-color: var(--el-color-info-light-3, #b1b3b8) !important;
-    color: var(--default-file-transfer-fg, var(--el-color-info, #909399)) !important;
-}
-:global(body[data-interface-style="default"].json-tool-theme-dark :is(.panel-actions, .diff-panel-actions) .file-transfer-button:not(:disabled):not(.is-disabled)) {
-    background-color: #3a3a3a !important;
-    border-color: #4a4a4a !important;
-    color: #e0e0e0 !important;
-}
-:global(body[data-interface-style="default"].json-tool-theme-dark :is(.panel-actions, .diff-panel-actions) .file-transfer-button:hover:not(:disabled):not(.is-disabled)),
-:global(body[data-interface-style="default"].json-tool-theme-dark :is(.panel-actions, .diff-panel-actions) .file-transfer-button:focus:not(:disabled):not(.is-disabled)) {
-    background-color: #464646 !important;
-    border-color: #5a5a5a !important;
-    color: #f0f0f0 !important;
-}
-:global(body[data-interface-style="default"].json-tool-theme-dark :is(.panel-actions, .diff-panel-actions) .file-transfer-button:active:not(:disabled):not(.is-disabled)) {
-    background-color: #2e2e2e !important;
-    border-color: #5a5a5a !important;
-    color: #e0e0e0 !important;
-}
+
 
 body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-button--info) {
     background-color: #3a3a3a;
@@ -5575,7 +5520,6 @@ body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select
     background: var(--json-tool-surface) !important;
     border: 1px solid var(--json-tool-border) !important;
     color: var(--json-tool-text) !important;
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5) !important;
     transition: var(--json-tool-theme-transition) !important;
 }
 
@@ -5613,7 +5557,6 @@ body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select
     background-color: var(--json-tool-surface-raised) !important;
     border-color: var(--json-tool-border) !important;
     color: var(--json-tool-text) !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
 }
 
 :global(body[data-interface-style="default"].json-tool-theme-dark .el-message__content),
@@ -5674,7 +5617,6 @@ body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select
 
 :global(body[data-interface-style="default"].json-tool-theme-dark .delete-archive-message-box .el-message-box__header),
 :global(body[data-interface-style="default"].json-tool-theme-dark .delete-archive-message-box .el-message-box__btns) {
-    border: 0 !important;
     background: var(--json-tool-surface) !important;
     box-shadow: none !important;
 }
@@ -6522,7 +6464,8 @@ body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide
 /* 编辑器状态栏样式 */
 .editor-status-bar {
     background: var(--json-tool-surface-status);
-    border-top: none;
+    border-top: 1px solid var(--json-tool-border);
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     padding: 0 10px;
@@ -6635,6 +6578,13 @@ body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide
     padding-right: 4px;
     border-radius: 4px 0 0 4px;
     box-shadow: 0 0 0 1px var(--json-tool-level-select-border) inset !important;
+}
+
+/* Move 4px of the text-to-arrow gap to the left inset. The 88px select,
+   available label width, arrow and adjacent action stay in place. */
+:deep(.level-select .el-select__wrapper) {
+    padding-left: 10px;
+    column-gap: 2px;
 }
 
 .collapse-control .level-select :deep(.el-input__wrapper:hover),

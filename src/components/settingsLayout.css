@@ -12,5 +12,6 @@
     color: var(--json-tool-text-muted, var(--el-text-color-secondary));
 }
 
-.el-dialog.settings-dialog-wrapper .general-toolbar-options { margin-top: 20px; container-type: inline-size; }
+.el-dialog.settings-dialog-wrapper .interface-settings-content { display: grid; gap: 20px; }
+.el-dialog.settings-dialog-wrapper .toolbar-settings-options { container-type: inline-size; }
 .el-dialog.settings-dialog-wrapper .appearance-settings { margin: 0; }

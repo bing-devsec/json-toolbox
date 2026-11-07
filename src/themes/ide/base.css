@@ -74,7 +74,7 @@ body[data-interface-style="ide"] .json-tool-root.theme-dark .first-use-guide {
 body[data-interface-style="ide"] .json-tool-root.theme-dark .first-use-guide-card {
     border-color: var(--json-tool-border);
     background: var(--json-tool-surface-raised);
-    box-shadow: var(--json-tool-shadow);
+    box-shadow: var(--ide-dialog-shadow);
 }
 body[data-interface-style="ide"] .json-tool-root.theme-dark .first-use-guide-title { color: var(--json-tool-text); }
 body[data-interface-style="ide"] .json-tool-root.theme-dark .first-use-guide-desc { color: var(--json-tool-text-muted); }
@@ -102,7 +102,7 @@ body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover.el-pop
     background: var(--json-tool-surface) !important;
     border-color: var(--json-tool-border) !important;
     color: var(--json-tool-text) !important;
-    box-shadow: var(--json-tool-shadow) !important;
+    box-shadow: var(--ide-popover-shadow) !important;
 }
 body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover .el-popper__arrow::before {
     background: var(--json-tool-surface) !important;
@@ -127,5 +127,34 @@ body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover .demo-
 }
 
 /* IDE: crisp functional separators; shape, not font metrics, carries density. */
-body[data-interface-style="ide"] .panel-header { box-shadow: none; }
+body[data-interface-style="ide"] :is(.json-tool-container, .editor-panel, .tool-bar-wrapper, .panel-header, .archive-sidebar-header, .editor-status-bar) {
+    box-shadow: none;
+}
+
+/* A real bottom edge separates the flat workbench from surrounding page content.
+   Include it in the existing height, including fullscreen and Diff layouts. */
+body[data-interface-style="ide"] .json-tool-container {
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--json-tool-border);
+}
+
+/* Floating menus sit just above the flat workbench; modal cards rise one step higher. */
+body[data-interface-style="ide"] :is(.el-popper, .el-popover, .el-select__popper, .el-dropdown__popper, .el-message, .el-notification) {
+    box-shadow: var(--ide-popover-shadow) !important;
+}
+body[data-interface-style="ide"] :is(.el-dialog, .el-message-box, .first-use-guide-card, .review-invitation) {
+    box-shadow: var(--ide-dialog-shadow) !important;
+}
+/* Element dialogs and message boxes have no real border. An inset contour keeps their existing geometry. */
+body[data-interface-style="ide"] :is(.el-dialog, .el-message-box) {
+    box-shadow: inset 0 0 0 1px var(--json-tool-border), var(--ide-dialog-shadow) !important;
+}
 body[data-interface-style="ide"] .editor-status-bar { font-variant-numeric: tabular-nums; }
+
+/* Settings remain on the dialog plane; drag feedback is a temporary floating hint. */
+body[data-interface-style="ide"] .switch-card {
+    box-shadow: none !important;
+}
+body[data-interface-style="ide"] .editor-drag-upload-card {
+    box-shadow: var(--ide-popover-shadow);
+}

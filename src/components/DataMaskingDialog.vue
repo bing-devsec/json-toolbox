@@ -2908,6 +2908,20 @@ watch(
     max-width: 95vw;
 }
 
+/* Element creates the teleported dialog shell without this component scope id.
+   Target only our dialog class; keep specificity below themed title bars. */
+:global(.el-dialog.data-masking-dialog-wrapper > :where(.el-dialog__header)) {
+    padding: 16px 20px 12px;
+}
+
+:global(.el-dialog.data-masking-dialog-wrapper > :where(.el-dialog__body)) {
+    padding: 20px;
+}
+
+:global(.el-dialog.data-masking-dialog-wrapper > :where(.el-dialog__footer)) {
+    padding: 12px 20px 16px;
+}
+
 .data-masking-dialog-wrapper :deep(.el-dialog) {
     max-height: calc(100vh - 12vh);
     display: flex;

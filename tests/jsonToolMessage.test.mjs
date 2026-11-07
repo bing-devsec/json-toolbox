@@ -39,7 +39,21 @@ function fixture() {
         addEventListener: (name, callback) => listeners.set(name, callback),
         removeEventListener: (name, callback) => { if (listeners.get(name) === callback) listeners.delete(name); },
     };
-    const document = { body, defaultView: view };
+    const stacks = [];
+    const makeNode = () => ({
+        children: [], parentElement: null, removed: false,
+        appendChild(child) { this.children.push(child); child.parentElement = this; return child; },
+        remove() {
+            this.removed = true;
+            if (this.parentElement) this.parentElement.children = this.parentElement.children.filter(child => child !== this);
+            this.parentElement = null;
+        },
+    });
+    Object.assign(body, makeNode());
+
+    const document = { body, defaultView: view, createElement: () => {
+        const node = makeNode(); stacks.push(node); return node;
+    } };
     const parent = { parentElement: body };
     let rect = { top: 0, height: 44, width: 1200, right: 1200 };
     const toolbar = { ownerDocument: document, parentElement: parent, getBoundingClientRect: () => rect };
@@ -49,7 +63,7 @@ function fixture() {
         calls.push(call);
         return { close: () => { call.closes++; } };
     } });
-    return { ...module.exports, calls, values, listeners, observers, toolbar, parent, body, view,
+    return { ...module.exports, calls, values, listeners, observers, toolbar, parent, body, stacks, view,
         move: next => { rect = { ...rect, ...next }; },
     };
 }
@@ -85,22 +99,60 @@ test('mode height and viewport changes use actual bounds and retain the right in
     dispose();
 });
 
-test('new results replace the current feedback without a late close clearing the replacement', () => {
+test('warnings and successes from one action coexist in arrival order with independent lifetimes', () => {
     const f = fixture();
     const dispose = f.bindJsonToolMessageToolbar(f.toolbar);
-    f.showMessageSuccess('formatted');
-    f.showMessageError('invalid JSON', 7000);
-    assert.equal(f.calls[0].closes, 1);
-    f.calls[0].options.onClose();
-    f.showMessageWarning('check input');
-    assert.equal(f.calls[1].closes, 1);
-    assert.equal(f.calls[1].options.duration, 7000);
-    assert.equal(f.calls[1].options.message.props.title, 'invalid JSON');
-    assert.equal(f.calls[1].options.message.children, 'invalid JSON');
-    assert.equal(f.calls[1].options.appendTo, f.body, 'messages stay above modal stacking contexts');
-    assert.equal(f.calls[1].options.placement, 'top-right');
+    f.showMessageWarning('long line protection enabled', 7000);
+    f.showMessageSuccess('compressed');
+    f.showMessageError('invalid JSON', 0);
+    assert.deepEqual(f.calls.map(call => call.closes), [0, 0, 0], 'new feedback must not close earlier feedback');
+    assert.deepEqual(f.calls.map(call => call.options.type), ['warning', 'success', 'error']);
+    assert.equal(f.calls[0].options.duration, 7000);
+    assert.equal(f.calls[1].options.duration, undefined, 'retain the library default duration');
+    assert.equal(f.calls[2].options.duration, 0, 'persistent messages must remain persistent');
+    for (const { options } of f.calls) {
+        assert.equal(options.placement, 'top-right');
+        assert.equal(options.appendTo, f.stacks[0]);
+        assert.equal(options.appendTo.parentElement, f.body);
+        assert.equal(options.message.props.title, options.message.children);
+    }
     dispose();
-    assert.equal(f.calls[2].closes, 1);
+    assert.deepEqual(f.calls.map(call => call.closes), [1, 1, 1], 'release every active message');
+});
+
+test('closing the middle or first message leaves the other messages alive', () => {
+    const f = fixture();
+    const dispose = f.bindJsonToolMessageToolbar(f.toolbar);
+    f.showMessageWarning('first', 7000);
+    f.showMessageSuccess('middle');
+    f.showMessageInfo('last');
+    f.calls[1].options.onClose();
+    f.calls[0].options.onClose();
+    f.showMessageError('new last');
+    assert.deepEqual(f.calls.map(call => call.closes), [0, 0, 0, 0]);
+    dispose();
+    assert.deepEqual(f.calls.map(call => call.closes), [0, 0, 1, 1], 'closed entries are released without affecting survivors');
+});
+
+test('messages share a flow container that survives close callbacks until toolbar teardown', () => {
+    const f = fixture();
+    const dispose = f.bindJsonToolMessageToolbar(f.toolbar);
+    assert.equal(f.stacks.length, 0, 'create the container only when there is feedback');
+    f.showMessageWarning('first', 7000);
+    f.showMessageSuccess('second');
+    assert.equal(f.stacks.length, 1);
+    const stack = f.calls[0].options.appendTo;
+    assert.notEqual(stack, f.body, 'messages need a dedicated flow container');
+    assert.equal(f.calls[1].options.appendTo, stack);
+    assert.equal(stack.parentElement, f.body);
+    f.calls[1].options.onClose();
+    f.calls[0].options.onClose();
+    assert.equal(stack.removed, false, 'onClose precedes the fade; keep the container mounted');
+    f.showMessageInfo('arrives while old messages fade');
+    assert.equal(f.calls[2].options.appendTo, stack, 'new feedback stays after the fading DOM nodes');
+    dispose();
+    assert.equal(stack.removed, true);
+    assert.equal(f.body.children.length, 0);
 });
 
 test('a new message reads moved bounds even before the resize observer delivers', () => {
@@ -112,17 +164,27 @@ test('a new message reads moved bounds even before the resize observer delivers'
     dispose();
 });
 
-test('teardown restores styles and releases listeners, observers and the current message', () => {
+test('rebinding releases the entire old stack and ignores stale cleanup and close callbacks', () => {
     const f = fixture();
     f.values.set('--json-tool-message-center-y', '100px');
     const oldDispose = f.bindJsonToolMessageToolbar(f.toolbar);
     f.showMessageInfo('first');
+    f.showMessageWarning('second', 7000);
     const dispose = f.bindJsonToolMessageToolbar(f.toolbar);
-    f.showMessageInfo('second');
+    assert.deepEqual(f.calls.map(call => call.closes), [1, 1]);
+    assert.equal(f.stacks[0].removed, true);
+    f.showMessageInfo('new owner');
+    assert.equal(f.stacks.length, 2);
+    assert.equal(f.calls[2].options.appendTo, f.stacks[1]);
     oldDispose();
-    assert.equal(f.calls[1].closes, 0, 'stale cleanup must not close the new owner');
+    f.calls[0].options.onClose();
+    f.calls[1].options.onClose();
+    assert.equal(f.calls[2].closes, 0, 'stale cleanup must not close the new owner');
+    assert.equal(f.stacks[1].removed, false);
     dispose();
-    assert.equal(f.calls[1].closes, 1);
+    dispose();
+    assert.deepEqual(f.calls.map(call => call.closes), [1, 1, 1], 'cleanup is idempotent');
+    assert.equal(f.stacks[1].removed, true);
     assert.equal(f.listeners.size, 0);
     assert.ok(f.observers.every(observer => observer.disconnected));
     assert.equal(f.values.get('--json-tool-message-center-y'), '100px');

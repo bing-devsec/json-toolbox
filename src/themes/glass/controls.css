@@ -14,7 +14,7 @@ body[data-interface-style="glass"] :is(.el-button.el-button, .archive-header-act
     color: var(--glass-control-fg) !important;
     border: 1px solid var(--glass-control-border) !important;
     border-radius: var(--glass-radius-small) !important;
-    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow-soft) !important;
+    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-control-shadow) !important;
     filter: none !important;
     font-weight: 500;
 }
@@ -32,14 +32,14 @@ body[data-interface-style="glass"] .el-button.el-button--primary {
     box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-primary-shadow) !important;
 }
 
-body[data-interface-style="glass"] :is(.tool-bar .el-button--primary:not(.json-format-button), .panel-actions .el-button--primary, .el-button.transfer-button) {
+body[data-interface-style="glass"] :is(.tool-bar .el-button--primary, .panel-actions .el-button--primary, .el-button.transfer-button) {
     --glass-control-bg: var(--glass-secondary-bg);
     --glass-control-fg: var(--glass-secondary-fg);
     --glass-control-border: var(--glass-secondary-border);
     --glass-control-hover-bg: var(--glass-secondary-hover-bg);
     --glass-control-hover-border: var(--glass-secondary-hover-border);
     --glass-control-active-bg: var(--glass-secondary-active-bg);
-    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow-soft) !important;
+    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-control-shadow) !important;
 }
 
 body[data-interface-style="glass"] :is(.el-button.el-button--danger, .archive-header-action.danger) {
@@ -90,6 +90,13 @@ body[data-interface-style="glass"] .main-action-group > .data-convert-dropdown:n
 }
 body[data-interface-style="glass"] .el-button-group > .el-button:not(:first-child) {
     border-left-color: var(--glass-divider) !important;
+}
+
+/* Keep every joined action on the same border in normal and hover states. */
+body[data-interface-style="glass"] .json-tool-root .main-action-group > .el-button,
+body[data-interface-style="glass"] .json-tool-root .main-action-group > .el-dropdown .el-button {
+    --glass-control-border: var(--toolbar-border);
+    --glass-control-hover-border: var(--toolbar-border);
 }
 
 /* Inputs, selects and keyboard focus */
@@ -261,7 +268,7 @@ body[data-interface-style="glass"] .appearance-mode button[aria-pressed="true"] 
 }
 body[data-interface-style="glass"] .appearance-style-card[aria-pressed="true"] {
     border-color: var(--glass-focus);
-    box-shadow: inset 0 0 0 1px var(--glass-focus), var(--glass-shadow-soft);
+    box-shadow: inset 0 0 0 1px var(--glass-focus), var(--glass-control-shadow);
     background: var(--glass-panel-soft);
 }
 
@@ -366,20 +373,6 @@ body[data-interface-style="glass"] .archive-sidebar-header .archive-header-actio
 }
 body[data-interface-style="glass"] .archive-sidebar-header .archive-header-action:disabled {
     background: transparent !important; border-color: transparent !important; color: var(--glass-neutral-disabled-fg) !important; opacity: 1 !important;
-}
-
-/* File transfer and diff format are the accent actions; sort stays neutral. */
-body[data-interface-style="glass"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button,
-body[data-interface-style="glass"] :is(.panel-actions, .diff-panel-actions) .file-transfer-button:hover:not(:disabled):not(.is-disabled),
-body[data-interface-style="glass"] .diff-panel-actions .diff-format-button,
-body[data-interface-style="glass"] .diff-panel-actions .diff-format-button:hover:not(:disabled):not(.is-disabled) {
-    color: var(--theme-accent) !important;
-    border-color: color-mix(in srgb, var(--theme-accent) 45%, var(--json-tool-border)) !important;
-}
-
-body[data-interface-style="glass"] :is(.panel-actions, .diff-panel-actions) .el-button--success,
-body[data-interface-style="glass"] :is(.panel-actions, .diff-panel-actions) .el-button--success:hover:not(:disabled):not(.is-disabled) {
-    border-color: color-mix(in srgb, var(--theme-success) 45%, var(--json-tool-border)) !important;
 }
 
 /* Keep focus immediate: these frames never animate their geometry or focus shadow. */

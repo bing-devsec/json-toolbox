@@ -2,7 +2,7 @@
 
 ## 对照范围
 
-网页入口是同级 portal-web 的 components/JsonTool，扩展入口是本仓库 src/components。
+网页入口是同级 json-web 的 components/JsonTool，扩展入口是本仓库 src/components。
 对照 i18n、jsonEngine、Workers、largeEditor 工具、Diff 和转换功能时保留两端各自的 import、生命周期和可用功能。先定位实际同级工程；如果未检出网页工程，说明缺少跨端对照而继续能独立完成的扩展检查。
 
 新增能力如仅获授权修改一个端，完成这一端并指出另一端是否受影响，不擅自扩展提交范围。

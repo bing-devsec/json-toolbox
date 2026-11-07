@@ -72,7 +72,7 @@ body[data-interface-style="retro"] .json-tool-root.theme-dark .first-use-guide {
 body[data-interface-style="retro"] .json-tool-root.theme-dark .first-use-guide-card {
     border-color: var(--json-tool-border);
     background: var(--json-tool-surface-raised);
-    box-shadow: var(--json-tool-shadow);
+    box-shadow: var(--retro-dialog-shadow);
 }
 body[data-interface-style="retro"] .json-tool-root.theme-dark .first-use-guide-title { color: var(--json-tool-text); }
 body[data-interface-style="retro"] .json-tool-root.theme-dark .first-use-guide-desc { color: var(--json-tool-text-muted); }
@@ -100,7 +100,7 @@ body[data-interface-style="retro"].json-tool-theme-dark .demo-guide-popover.el-p
     background: var(--json-tool-surface) !important;
     border-color: var(--json-tool-border) !important;
     color: var(--json-tool-text) !important;
-    box-shadow: var(--json-tool-shadow) !important;
+    box-shadow: var(--retro-popover-shadow) !important;
 }
 body[data-interface-style="retro"].json-tool-theme-dark .demo-guide-popover .el-popper__arrow::before {
     background: var(--json-tool-surface) !important;
@@ -130,44 +130,48 @@ body[data-interface-style="retro"] {
     background: var(--retro-desktop);
     background-attachment: fixed;
 }
-body[data-interface-style="retro"] .json-tool-container { background: transparent; }
+body[data-interface-style="retro"] .json-tool-container {
+    background: transparent;
+    box-shadow: var(--retro-workbench-shadow);
+}
+/* Docked sections share one window; only floating surfaces cast a separate shadow. */
+body[data-interface-style="retro"] :is(.json-tool-container.fullscreen, .tool-bar-wrapper, .panel-header, .archive-sidebar-header) {
+    box-shadow: none;
+}
+body[data-interface-style="retro"] :is(.el-popper, .el-message, .el-notification) {
+    box-shadow: var(--retro-popover-shadow) !important;
+}
+body[data-interface-style="retro"] :is(.el-dialog, .el-message-box) {
+    box-shadow: var(--retro-dialog-shadow) !important;
+}
+/* Element dialogs and message boxes have no outer border; keep the window contour inside its bounds. */
+body[data-interface-style="retro"] :is(.el-dialog, .el-message-box) {
+    box-shadow: inset 0 0 0 1px var(--retro-window-border), var(--retro-dialog-shadow) !important;
+}
 
 body[data-interface-style="retro"] .tool-bar-wrapper {
     background: var(--retro-face) !important;
-    border-bottom: 1px solid var(--retro-border) !important;
-    box-shadow: inset 0 1px 0 var(--retro-highlight);
+    border-bottom-color: var(--retro-border) !important;
 }
 body[data-interface-style="retro"] .tool-bar { background: transparent !important; }
 
 body[data-interface-style="retro"] .panel-header {
     background: var(--retro-title) !important;
-    border-bottom: 1px solid var(--retro-title-border) !important;
+    border-bottom-color: var(--retro-title-border) !important;
     color: var(--retro-title-text) !important;
-    box-shadow: inset 0 1px 0 var(--retro-title-highlight);
 }
 body[data-interface-style="retro"] .panel-title { color: var(--retro-title-text) !important; font-weight: 700; }
 
 body[data-interface-style="retro"] .editor-status-bar {
     background: var(--retro-status) !important;
-    border-top: 0 !important;
+    border-top-color: var(--retro-border) !important;
     color: var(--json-tool-text-muted) !important;
-    box-shadow: inset 0 1px 0 var(--retro-border), var(--retro-status-shadow);
+    box-shadow: var(--retro-status-shadow);
 }
 body[data-interface-style="retro"] .archive-sidebar {
     position: relative;
     background: var(--retro-window) !important;
     border-right: 0 !important;
-}
-body[data-interface-style="retro"] .archive-sidebar::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 1px;
-    background: var(--retro-border);
-    pointer-events: none;
-    z-index: 2;
 }
 body[data-interface-style="retro"] .archive-item.is-active {
     background: var(--retro-selected) !important;
@@ -176,18 +180,7 @@ body[data-interface-style="retro"] .archive-item.is-active {
 body[data-interface-style="retro"] .editor-panel {
     background: var(--retro-window);
     border: 0;
-    border-radius: var(--retro-radius);
-    box-shadow: var(--retro-window-shadow);
-}
-/* Visual frame only: borders must never change panel content geometry. */
-body[data-interface-style="retro"] .editor-panel::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--retro-window-border);
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: 3;
+    box-shadow: none;
 }
 body[data-interface-style="retro"] .resizer {
     background: var(--retro-face-solid);
@@ -202,7 +195,6 @@ body[data-interface-style="retro"] .transfer-button {
 }
 body[data-interface-style="retro"] .monaco-editor .margin {
     background: var(--json-tool-gutter-bg) !important;
-    box-shadow: inset -1px 0 0 var(--retro-dotted);
 }
 
 body[data-interface-style="retro"] :is(.el-dialog, .el-message-box) {
@@ -213,11 +205,11 @@ body[data-interface-style="retro"] :is(.el-popover.el-popper, .el-select__popper
     background: var(--retro-window) !important;
     border: 1px solid var(--retro-window-border) !important;
     border-radius: var(--retro-radius) !important;
-    box-shadow: var(--retro-window-shadow) !important;
+    box-shadow: var(--retro-popover-shadow) !important;
 }
 body[data-interface-style="retro"] :is(.el-dialog__header, .el-message-box__header) {
     background: var(--retro-title) !important;
-    border-bottom: 1px solid var(--retro-title-border) !important;
+    border-bottom-color: var(--retro-title-border) !important;
     padding: 10px 12px;
 }
 body[data-interface-style="retro"] :is(.el-dialog__title, .el-message-box__title, .dialog-title-with-close) {
@@ -228,7 +220,7 @@ body[data-interface-style="retro"] :is(.el-dialog__headerbtn .el-dialog__close, 
     color: var(--retro-title-text) !important;
 }
 body[data-interface-style="retro"] :is(.el-dialog__footer, .el-message-box__btns) {
-    border-top: 1px solid var(--retro-dotted) !important;
+    border-top-color: var(--retro-dotted) !important;
     background: var(--retro-window) !important;
 }
 body[data-interface-style="retro"] .el-overlay { background: var(--retro-scrim) !important; }
@@ -237,7 +229,7 @@ body[data-interface-style="retro"] .first-use-guide-card {
     background: var(--retro-window) !important;
     border: 1px solid var(--retro-window-border) !important;
     border-radius: var(--retro-radius);
-    box-shadow: var(--retro-window-shadow) !important;
+    box-shadow: var(--retro-dialog-shadow) !important;
 }
 body[data-interface-style="retro"] :is(.first-use-guide-title, .first-use-guide-desc) { color: var(--json-tool-text) !important; }
 body[data-interface-style="retro"] .screen-size-warning { background: var(--retro-desktop) !important; color: var(--retro-title-text); }
@@ -250,13 +242,13 @@ body[data-interface-style="retro"] .demo-guide-popover.el-popover {
 }
 body[data-interface-style="retro"] .demo-guide-popover .demo-guide-header {
     background: var(--retro-title) !important;
-    border-bottom: 1px solid var(--retro-title-border) !important;
+    border-bottom-color: var(--retro-title-border) !important;
 }
 body[data-interface-style="retro"] .demo-guide-popover .demo-guide-header h3 {
     color: var(--retro-title-text) !important;
     font-weight: 700;
 }
-body[data-interface-style="retro"] .demo-guide-popover .demo-guide-footer { border-top: 1px solid var(--retro-dotted) !important; }
+body[data-interface-style="retro"] .demo-guide-popover .demo-guide-footer { border-top-color: var(--retro-dotted) !important; }
 body[data-interface-style="retro"] .demo-guide-popover .demo-current-settings {
     background: var(--retro-face-solid) !important;
     border: 1px solid var(--retro-border) !important;
@@ -274,7 +266,7 @@ body[data-interface-style="retro"] .el-popper__arrow::before {
 /* App-level surfaces outside the workbench (capture notice, review invitation). */
 body[data-interface-style="retro"] .capture-notice {
     background: var(--retro-status) !important;
-    border-bottom: 1px solid var(--retro-border) !important;
+    border-bottom-color: var(--retro-border) !important;
     color: var(--json-tool-text) !important;
 }
 body[data-interface-style="retro"] .capture-notice button {
@@ -288,7 +280,7 @@ body[data-interface-style="retro"] .review-invitation {
     background: var(--retro-window) !important;
     border: 1px solid var(--retro-window-border) !important;
     border-radius: var(--retro-radius) !important;
-    box-shadow: var(--retro-window-shadow) !important;
+    box-shadow: var(--retro-dialog-shadow) !important;
     color: var(--json-tool-text) !important;
 }
 body[data-interface-style="retro"] .review-invitation :is(h2, p) { color: var(--json-tool-text) !important; }
@@ -311,4 +303,11 @@ body[data-interface-style="retro"] .review-invitation :is(.review-icon, .review-
 body[data-interface-style="retro"] .review-invitation p.review-error { color: var(--theme-danger) !important; }
 
 
-/* Bordered editor panels start 1px lower; the title actions follow the same line. */
+
+/* Settings remain on the dialog plane; drag feedback is a temporary floating hint. */
+body[data-interface-style="retro"] .switch-card {
+    box-shadow: none !important;
+}
+body[data-interface-style="retro"] .editor-drag-upload-card {
+    box-shadow: var(--retro-popover-shadow);
+}
