@@ -1,12 +1,20 @@
 // JSON 排序工具：包含字典序、长度、字段值比较与递归排序
-import { getValueByPath } from './jsonPath';
+import { getValueByPathParts, parsePathToParts } from './jsonPath';
 
 export type SortMethod = 'dictionary' | 'length' | 'field';
 export type SortOrder = 'asc' | 'desc';
 
+// Constructing a collator for every comparison dominates large key/line sorts.
+const dictionaryCollator = new Intl.Collator(undefined, { numeric: false, sensitivity: 'base' });
+
+// Preserve JSON's own __proto__ key without invoking Object.prototype's setter.
+const setOwnValue = (target: Record<string, any>, key: string, value: any): void => {
+    Object.defineProperty(target, key, { value, enumerable: true, configurable: true, writable: true });
+};
+
 // 比较函数：字典序
 export const compareDictionary = (a: string, b: string): number => {
-    return a.localeCompare(b, undefined, { numeric: false, sensitivity: 'base' });
+    return dictionaryCollator.compare(a, b);
 };
 
 // 比较函数：按Key长度
@@ -45,6 +53,14 @@ export const compareFieldValues = (a: any, b: any): number => {
     return strA.localeCompare(strB);
 };
 
+// A field path is constant during a sort. Keep getValueByPath's empty-path and
+// falsy-root behavior while reusing the existing own-property traversal.
+const createFieldReader = (fieldPath: string): ((value: any) => any) => {
+    if (!fieldPath) return (value: any) => value;
+    const parts = parsePathToParts(fieldPath);
+    return (value: any) => value ? getValueByPathParts(value, parts) : value;
+};
+
 // 获取比较函数
 export const getCompareFunction = (method: SortMethod, fieldPath?: string): ((a: any, b: any) => number) => {
     switch (method) {
@@ -52,19 +68,28 @@ export const getCompareFunction = (method: SortMethod, fieldPath?: string): ((a:
             return (a: any, b: any) => compareDictionary(String(a), String(b));
         case 'length':
             return (a: any, b: any) => compareLength(String(a), String(b));
-        case 'field':
+        case 'field': {
+            if (!fieldPath) return () => 0;
+            const readField = createFieldReader(fieldPath);
             return (a: any, b: any) => {
-                if (!fieldPath) return 0;
-
                 // 对于字段排序，a和b应该是对象或数组元素
-                const valueA = getValueByPath(a, fieldPath);
-                const valueB = getValueByPath(b, fieldPath);
+                const valueA = readField(a);
+                const valueB = readField(b);
 
                 return compareFieldValues(valueA, valueB);
             };
+        }
         default:
             return (a: any, b: any) => compareDictionary(String(a), String(b));
     }
+};
+
+const sortArrayByField = (items: any[], fieldPath: string, order: SortOrder): any[] => {
+    const readField = createFieldReader(fieldPath);
+    return [...items].sort((a, b) => {
+        const result = compareFieldValues(readField(a), readField(b));
+        return order === 'asc' ? result : -result;
+    });
 };
 
 // 递归排序JSON对象
@@ -75,13 +100,7 @@ export const sortJsonObject = (obj: any, method: SortMethod, order: SortOrder, f
 
     if (Array.isArray(obj)) {
         if (method === 'field' && fieldPath) {
-            // 数组元素按字段值排序
-            const compareFn = getCompareFunction(method, fieldPath);
-            return [...obj]
-                .sort((a, b) => {
-                    const result = compareFn(a, b);
-                    return order === 'asc' ? result : -result;
-                })
+            return sortArrayByField(obj, fieldPath, order)
                 .map((item) => sortJsonObject(item, method, order, fieldPath));
         } else {
             // 普通数组：递归处理每个元素
@@ -99,19 +118,8 @@ export const sortJsonObject = (obj: any, method: SortMethod, order: SortOrder, f
             // 对象的值包含数组，对每个数组值进行排序
             const sortedObj: any = {};
             for (const [key, value] of Object.entries(obj)) {
-                if (Array.isArray(value)) {
-                    // 对数组进行字段排序
-                    const compareFn = getCompareFunction(method, fieldPath);
-                    sortedObj[key] = [...value]
-                        .sort((a, b) => {
-                            const result = compareFn(a, b);
-                            return order === 'asc' ? result : -result;
-                        })
-                        .map((item) => sortJsonObject(item, method, order, fieldPath));
-                } else {
-                    // 非数组值递归处理
-                    sortedObj[key] = sortJsonObject(value, method, order, fieldPath);
-                }
+                // Recursive array handling already performs the same field sort.
+                setOwnValue(sortedObj, key, sortJsonObject(value, method, order, fieldPath));
             }
             return sortedObj;
         } else {
@@ -127,7 +135,7 @@ export const sortJsonObject = (obj: any, method: SortMethod, order: SortOrder, f
 
             const sortedObj: any = {};
             for (const [key, value] of sortedEntries) {
-                sortedObj[key] = sortJsonObject(value, method, order, fieldPath);
+                setOwnValue(sortedObj, key, sortJsonObject(value, method, order, fieldPath));
             }
             return sortedObj;
         }
@@ -142,7 +150,7 @@ export const sortJsonObject = (obj: any, method: SortMethod, order: SortOrder, f
         const sortedObj: any = {};
         for (const key of sortedKeys) {
             // 递归处理值
-            sortedObj[key] = sortJsonObject(obj[key], method, order, fieldPath);
+            setOwnValue(sortedObj, key, sortJsonObject(obj[key], method, order, fieldPath));
         }
 
         return sortedObj;
@@ -158,65 +166,29 @@ export const sortJsonByField = (data: any, fieldPath: string, order: SortOrder =
         // 检查第一个元素是否是数组
         if (data.length > 0 && Array.isArray(data[0])) {
             // 这是一个数组的数组，对每个子数组进行排序
-            return data.map((subArray) => {
-                if (Array.isArray(subArray)) {
-                    return [...subArray].sort((a, b) => {
-                        const valueA = getValueByPath(a, fieldPath);
-                        const valueB = getValueByPath(b, fieldPath);
-                        const result = compareFieldValues(valueA, valueB);
-                        return order === 'asc' ? result : -result;
-                    });
-                }
-                return subArray;
-            });
-        } else {
-            // 普通数组，按字段排序数组元素
-            return [...data].sort((a, b) => {
-                const valueA = getValueByPath(a, fieldPath);
-                const valueB = getValueByPath(b, fieldPath);
-                const result = compareFieldValues(valueA, valueB);
-                return order === 'asc' ? result : -result;
-            });
+            return data.map((subArray) => Array.isArray(subArray) ? sortArrayByField(subArray, fieldPath, order) : subArray);
         }
+        return sortArrayByField(data, fieldPath, order);
     }
 
     // 如果是对象，检查对象的值是否是数组
     if (typeof data === 'object') {
-        const result: any = {};
-        for (const [key, value] of Object.entries(data)) {
-            if (Array.isArray(value)) {
-                // 对数组值进行排序
-                result[key] = [...value].sort((a, b) => {
-                    const valueA = getValueByPath(a, fieldPath);
-                    const valueB = getValueByPath(b, fieldPath);
-                    const result = compareFieldValues(valueA, valueB);
-                    return order === 'asc' ? result : -result;
-                });
-            } else {
-                // 保持其他值不变
-                result[key] = value;
-            }
-        }
         // 如果顶层是对象且其值不是数组（比如 map），支持按 value 的子字段对键进行排序
-        const allValuesAreObjects = Object.values(data).every((v) => typeof v === 'object' && v !== null && !Array.isArray(v));
-        const allValuesArePrimitive = Object.values(data).every((v) => (typeof v !== 'object' || v === null) && !Array.isArray(v));
+        const values = Object.values(data);
+        const allValuesAreObjects = values.every((v) => typeof v === 'object' && v !== null && !Array.isArray(v));
+        const allValuesArePrimitive = values.every((v) => (typeof v !== 'object' || v === null) && !Array.isArray(v));
 
         // 情况A：每个 value 是对象（例如 { id: 1 }），且用户填写了 fieldPath 或者可以自动回退到 value.<field>
         if (allValuesAreObjects && fieldPath) {
             const entries = Object.entries(data);
+            // 支持直接写 value.id，也支持简写 id（尝试回退）。
+            const readField = createFieldReader(fieldPath);
+            const readFallback = fieldPath.startsWith('value.') ? null : createFieldReader('value.' + fieldPath);
+            const extractValue = (obj: any) => {
+                const value = readField(obj);
+                return value == null && readFallback ? readFallback(obj) : value;
+            };
             entries.sort((a, b) => {
-                // 支持直接写 value.id，也支持简写 id（尝试回退）
-                const extractValue = (obj: any) => {
-                    let v = getValueByPath(obj, fieldPath);
-                    if (v === undefined || v === null) {
-                        // 如果 fieldPath 本身没有 value. 前缀，尝试加上
-                        if (!fieldPath.startsWith('value.')) {
-                            v = getValueByPath(obj, 'value.' + fieldPath);
-                        }
-                    }
-                    return v;
-                };
-
                 const valueA = extractValue(a[1]);
                 const valueB = extractValue(b[1]);
                 const cmp = compareFieldValues(valueA, valueB);
@@ -224,7 +196,7 @@ export const sortJsonByField = (data: any, fieldPath: string, order: SortOrder =
             });
             const sortedObj: any = {};
             for (const [k, v] of entries) {
-                sortedObj[k] = v;
+                setOwnValue(sortedObj, k, v);
             }
             return sortedObj;
         }
@@ -239,9 +211,15 @@ export const sortJsonByField = (data: any, fieldPath: string, order: SortOrder =
             });
             const sortedObj: any = {};
             for (const [k, v] of entries) {
-                sortedObj[k] = v;
+                setOwnValue(sortedObj, k, v);
             }
             return sortedObj;
+        }
+        // Only the mixed/array branch needs this reconstruction. Map sorts above
+        // already build their own ordered object, so do not copy it twice.
+        const result: any = {};
+        for (const [key, value] of Object.entries(data)) {
+            setOwnValue(result, key, Array.isArray(value) ? sortArrayByField(value, fieldPath, order) : value);
         }
         return result;
     }
@@ -270,7 +248,7 @@ export const sortStringLines = (input: string, method: 'dictionary' | 'length' |
             return order === 'asc' ? diff : -diff;
         });
         otherLines.sort((a, b) => {
-            const diff = a.localeCompare(b, undefined, { numeric: false, sensitivity: 'base' });
+            const diff = dictionaryCollator.compare(a, b);
             return order === 'asc' ? diff : -diff;
         });
 
@@ -282,12 +260,12 @@ export const sortStringLines = (input: string, method: 'dictionary' | 'length' |
         let result: number;
 
         if (method === 'dictionary') {
-            result = a.localeCompare(b, undefined, { numeric: false, sensitivity: 'base' });
+            result = dictionaryCollator.compare(a, b);
         } else if (method === 'length') {
             if (a.length !== b.length) {
                 result = a.length - b.length;
             } else {
-                result = a.localeCompare(b, undefined, { numeric: false, sensitivity: 'base' });
+                result = dictionaryCollator.compare(a, b);
             }
         } else {
             result = 0;

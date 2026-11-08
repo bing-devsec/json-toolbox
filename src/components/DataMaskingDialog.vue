@@ -409,7 +409,7 @@ import 'element-plus/es/components/option/style/css';
 import 'element-plus/es/components/select/style/css';
 
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
-import JSON5 from 'json5';
+import { parseMaskingInput, isMarkedNumberString, extractMarkedNumber } from './utils/jsonMaskingCodec';
 import { showMessageError, showMessageSuccess, showMessageWarning } from '@/utils/jsonToolMessage';
 import { Plus, Delete, DocumentAdd, FolderOpened, ArrowRight, Warning } from '@element-plus/icons-vue';
 
@@ -634,111 +634,6 @@ const MASK_TXT_EN: MaskTxt = {
 
 const maskTxt = computed<MaskTxt>(() => (props.locale === 'en' ? MASK_TXT_EN : MASK_TXT_ZH));
 
-const highPrecisionMarkerPrefix = '\uE000HPN:';
-const highPrecisionMarkerSuffix = ':HPN\uE000';
-
-const isMarkedNumberString = (value: any): value is string =>
-    typeof value === 'string' && value.startsWith(highPrecisionMarkerPrefix) && value.endsWith(highPrecisionMarkerSuffix);
-
-const extractMarkedNumber = (value: string) => value.slice(highPrecisionMarkerPrefix.length, -highPrecisionMarkerSuffix.length);
-
-const markHighPrecisionNumbers = (input: string): string => {
-    let result = '';
-    let i = 0;
-    let inString = false;
-    let stringChar = '';
-    let inLineComment = false;
-    let inBlockComment = false;
-
-    const isIdentifierChar = (ch: string) => /[A-Za-z0-9_$]/.test(ch);
-
-    while (i < input.length) {
-        const char = input[i];
-        const next = input[i + 1] || '';
-
-        if (inLineComment) {
-            result += char;
-            if (char === '\n') {
-                inLineComment = false;
-            }
-            i++;
-            continue;
-        }
-
-        if (inBlockComment) {
-            result += char;
-            if (char === '*' && next === '/') {
-                result += next;
-                i += 2;
-                inBlockComment = false;
-                continue;
-            }
-            i++;
-            continue;
-        }
-
-        if (inString) {
-            result += char;
-            if (char === '\\' && next) {
-                result += next;
-                i += 2;
-                continue;
-            }
-            if (char === stringChar) {
-                inString = false;
-                stringChar = '';
-            }
-            i++;
-            continue;
-        }
-
-        if (char === '/' && next === '/') {
-            result += char + next;
-            i += 2;
-            inLineComment = true;
-            continue;
-        }
-
-        if (char === '/' && next === '*') {
-            result += char + next;
-            i += 2;
-            inBlockComment = true;
-            continue;
-        }
-
-        if (char === '"' || char === "'") {
-            inString = true;
-            stringChar = char;
-            result += char;
-            i++;
-            continue;
-        }
-
-        const prevChar = i > 0 ? input[i - 1] : '';
-        if ((char === '+' || char === '-' || char === '.' || (char >= '0' && char <= '9')) && !isIdentifierChar(prevChar)) {
-            const slice = input.slice(i);
-            const match = slice.match(/^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/);
-            if (match && match[0]) {
-                const token = match[0];
-                const nextChar = input[i + token.length] || '';
-                if (!isIdentifierChar(nextChar)) {
-                    if (token.includes('.') || token.includes('e') || token.includes('E')) {
-                        const wrapped = `"${highPrecisionMarkerPrefix}${token}${highPrecisionMarkerSuffix}"`;
-                        result += wrapped;
-                        i += token.length;
-                        continue;
-                    }
-                }
-            }
-        }
-
-        result += char;
-        i++;
-    }
-
-    return result;
-};
-
 const detectIndentSize = (text: string): number => {
     const lines = text.split(/\r?\n/);
     let minIndent = Infinity;
@@ -757,102 +652,6 @@ const detectIndentSize = (text: string): number => {
 
     if (Number.isFinite(minIndent)) return minIndent;
     return 2;
-};
-
-const preserveUnicodeEscapes = (input: string) => {
-    const placeholderByHex = new Map<string, string>();
-    const placeholderToEscape = new Map<string, string>();
-    const used = new Set<string>();
-    for (const ch of input) used.add(ch);
-
-    let nextCodePoint = 0xe100;
-    const allocPlaceholder = () => {
-        while (nextCodePoint <= 0xf8ff) {
-            const ch = String.fromCharCode(nextCodePoint++);
-            if (!used.has(ch)) {
-                used.add(ch);
-                return ch;
-            }
-        }
-        const fallback = `__UNI_${Date.now()}_${Math.random().toString(16).slice(2)}__`;
-        used.add(fallback);
-        return fallback;
-    };
-
-    let out = '';
-    let i = 0;
-    while (i < input.length) {
-        if (input[i] === '\\' && i + 5 < input.length && input[i + 1] === 'u') {
-            const hex = input.slice(i + 2, i + 6);
-            if (/^[0-9a-fA-F]{4}$/.test(hex)) {
-                let backslashCount = 0;
-                let k = i - 1;
-                while (k >= 0 && input[k] === '\\') {
-                    backslashCount++;
-                    k--;
-                }
-                const isEscapedBackslash = backslashCount % 2 === 1;
-                if (!isEscapedBackslash) {
-                    let placeholder = placeholderByHex.get(hex);
-                    if (!placeholder) {
-                        placeholder = allocPlaceholder();
-                        placeholderByHex.set(hex, placeholder);
-                        placeholderToEscape.set(placeholder, `\\u${hex}`);
-                    }
-                    out += placeholder;
-                    i += 6;
-                    continue;
-                }
-            }
-        }
-        out += input[i];
-        i++;
-    }
-
-    return { transformed: out, placeholderToEscape };
-};
-
-const restoreUnicodeEscapes = (output: string, placeholderToEscape: Map<string, string>) => {
-    let result = output;
-    placeholderToEscape.forEach((escape, placeholder) => {
-        result = result.split(placeholder).join(escape);
-    });
-    return result;
-};
-
-const stringifyPreservingMarkedNumbers = (value: any, indentSize = 2, level = 0): string => {
-    const indent = ' '.repeat(level * indentSize);
-    const nextIndent = ' '.repeat((level + 1) * indentSize);
-
-    if (value === null || value === undefined) {
-        return 'null';
-    }
-
-    if (typeof value === 'string') {
-        if (isMarkedNumberString(value)) {
-            return extractMarkedNumber(value);
-        }
-        return JSON.stringify(value);
-    }
-
-    if (typeof value === 'number' || typeof value === 'boolean') {
-        return JSON.stringify(value);
-    }
-
-    if (Array.isArray(value)) {
-        if (value.length === 0) return '[]';
-        const items = value.map((item) => nextIndent + stringifyPreservingMarkedNumbers(item, indentSize, level + 1));
-        return '[\n' + items.join(',\n') + '\n' + indent + ']';
-    }
-
-    if (typeof value === 'object') {
-        const keys = Object.keys(value);
-        if (keys.length === 0) return '{}';
-        const items = keys.map((key) => `${nextIndent}${JSON.stringify(key)}: ${stringifyPreservingMarkedNumbers(value[key], indentSize, level + 1)}`);
-        return '{\n' + items.join(',\n') + '\n' + indent + '}';
-    }
-
-    return 'null';
 };
 
 // 对话框显示状态
@@ -1656,6 +1455,12 @@ const getNextLevelKeys = (jsonObj: any, currentPath: string): PathSuggestion[] =
     return suggestions.sort((a, b) => a.value.localeCompare(b.value));
 };
 
+// Parse once per source change; path keystrokes only navigate the same immutable input.
+// The dialog is conditionally mounted, so closing it releases this parsed tree.
+const suggestionJson = computed(() => {
+    try { return JSON.parse(props.jsonData); } catch { return undefined; }
+});
+
 // 查询字段路径建议（基于上下文）
 const queryFieldPaths = (queryString: string, cb: (suggestions: PathSuggestion[]) => void) => {
     if (!props.jsonData || !props.jsonData.trim()) {
@@ -1664,7 +1469,7 @@ const queryFieldPaths = (queryString: string, cb: (suggestions: PathSuggestion[]
     }
 
     try {
-        const jsonObj = JSON.parse(props.jsonData);
+        const jsonObj = suggestionJson.value;
 
         // 获取当前路径
         let currentPath = queryString || '';
@@ -2741,7 +2546,7 @@ const maskObject = (obj: any, rules: MaskingRule[], currentPath: string[] = []):
 
     // 处理对象
     if (typeof obj === 'object') {
-        const maskedObj: any = {};
+        const maskedObj: any = Object.create(null);
 
         for (const [key, value] of Object.entries(obj)) {
             const fieldPath = [...currentPath, key];
@@ -2853,12 +2658,10 @@ const confirmApply = () => {
     applying.value = true;
 
     try {
-        let jsonObj;
-        const unicodePreserve = preserveUnicodeEscapes(props.jsonData);
+        let codec: ReturnType<typeof parseMaskingInput>;
         const indentSize = detectIndentSize(props.jsonData);
         try {
-            const processedInput = markHighPrecisionNumbers(unicodePreserve.transformed);
-            jsonObj = JSON5.parse(processedInput);
+            codec = parseMaskingInput(props.jsonData, indentSize);
         } catch (error) {
             showMessageError(maskTxt.value.msgInvalidJson);
             applying.value = false;
@@ -2866,11 +2669,10 @@ const confirmApply = () => {
         }
 
         // 应用脱敏（只使用当前规则）
-        const { result, count } = maskObject(jsonObj, [currentRule.value]);
+        const { result, count } = maskObject(codec.data, [currentRule.value]);
 
         // 格式化输出
-        const maskedJsonRaw = stringifyPreservingMarkedNumbers(result, indentSize);
-        const maskedJson = restoreUnicodeEscapes(maskedJsonRaw, unicodePreserve.placeholderToEscape);
+        const maskedJson = codec.stringify(result);
 
         // 直接应用到编辑区域
         emit('apply', maskedJson);

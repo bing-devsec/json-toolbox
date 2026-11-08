@@ -833,7 +833,7 @@ export const cookieToJSON = (cookieStr: string, indentSize: number = 2): string 
                     appendCookiePair(acc, segment.slice(0, separatorIndex), segment.slice(separatorIndex + 1));
                 }
                 return acc;
-            }, {});
+            }, Object.create(null));
 
         if (Object.keys(cookies).length === 0) {
             throw new JsonConvertError('COOKIE_NO_VALID_PAIRS');

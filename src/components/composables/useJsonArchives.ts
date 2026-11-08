@@ -55,13 +55,25 @@ export const useJsonArchives = (options: UseJsonArchivesOptions) => {
     } | null = null;
     let layoutFrame: number | null = null;
 
+    let disposed = false;
+    let loadSequence = 0;
+    let moveSequence = 0;
+    let tabGeneration = 0;
+    watch(() => options.tabId.value, () => { tabGeneration++; }, { flush: 'sync' });
+
     /** 从当前标签页的 IndexedDB 存储桶读取存档；无输入参数，失败时清空列表并提示。 */
     const loadArchives = async (): Promise<void> => {
-        if (typeof window === 'undefined') return;
+        if (typeof window === 'undefined' || disposed) return;
+        const tabId = options.tabId.value;
+        const generation = tabGeneration;
+        const sequence = ++loadSequence;
+        const isCurrent = () => !disposed && generation === tabGeneration && tabId === options.tabId.value && sequence === loadSequence;
         try {
-            const record = await idbGet<ArchiveBucketRecord>(IDB_STORE_ARCHIVES, options.tabId.value);
+            const record = await idbGet<ArchiveBucketRecord>(IDB_STORE_ARCHIVES, tabId);
+            if (!isCurrent()) return;
             archives.value = Array.isArray(record?.archives) ? record.archives : [];
         } catch (error: any) {
+            if (!isCurrent()) return;
             archives.value = [];
             showMessageError(options.settingsTxt.value.msgArchiveLoadFail(error?.message ?? String(error)));
         }
@@ -73,6 +85,9 @@ export const useJsonArchives = (options: UseJsonArchivesOptions) => {
      */
     const saveArchives = async (): Promise<boolean> => {
         if (typeof window === 'undefined') return true;
+        if (disposed) return false;
+        const tabId = options.tabId.value;
+        const generation = tabGeneration;
         try {
             const plainArchives: JsonArchive[] = archives.value.map(({ id, name, size, content }) => ({
                 id,
@@ -81,7 +96,7 @@ export const useJsonArchives = (options: UseJsonArchivesOptions) => {
                 content,
             }));
             const record: ArchiveBucketRecord = {
-                tabId: options.tabId.value,
+                tabId,
                 archives: plainArchives,
                 updatedAt: Date.now(),
                 version: 1,
@@ -89,6 +104,7 @@ export const useJsonArchives = (options: UseJsonArchivesOptions) => {
             await idbPut(IDB_STORE_ARCHIVES, record);
             return true;
         } catch (error: any) {
+            if (disposed || generation !== tabGeneration || tabId !== options.tabId.value) return false;
             showMessageError(
                 options.settingsTxt.value.msgArchiveSaveFail(
                     error?.message ?? options.settingsTxt.value.msgArchiveStorageError,
@@ -334,14 +350,26 @@ export const useJsonArchives = (options: UseJsonArchivesOptions) => {
         const sourceIndex = archives.value.findIndex((archive) => archive.id === sourceId);
         if (sourceIndex === -1 || targetIndex < 0) return;
 
-        const [moved] = archives.value.splice(sourceIndex, 1);
+        const list = archives.value;
+        const tabId = options.tabId.value;
+        const generation = tabGeneration;
+        const sequence = ++moveSequence;
+        const previous = list[sourceIndex - 1];
+        const next = list[sourceIndex + 1];
+        const [moved] = list.splice(sourceIndex, 1);
         let insertIndex = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex;
         insertIndex = Math.max(0, Math.min(insertIndex, archives.value.length));
         archives.value.splice(insertIndex, 0, moved);
 
         if (!(await saveArchives())) {
-            archives.value.splice(insertIndex, 1);
-            archives.value.splice(sourceIndex, 0, moved);
+            if (disposed || sequence !== moveSequence || generation !== tabGeneration || tabId !== options.tabId.value || archives.value !== list) return;
+            const currentIndex = list.indexOf(moved);
+            if (currentIndex < 0) return;
+            list.splice(currentIndex, 1);
+            const nextIndex = next ? list.indexOf(next) : -1;
+            const previousIndex = previous ? list.indexOf(previous) : -1;
+            const restoreIndex = nextIndex >= 0 ? nextIndex : previousIndex >= 0 ? previousIndex + 1 : Math.min(sourceIndex, list.length);
+            list.splice(restoreIndex, 0, moved);
         }
     };
 
@@ -384,6 +412,7 @@ export const useJsonArchives = (options: UseJsonArchivesOptions) => {
     };
 
     onBeforeUnmount(() => {
+        disposed = true;
         stopArchiveResize();
         onArchiveDragEnd();
     });

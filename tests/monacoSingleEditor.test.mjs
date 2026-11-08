@@ -68,9 +68,9 @@ test('application Diff uses ordinary editors and never calls the pruned native f
         return entry.isDirectory() ? visit(file) : /\.(?:ts|vue)$/.test(entry.name) ? [file] : [];
     });
     for (const file of visit(path.join(root, 'src/components'))) {
-        assert(!/\b(?:monaco|Monaco)\.editor\.(?:createDiffEditor|createMultiFileDiffEditor)\b/.test(fs.readFileSync(file, 'utf8')), file);
+        assert(!/\b(?:monaco|Monaco|monacoApi)\.editor\.(?:createDiffEditor|createMultiFileDiffEditor)\b/.test(fs.readFileSync(file, 'utf8')), file);
     }
-    const diff = fs.readFileSync(path.join(root, 'src/components/composables/useDiffEditors.ts'), 'utf8');
+    const diff = fs.readFileSync(path.join(root, 'src/components/composables/diffEditorRuntime.ts'), 'utf8');
     assert(diff.includes('diffLeftEditor = monacoApi.editor.create('));
     assert(diff.includes('diffRightEditor = monacoApi.editor.create('));
 });

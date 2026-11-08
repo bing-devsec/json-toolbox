@@ -4,51 +4,6 @@
 
 const isUnsafeUnicodeDecodeTarget = (code: number): boolean => code <= 0x1f || code === 0x7f || (code >= 0x80 && code <= 0x9f);
 
-// 基于原始字符串统计 index 前的连续反斜杠数量，避免已解码结果影响后续 escape 判断。
-const countPrecedingBackslashes = (str: string, index: number): number => {
-    let count = 0;
-    for (let i = index - 1; i >= 0 && str[i] === '\\'; i--) {
-        count++;
-    }
-    return count;
-};
-
-// Unicode 解码（\uXXXX 格式）- 仅替换命中的转义片段，保留上下文
-export const decodeUnicode = (str: string): string | null => {
-    try {
-        let result = '';
-        let i = 0;
-        let hasMatch = false;
-
-        while (i < str.length) {
-            if (str[i] === '\\' && i + 5 < str.length && str[i + 1] === 'u' && /^[0-9a-fA-F]{4}$/.test(str.substring(i + 2, i + 6))) {
-                // 检查前面是否有反斜杠（避免匹配 \\u）
-                const prevBackslash = countPrecedingBackslashes(str, i);
-                if (prevBackslash % 2 === 0) {
-                    // 单反斜杠，可以解码
-                    const hex = str.substring(i + 2, i + 6);
-                    const code = parseInt(hex, 16);
-                    if (isUnsafeUnicodeDecodeTarget(code)) {
-                        result += str.substring(i, i + 6);
-                        i += 6;
-                        continue;
-                    }
-                    result += String.fromCharCode(code);
-                    i += 6;
-                    hasMatch = true;
-                    continue;
-                }
-            }
-            result += str[i];
-            i++;
-        }
-
-        return hasMatch ? result : null;
-    } catch {
-        return null;
-    }
-};
-
 const isUtf8SurrogateCodePoint = (code: number): boolean => code >= 0xd800 && code <= 0xdfff;
 
 interface HexEscapeToken {
@@ -131,7 +86,7 @@ export const isReadableHexDecoded = (decoded: string): boolean => {
     return true;
 };
 
-const getUtf8SequenceLength = (byte: number): number | null => {
+export const getUtf8SequenceLength = (byte: number): number | null => {
     if (byte <= 0x7f) return 1;
     if (byte >= 0xc2 && byte <= 0xdf) return 2;
     if (byte >= 0xe0 && byte <= 0xef) return 3;
@@ -189,17 +144,37 @@ const decodeHexEscapeTokens = (tokens: HexEscapeToken[]): { text: string; hasMat
     return { text, hasMatch };
 };
 
-// Hex 解码（\xHH 格式）- 仅替换连续命中的片段，保留上下文
-export const decodeHex = (str: string): string | null => {
+// 混合 Unicode / Hex 解码只扫描原始字符串，避免 \u005C 生成的新反斜杠继续触发二次解码。
+const decodeJsonEscapesOnce = (str: string, unicode = true, hex = true): string | null => {
     try {
         let result = '';
         let i = 0;
         let hasMatch = false;
 
         while (i < str.length) {
-            if (str[i] === '\\' && i + 3 < str.length && str[i + 1] === 'x' && /^[0-9a-fA-F]{2}$/.test(str.substring(i + 2, i + 4))) {
-                const prevBackslash = countPrecedingBackslashes(str, i);
-                if (prevBackslash % 2 === 0) {
+            if (str[i] === '\\') {
+                // A pair belongs to the original escape layer. Skip it together so
+                // long runs never repeatedly scan backwards for their parity.
+                if (str[i + 1] === '\\') {
+                    result += '\\\\';
+                    i += 2;
+                    continue;
+                }
+                if (unicode && i + 5 < str.length && str[i + 1] === 'u' && /^[0-9a-fA-F]{4}$/.test(str.substring(i + 2, i + 6))) {
+                    const hex = str.substring(i + 2, i + 6);
+                    const code = parseInt(hex, 16);
+                    if (isUnsafeUnicodeDecodeTarget(code)) {
+                        result += str.substring(i, i + 6);
+                        i += 6;
+                        continue;
+                    }
+                    result += String.fromCharCode(code);
+                    i += 6;
+                    hasMatch = true;
+                    continue;
+                }
+
+                if (hex && i + 3 < str.length && str[i + 1] === 'x' && /^[0-9a-fA-F]{2}$/.test(str.substring(i + 2, i + 4))) {
                     const { tokens, endIndex } = readHexEscapeRun(str, i);
                     const decoded = decodeHexEscapeTokens(tokens);
                     if (decoded.hasMatch) {
@@ -208,6 +183,9 @@ export const decodeHex = (str: string): string | null => {
                         i = endIndex;
                         continue;
                     }
+                    result += str.slice(i, endIndex);
+                    i = endIndex;
+                    continue;
                 }
             }
 
@@ -221,53 +199,9 @@ export const decodeHex = (str: string): string | null => {
     }
 };
 
-// 混合 Unicode / Hex 解码只扫描原始字符串，避免 \u005C 生成的新反斜杠继续触发二次解码。
-const decodeJsonEscapesOnce = (str: string): string | null => {
-    try {
-        let result = '';
-        let i = 0;
-        let hasMatch = false;
-
-        while (i < str.length) {
-            if (str[i] === '\\') {
-                const prevBackslash = countPrecedingBackslashes(str, i);
-                if (prevBackslash % 2 === 0) {
-                    if (i + 5 < str.length && str[i + 1] === 'u' && /^[0-9a-fA-F]{4}$/.test(str.substring(i + 2, i + 6))) {
-                        const hex = str.substring(i + 2, i + 6);
-                        const code = parseInt(hex, 16);
-                        if (isUnsafeUnicodeDecodeTarget(code)) {
-                            result += str.substring(i, i + 6);
-                            i += 6;
-                            continue;
-                        }
-                        result += String.fromCharCode(code);
-                        i += 6;
-                        hasMatch = true;
-                        continue;
-                    }
-
-                    if (i + 3 < str.length && str[i + 1] === 'x' && /^[0-9a-fA-F]{2}$/.test(str.substring(i + 2, i + 4))) {
-                        const { tokens, endIndex } = readHexEscapeRun(str, i);
-                        const decoded = decodeHexEscapeTokens(tokens);
-                        if (decoded.hasMatch) {
-                            result += decoded.text;
-                            hasMatch = true;
-                            i = endIndex;
-                            continue;
-                        }
-                    }
-                }
-            }
-
-            result += str[i];
-            i++;
-        }
-
-        return hasMatch ? result : null;
-    } catch {
-        return null;
-    }
-};
+// Public single-encoding entry points share the same original-text scan.
+export const decodeUnicode = (str: string): string | null => decodeJsonEscapesOnce(str, true, false);
+export const decodeHex = (str: string): string | null => decodeJsonEscapesOnce(str, false, true);
 
 // 检查字符串是否可能是某种编码格式
 export const isLikelyEncoded = (str: string): boolean => {

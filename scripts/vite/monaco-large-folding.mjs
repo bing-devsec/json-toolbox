@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { verifyMonacoTransferFoldingContract } from './monaco-transfer-folding-contract.mjs';
 
 const MONACO_FOLDING_REGION_LIMIT = 1_000_000;
 
@@ -106,6 +107,7 @@ export const patchMonacoFoldingRanges = (source) => {
 export const monacoLargeFoldingPlugin = () => ({
     name: 'monaco-large-folding',
     enforce: 'pre',
+    buildStart() { verifyMonacoTransferFoldingContract(); },
     /**
      * Monaco 0.52.2 发布包缺少 marked.umd.js.map。移除失效声明，避免 Vite
      * 在开发模式直接加载 Monaco ESM 源码时反复输出 ENOENT 警告。

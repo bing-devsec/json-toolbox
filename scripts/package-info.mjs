@@ -15,7 +15,7 @@ export const getSourceInfo = (root) => {
             else if (entry.isFile()) files.push(next);
         }
     };
-    for (const directory of ['src', 'public', 'scripts']) visit(directory);
+    for (const directory of ['src', 'public', 'scripts', 'assets']) visit(directory);
     for (const name of fs.readdirSync(root)) {
         if (/^(?:package(?:-lock)?\.json|index\.html|vite\.config\.[^/]+|tsconfig[^/]*\.json)$/.test(name)) files.push(name);
     }

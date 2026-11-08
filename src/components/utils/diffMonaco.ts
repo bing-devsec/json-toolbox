@@ -3,6 +3,7 @@ import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { monacoApi } from './monacoRuntime';
 
 import type { DiffLineChange } from './diffEngine';
+import { getDiffLineRangeInfo } from './diffLineRange';
 import { getVisibleDiffViewZone } from './diffViewZoneGeometry';
 
 export interface DiffViewZoneSpec {
@@ -101,13 +102,6 @@ const getDiffViewZonePainter = (editor: monaco.editor.IStandaloneCodeEditor): Di
     return painter;
 };
 
-const getDiffLineRangeInfo = (change: DiffLineChange) => {
-    const hasLeft = change.originalEndLineNumber >= change.originalStartLineNumber;
-    const hasRight = change.modifiedEndLineNumber >= change.modifiedStartLineNumber;
-    const leftLineCount = hasLeft ? change.originalEndLineNumber - change.originalStartLineNumber + 1 : 0;
-    const rightLineCount = hasRight ? change.modifiedEndLineNumber - change.modifiedStartLineNumber + 1 : 0;
-    return { hasLeft, hasRight, leftLineCount, rightLineCount };
-};
 
 const clampViewZoneAfterLineNumber = (editor: monaco.editor.IStandaloneCodeEditor, afterLineNumber: number): number => {
     const model = editor.getModel();
@@ -292,34 +286,8 @@ export const getDiffChangeTop = (
     return 0;
 };
 
-/**
- * 用 executeEdits 做全文替换，保留 undo/redo 栈。
- * 关键点：
- *   1. 通过 pushStackElement 把本次替换强制切成独立的 undo step，
- *      避免和用户此前的手动输入合并在一起、一次 Ctrl+Z 撤销过多；
- *   2. source 参数会挂到 undo step 上，便于未来排查到底是哪个操作产生的变更。
- *
- * 绝对不要直接 editor.setValue(...) —— setValue 会把整个 undo/redo 栈清空，
- * 导致用户感觉"撤销/取消撤销失灵"。
- */
-export const replaceEditorValuePreservingUndo = (editor: monaco.editor.IStandaloneCodeEditor, newValue: string, source: string) => {
-    const model = editor.getModel();
-    if (!model) {
-        editor.setValue(newValue);
-        return;
-    }
-    const currentValue = model.getValue();
-    if (currentValue === newValue) return;
-
-    const lastLine = model.getLineCount();
-    const lastCol = model.getLineMaxColumn(lastLine);
-    const fullRange = new monacoApi.Range(1, 1, lastLine, lastCol);
-
-    // 关键：编辑前后各切一次 undo step，保证本次替换独占一个 undo group
-    model.pushStackElement();
-    editor.executeEdits(source, [{ range: fullRange, text: newValue }]);
-    model.pushStackElement();
-};
+// Compatibility export for existing sorting callers.
+export { replaceEditorValuePreservingUndo } from './editorEdits';
 
 /**
  * 自动布局某个 diff editor：优先按容器 rect 大小 layout，rect 不可用时回退默认 layout。

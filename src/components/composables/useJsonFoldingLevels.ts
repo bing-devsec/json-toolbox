@@ -1,6 +1,8 @@
 import { computed, type Ref } from 'vue';
 import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { sleep } from '../utils/common';
+import { captureEditorSnapshot } from '../utils/editorSnapshot';
+import { rememberCurrentTransferFolding } from '../utils/editorTransferFolding';
 
 export interface JsonFoldingLevelFoldResult {
     firstTargetLevelLine: number | null;
@@ -63,14 +65,17 @@ export const useJsonFoldingLevels = (options: UseJsonFoldingLevelsOptions) => {
         if (!editor) return null;
         const model = editor.getModel();
         if (!model || model.getLanguageId() !== 'json') return null;
+        const isCurrent = captureEditorSnapshot(() => editor);
 
         for (let attempt = 0; attempt < 4; attempt++) {
             const foldingModel = await getFoldingModelAsync(editor);
+            if (!isCurrent() || model.getLanguageId() !== 'json') return null;
             const regions = foldingModel?.regions;
             if (regions && regions.length > 0) {
                 return getMaxFoldingRegionLevel(regions);
             }
             await sleep(150 * (attempt + 1));
+            if (!isCurrent() || model.getLanguageId() !== 'json') return null;
         }
 
         return 0;
@@ -82,8 +87,9 @@ export const useJsonFoldingLevels = (options: UseJsonFoldingLevelsOptions) => {
             options.maxFoldableLevel.value = null;
             return;
         }
+        const isCurrent = captureEditorSnapshot(options.getOutputEditor);
         const resolvedLevel = await resolveMaxFoldableLevel(outputEditor);
-        if (!options.getOutputEditor()) return;
+        if (!isCurrent() || outputEditor.getModel()?.getLanguageId() !== language) return;
         options.maxFoldableLevel.value = resolvedLevel;
     };
 
@@ -95,8 +101,9 @@ export const useJsonFoldingLevels = (options: UseJsonFoldingLevelsOptions) => {
         if (!model) return { firstTargetLevelLine: null, firstCollapsedLine: null, targetRegionCount: 0 };
 
         const targetLevel = options.selectedLevel.value;
+        const isCurrent = captureEditorSnapshot(options.getOutputEditor);
         const foldingModel = await getFoldingModelAsync(outputEditor);
-        if (!foldingModel) return { firstTargetLevelLine: null, firstCollapsedLine: null, targetRegionCount: 0 };
+        if (!isCurrent() || options.selectedLevel.value !== targetLevel || !foldingModel) return { firstTargetLevelLine: null, firstCollapsedLine: null, targetRegionCount: 0 };
 
         const regions = foldingModel.regions;
         if (!regions || regions.length === 0) return { firstTargetLevelLine: null, firstCollapsedLine: null, targetRegionCount: 0 };
@@ -132,6 +139,8 @@ export const useJsonFoldingLevels = (options: UseJsonFoldingLevelsOptions) => {
         if (toCollapse.length > 0) {
             foldingModel.toggleCollapseState(toCollapse);
         }
+
+        if (isCurrent()) rememberCurrentTransferFolding(outputEditor, foldingModel);
 
         return { firstTargetLevelLine, firstCollapsedLine, targetRegionCount };
     };

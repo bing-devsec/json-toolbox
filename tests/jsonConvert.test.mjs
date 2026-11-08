@@ -14,16 +14,13 @@ const built = await build({
     `, resolveDir: process.cwd(), loader: 'ts' },
     bundle: true, platform: 'node', format: 'cjs', write: false,
     plugins: [{ name: 'capture-editor-registration', setup(build) {
+        build.onResolve({ filter: /utils\/monacoRuntime$/ }, () => ({ path: 'runtime', namespace: 'runtime-fixture' }));
+        build.onLoad({ filter: /.*/, namespace: 'runtime-fixture' }, () => ({ contents: `export * as monacoApi from 'monaco-editor/esm/vs/editor/editor.api'; export const createMonacoWorker = () => ({});` }));
         build.onResolve({ filter: /^monaco-editor\/esm\/vs\/editor\/editor\.api$/ }, () => ({ path: 'editor', namespace: 'capture' }));
         build.onResolve({ filter: /\?worker$/ }, () => ({ path: 'worker', namespace: 'capture' }));
-        build.onResolve({ filter: /monacoRuntime$/ }, () => ({ path: 'runtime', namespace: 'capture' }));
         build.onResolve({ filter: /^vue$/ }, () => ({ path: 'vue', namespace: 'capture' }));
         build.onResolve({ filter: /^monaco-editor\/esm\/vs\/basic-languages\// }, args => ({ path: args.path, external: true }));
-        build.onLoad({ filter: /.*/, namespace: 'capture' }, args => ({ contents: args.path === 'runtime' ? `
-            import * as monacoApi from 'monaco-editor/esm/vs/editor/editor.api';
-            export {monacoApi};
-            export const createMonacoWorker = () => ({});
-        ` : args.path === 'editor' ? `
+        build.onLoad({ filter: /.*/, namespace: 'capture' }, args => ({ contents: args.path === 'editor' ? `
             export const captures = { registrations: [], definitions: new Map(), providers: new Map() };
             export const languages = {
                 register: value => captures.registrations.push(value),
@@ -31,7 +28,7 @@ const built = await build({
                 setTokensProvider: (id, value) => captures.providers.set(id, value)
             };
             export const editor = {};
-        ` : args.path === 'vue' ? 'export const onBeforeUnmount = () => {};' : 'export default class TestWorker {};' }));
+        ` : args.path === 'vue' ? 'export const onBeforeUnmount = () => {}; export const inject = () => undefined;' : 'export default class TestWorker {};' }));
     } }],
 });
 const module = { exports: {} };
@@ -114,7 +111,7 @@ test('XML distinguishes real newline from literal backslash-n and escapes Unicod
 });
 
 const registry = api.useMonacoLanguageRegistry({ value: 'light' });
-registry.ensureMonacoLanguageRegistered('yaml');
+await registry.ensureMonacoLanguageRegistered('yaml');
 // Exercise the actual provider registered in production, passing each endState to the next line.
 const tokenizer = api.captures.providers.get('yaml');
 assert.ok(tokenizer, 'YAML registers its stateful TokensProvider');
@@ -137,8 +134,8 @@ const assertType = (line, text, type, tokens = tokenize(line).tokens) => {
 };
 const assertBlockLine = row => assert.deepEqual(JSON.parse(JSON.stringify(row.tokens)), [{ offset: 0, type: 'string.yaml' }], row.line);
 
-test('YAML registers once and highlights root, nested, array, Unicode and quoted keys', () => {
-    registry.ensureMonacoLanguageRegistered('yaml');
+test('YAML registers once and highlights root, nested, array, Unicode and quoted keys', async () => {
+    await registry.ensureMonacoLanguageRegistered('yaml');
     assert.equal(api.captures.registrations.filter(value => value.id === 'yaml').length, 1);
     for (const [line, key] of [['name: "Alice"', 'name'], ['  age: 30', 'age'], ['  - name: "Alice"', 'name'], ['中文字段: "值"', '中文字段'], ['"space key": "value"', '"space key"'], ['"quote\\"key": "value"', '"quote\\"key"']]) assertType(line, key, 'type');
 });

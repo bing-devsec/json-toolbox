@@ -20,23 +20,20 @@ export interface TabHeartbeatRecord {
 }
 
 let idbOpenPromise: Promise<IDBDatabase> | null = null;
+let activeConnection: IDBDatabase | null = null;
 
 const REQUIRED_STORES = [IDB_STORE_ARCHIVES, IDB_STORE_DIFF_DRAFTS, IDB_STORE_TAB_HEARTBEATS] as const;
 
 const hasAllRequiredStores = (db: IDBDatabase): boolean => REQUIRED_STORES.every((name) => db.objectStoreNames.contains(name));
 
-const deleteJsonToolDb = (): Promise<void> =>
-    new Promise((resolve, reject) => {
-        const delReq = indexedDB.deleteDatabase(IDB_DB_NAME);
-        delReq.onsuccess = () => resolve();
-        delReq.onerror = () => reject(delReq.error ?? new Error('Failed to delete IndexedDB'));
-        // 被其他 tab 的活跃连接阻塞时，仍然按成功处理：下一次 open 会再走一次校验逻辑
-        delReq.onblocked = () => resolve();
-    });
-
 const doOpenJsonToolDb = (): Promise<IDBDatabase> =>
     new Promise<IDBDatabase>((resolve, reject) => {
         const req = indexedDB.open(IDB_DB_NAME, IDB_DB_VERSION);
+        let abandoned = false;
+        const fail = (error: Error | DOMException) => {
+            abandoned = true;
+            reject(error);
+        };
         req.onupgradeneeded = () => {
             const db = req.result;
             if (!db.objectStoreNames.contains(IDB_STORE_ARCHIVES)) {
@@ -49,45 +46,41 @@ const doOpenJsonToolDb = (): Promise<IDBDatabase> =>
                 db.createObjectStore(IDB_STORE_TAB_HEARTBEATS, { keyPath: 'tabId' });
             }
         };
-        req.onsuccess = async () => {
+        req.onsuccess = () => {
             const db = req.result;
-            // 异常分支：DB 存在但版本号已是当前版本，stores 缺失（如用户在 DevTools 中"清除站点数据"
-            // 时连接被锁导致删除不彻底）。此时不会触发 onupgradeneeded，需要主动删库重建。
+            // A blocked open can eventually succeed after its promise was rejected.
+            // Do not leak that connection or let it replace a newer retry.
+            if (abandoned) { db.close(); return; }
             if (!hasAllRequiredStores(db)) {
                 db.close();
-                try {
-                    await deleteJsonToolDb();
-                    const fresh = await doOpenJsonToolDb();
-                    resolve(fresh);
-                } catch (err) {
-                    reject(err);
-                }
+                fail(new Error('IndexedDB stores are missing. Existing data was preserved; close other tabs and retry. If the problem persists, recovery is required.'));
                 return;
             }
-            // 当其他 tab 触发升级或删库时，主动让出连接，避免长期阻塞
-            db.onversionchange = () => {
-                db.close();
+            activeConnection = db;
+            const invalidateConnection = () => {
+                if (activeConnection !== db) return;
+                activeConnection = null;
                 idbOpenPromise = null;
             };
-            // 连接被关闭（异常或浏览器回收）时重置单例，下一次调用重新打开
-            db.onclose = () => {
-                idbOpenPromise = null;
-            };
+            // Yield to another tab's upgrade without clearing a newer connection.
+            db.onversionchange = () => { db.close(); invalidateConnection(); };
+            db.onclose = invalidateConnection;
             resolve(db);
         };
-        req.onerror = () => reject(req.error ?? new Error('Failed to open IndexedDB'));
-        req.onblocked = () => reject(new Error('Opening IndexedDB was blocked'));
+        req.onerror = () => fail(req.error ?? new Error('Failed to open IndexedDB'));
+        req.onblocked = () => fail(new Error('Opening IndexedDB was blocked'));
     });
 
 export const openJsonToolDb = (): Promise<IDBDatabase> => {
     if (typeof window === 'undefined') return Promise.reject(new Error('IndexedDB not available'));
     if (idbOpenPromise) return idbOpenPromise;
-    idbOpenPromise = doOpenJsonToolDb().catch((err) => {
-        // 失败时清空单例，避免后续调用永久卡在已 reject 的 promise 上
-        idbOpenPromise = null;
+    const opening = doOpenJsonToolDb().catch((err) => {
+        // Do not clear a newer retry when an old request finishes late.
+        if (idbOpenPromise === opening) idbOpenPromise = null;
         throw err;
     });
-    return idbOpenPromise;
+    idbOpenPromise = opening;
+    return opening;
 };
 
 export const idbGet = async <T>(storeName: string, key: IDBValidKey): Promise<T | undefined> => {
@@ -101,16 +94,21 @@ export const idbGet = async <T>(storeName: string, key: IDBValidKey): Promise<T 
     });
 };
 
-export const idbPut = async (storeName: string, value: any): Promise<void> => {
+// Request success only means the write was queued successfully, not committed.
+const writeTransaction = async (storeName: string, operation: (store: IDBObjectStore) => IDBRequest): Promise<void> => {
     const db = await openJsonToolDb();
     await new Promise<void>((resolve, reject) => {
         const tx = db.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        const req = store.put(value);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error ?? new Error('IndexedDB put failed'));
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error ?? new Error('IndexedDB transaction failed'));
+        tx.onabort = () => reject(tx.error ?? new Error('IndexedDB transaction aborted'));
+        const req = operation(tx.objectStore(storeName));
+        req.onerror = () => reject(req.error ?? new Error('IndexedDB write failed'));
     });
 };
+
+export const idbPut = (storeName: string, value: any): Promise<void> =>
+    writeTransaction(storeName, (store) => store.put(value));
 
 export const idbCount = async (storeName: string): Promise<number> => {
     const db = await openJsonToolDb();
@@ -123,16 +121,8 @@ export const idbCount = async (storeName: string): Promise<number> => {
     });
 };
 
-export const idbDelete = async (storeName: string, key: IDBValidKey): Promise<void> => {
-    const db = await openJsonToolDb();
-    await new Promise<void>((resolve, reject) => {
-        const tx = db.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        const req = store.delete(key);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error ?? new Error('IndexedDB delete failed'));
-    });
-};
+export const idbDelete = (storeName: string, key: IDBValidKey): Promise<void> =>
+    writeTransaction(storeName, (store) => store.delete(key));
 
 export const idbGetAll = async <T>(storeName: string): Promise<T[]> => {
     const db = await openJsonToolDb();

@@ -33,6 +33,9 @@ interface GlassControls {
     selectedBackground: string; selectedForeground: string; primaryShadow: string;
 }
 
+// The page uses this stronger light-mode blue for small text.
+export const glassPageAccent = '#3054a5';
+
 const controls: Record<AppearanceMode, GlassControls> = {
     light: {
         neutral: {
@@ -48,7 +51,7 @@ const controls: Record<AppearanceMode, GlassControls> = {
             disabledBackground: 'rgba(255,255,255,.24)', disabledForeground: '#97a3b4', disabledBorder: 'rgba(120,140,180,.16)',
         },
         primary: {
-            background: 'linear-gradient(180deg, #416bc4, #345bb0)', foreground: '#ffffff', border: '#3054a5',
+            background: 'linear-gradient(180deg, #416bc4, #345bb0)', foreground: '#ffffff', border: glassPageAccent,
             hoverBackground: 'linear-gradient(180deg, #3b63bb, #3054a5)', hoverBorder: '#3054a5',
             activeBackground: 'linear-gradient(180deg, #294c96, #345bb0)',
             disabledBackground: 'rgba(65,104,200,.35)', disabledForeground: 'rgba(255,255,255,.72)', disabledBorder: 'rgba(65,104,200,.24)',

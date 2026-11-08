@@ -1,7 +1,7 @@
-import JSON5 from 'json5';
+import parseJSON5 from 'json5/lib/parse.js';
 import { JsonInputParseError } from './types';
 
-import { smartDecode } from '../decode';
+import { decodeUTF8Bytes, getUtf8SequenceLength, smartDecode } from '../decode';
 import { createHighPrecisionNumberWrapper, normalizeJsonNumberLiteral, tryParseHighPrecisionWrapper, tryReadHighPrecisionWrapperObject } from './numberLiteral';
 import { preprocessSpecialJsonValues } from './preprocess';
 import { ChunkedStringBuilder } from './stringBuilder';
@@ -35,109 +35,9 @@ export class JsonPlusFormatter {
         this.indentCache = [''];
     }
 
-    // 严格 UTF-8 解码：只有完整合法的字节序列才返回字符串，否则交给调用方保留原始 \xHH。
-    private decodeUTF8(bytes: number[]): string | null {
-        let result = '';
-        let i = 0;
-
-        while (i < bytes.length) {
-            const byte = bytes[i];
-
-            if (byte <= 0x7f) {
-                result += String.fromCharCode(byte);
-                i++;
-                continue;
-            }
-
-            let code = 0;
-            let continuationCount = 0;
-            let minCodePoint = 0;
-
-            if (byte >= 0xc2 && byte <= 0xdf) {
-                code = byte & 0x1f;
-                continuationCount = 1;
-                minCodePoint = 0x80;
-            } else if (byte >= 0xe0 && byte <= 0xef) {
-                code = byte & 0x0f;
-                continuationCount = 2;
-                minCodePoint = 0x800;
-            } else if (byte >= 0xf0 && byte <= 0xf4) {
-                code = byte & 0x07;
-                continuationCount = 3;
-                minCodePoint = 0x10000;
-            } else {
-                return null;
-            }
-
-            if (i + continuationCount >= bytes.length) {
-                return null;
-            }
-
-            for (let offset = 1; offset <= continuationCount; offset++) {
-                const continuationByte = bytes[i + offset];
-                if ((continuationByte & 0xc0) !== 0x80) {
-                    return null;
-                }
-                code = (code << 6) | (continuationByte & 0x3f);
-            }
-
-            if (code < minCodePoint || code > 0x10ffff || this.isSurrogate(code)) {
-                return null;
-            }
-
-            if (code >= 0x10000) {
-                const high = Math.floor((code - 0x10000) / 0x400) + 0xd800;
-                const low = ((code - 0x10000) % 0x400) + 0xdc00;
-                result += String.fromCharCode(high, low);
-            } else {
-                result += String.fromCharCode(code);
-            }
-            i += continuationCount + 1;
-        }
-
-        return result;
-    }
-
-    // 对 decodeUTF8 返回的字符串进行适配，确保放入 JSON 字符串字面中是合法的（控制字符需要转义）
+    // Decoded bytes use the same escaping rules, without placeholder interpretation.
     private escapeDecodedString(str: string): string {
-        let out = '';
-        for (let j = 0; j < str.length; j++) {
-            const ch = str[j];
-            const code = str.charCodeAt(j);
-            if (this.isHighSurrogate(code) && j + 1 < str.length && this.isLowSurrogate(str.charCodeAt(j + 1))) {
-                out += ch + str[j + 1];
-                j++;
-            } else if (this.isSurrogate(code)) {
-                out += this.formatUnicodeEscape(code);
-            } else if (ch === '\\') {
-                out += '\\\\';
-            } else if (ch === '"') {
-                out += '\\"';
-            } else if (ch === '\n') {
-                out += '\\n';
-            } else if (ch === '\r') {
-                out += '\\r';
-            } else if (ch === '\t') {
-                out += '\\t';
-            } else if (ch === '\b') {
-                out += '\\b';
-            } else if (ch === '\f') {
-                out += '\\f';
-            } else if (this.isJsonControlCode(code)) {
-                out += this.formatUnicodeEscape(code);
-            } else {
-                out += ch;
-            }
-        }
-        return out;
-    }
-
-    private getUtf8SequenceLength(byte: number): number | null {
-        if (byte <= 0x7f) return 1;
-        if (byte >= 0xc2 && byte <= 0xdf) return 2;
-        if (byte >= 0xe0 && byte <= 0xef) return 3;
-        if (byte >= 0xf0 && byte <= 0xf4) return 4;
-        return null;
+        return this.quoteString(str).slice(1, -1);
     }
 
     // 将无法组成合法 UTF-8 的 JSON5 Hex 字节先占位，最终输出为合法 JSON Unicode escape。
@@ -156,7 +56,7 @@ export class JsonPlusFormatter {
         let i = 0;
         while (i < pendingBytes.length) {
             const byte = pendingBytes[i];
-            const sequenceLength = this.getUtf8SequenceLength(byte.value);
+            const sequenceLength = getUtf8SequenceLength(byte.value);
             if (sequenceLength === null || i + sequenceLength > pendingBytes.length) {
                 result += this.preservePendingHexByte(byte, escapeMap);
                 i++;
@@ -164,7 +64,7 @@ export class JsonPlusFormatter {
             }
 
             const sequence = pendingBytes.slice(i, i + sequenceLength);
-            const decoded = this.decodeUTF8(sequence.map((item) => item.value));
+            const decoded = decodeUTF8Bytes(sequence.map((item) => item.value));
             if (decoded !== null) {
                 result += this.escapeDecodedString(decoded);
                 i += sequenceLength;
@@ -354,7 +254,7 @@ export class JsonPlusFormatter {
             try {
                 data = JSON.parse(processedInput);
             } catch {
-                data = JSON5.parse(processedInput);
+                data = parseJSON5(processedInput);
             }
             if (this.encodingMode) {
                 data = this.decodeParsedData(data);
@@ -815,63 +715,14 @@ export class JsonPlusFormatter {
         return 'null'; // 其他未知类型转为null
     }
 
-    // 格式化字符串
+    // Values may carry a protected numeric literal; object keys never do.
     private formatString(str: string, escapeMap: Map<string, string>): string {
-        const processedStr = str;
-
-        const highPrecisionLiteral = tryParseHighPrecisionWrapper(processedStr);
+        const highPrecisionLiteral = tryParseHighPrecisionWrapper(str);
         if (highPrecisionLiteral !== null) {
             const normalizedLiteral = normalizeJsonNumberLiteral(highPrecisionLiteral);
             if (normalizedLiteral !== null) return normalizedLiteral;
         }
-
-        if (!JsonPlusFormatter.SIMPLE_STRING_ESCAPE_RE.test(processedStr)) {
-            return '"' + processedStr + '"';
-        }
-
-        let result = '"';
-
-        for (let i = 0; i < processedStr.length; i++) {
-            const char = processedStr[i];
-            const formattedPlaceholder = this.formatEscapePlaceholderAt(processedStr, i, escapeMap);
-            if (formattedPlaceholder) {
-                result += formattedPlaceholder.text;
-                i += formattedPlaceholder.length - 1;
-                continue;
-            }
-            const code = processedStr.charCodeAt(i);
-
-            // 控制字符必须保持转义
-            if (this.isHighSurrogate(code) && i + 1 < processedStr.length && this.isLowSurrogate(processedStr.charCodeAt(i + 1))) {
-                result += char + processedStr[i + 1];
-                i++;
-            } else if (this.isSurrogate(code)) {
-                result += this.formatUnicodeEscape(code);
-            } else if (char === '\n') {
-                result += '\\n';
-            } else if (char === '\t') {
-                result += '\\t';
-            } else if (char === '\r') {
-                result += '\\r';
-            } else if (char === '\b') {
-                result += '\\b';
-            } else if (char === '\f') {
-                result += '\\f';
-            } else if (char === '"') {
-                result += '\\"';
-            } else if (char === '\\') {
-                result += '\\\\';
-            } else if (this.isJsonControlCode(code)) {
-                // 其他控制字符
-                result += this.formatUnicodeEscape(code);
-            } else {
-                // 解码模式下，解码后的字符可能包含特殊字符，需要处理
-                result += char;
-            }
-        }
-
-        result += '"';
-        return result;
+        return this.quoteString(str, escapeMap);
     }
 
     // 格式化数组
@@ -933,7 +784,7 @@ export class JsonPlusFormatter {
             let result = '{';
             for (let i = 0; i < keys.length; i++) {
                 const key = keys[i];
-                const keyStr = this.formatKey(key, escapeMap); // 处理对象键，key 不进行 smartDecode
+                const keyStr = this.quoteString(key, escapeMap); // 处理对象键，key 不进行 smartDecode
                 const valueStr = this.customStringify(obj[key], escapeMap, 0, true);
                 if (i > 0) result += ',';
                 result += keyStr + ':' + valueStr;
@@ -947,7 +798,7 @@ export class JsonPlusFormatter {
         let result = '{\n';
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
-            const keyStr = this.formatKey(key, escapeMap); // 处理对象键，key 不进行 smartDecode
+            const keyStr = this.quoteString(key, escapeMap); // 处理对象键，key 不进行 smartDecode
             const valueStr = this.customStringify(obj[key], escapeMap, indent + 1, compressed);
             if (i > 0) result += ',\n';
             result += indentStr + keyStr + ': ' + valueStr;
@@ -956,8 +807,8 @@ export class JsonPlusFormatter {
         return result + '\n' + nextIndentStr + '}';
     }
 
-    // 格式化对象 key（不进行 smartDecode，保持原始格式）
-    private formatKey(key: string, escapeMap: Map<string, string>): string {
+    // Shared JSON string escaping for keys and ordinary values. No decoding or numeric coercion.
+    private quoteString(key: string, escapeMap?: Map<string, string>): string {
         if (!JsonPlusFormatter.SIMPLE_STRING_ESCAPE_RE.test(key)) {
             return '"' + key + '"';
         }
@@ -966,7 +817,7 @@ export class JsonPlusFormatter {
 
         for (let i = 0; i < key.length; i++) {
             const char = key[i];
-            const formattedPlaceholder = this.formatEscapePlaceholderAt(key, i, escapeMap);
+            const formattedPlaceholder = escapeMap ? this.formatEscapePlaceholderAt(key, i, escapeMap) : null;
             if (formattedPlaceholder) {
                 result += formattedPlaceholder.text;
                 i += formattedPlaceholder.length - 1;

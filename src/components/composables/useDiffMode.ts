@@ -14,11 +14,11 @@
 //   - 子组件 JsonToolDiffPane 通过 inject 拿到本 composable 的返回值，自行渲染模板
 
 import { type UploadFile } from 'element-plus';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { type Ref, type InjectionKey, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 import { calculateHash } from '../utils/byteUtils';
-import { replaceEditorValuePreservingUndo } from '../utils/diffMonaco';
+import { replaceEditorValuePreservingUndo } from '../utils/editorEdits';
 import { type SettingsTxt } from '../utils/i18n';
 import type { DiffLocaleState } from '../utils/jsonToolLocaleTransition';
 import { IDB_DB_NAME, IDB_DB_VERSION, IDB_STORE_TAB_HEARTBEATS } from '../utils/idb';
@@ -73,6 +73,7 @@ export interface UseDiffModeCtx {
     setupSelectionListener: (editor: monaco.editor.IStandaloneCodeEditor, statusRef: Ref<string>) => monaco.IDisposable[];
     updateLineNumberWidth: (editor: monaco.editor.IStandaloneCodeEditor) => void;
     detectIndentSize: (content: string) => number;
+    getBuiltinIndentFallback?: () => number;
     onBeforeDisposeEditor?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
 
     // JSON 操作回调（封装 jsonEngine / diff 专用排序细节，避免把它们下沉）
@@ -153,6 +154,8 @@ export const useDiffMode = (ctx: UseDiffModeCtx): UseDiffModeReturn => {
     const diffRightEditorContainer = ref<HTMLElement | null>(null);
     const diffLeftEditorStatus = ref('');
     const diffRightEditorStatus = ref('');
+    let paneRequestId = 0;
+    onBeforeUnmount(() => { paneRequestId++; });
     let sendToDiffContextKeyPairs: Array<{ left: InputContextKeyHandle; right: InputContextKeyHandle }> = [];
 
     // ==================== 包裹 useDiffEditors ====================
@@ -177,6 +180,7 @@ export const useDiffMode = (ctx: UseDiffModeCtx): UseDiffModeReturn => {
         setupSelectionListener: ctx.setupSelectionListener,
         updateLineNumberWidth: ctx.updateLineNumberWidth,
         detectIndentSize: ctx.detectIndentSize,
+        getBuiltinIndentFallback: ctx.getBuiltinIndentFallback,
         onBeforeDisposeEditor: ctx.onBeforeDisposeEditor,
     });
     ctx.localeState = undefined;
@@ -214,6 +218,7 @@ export const useDiffMode = (ctx: UseDiffModeCtx): UseDiffModeReturn => {
     };
 
     const exitDiffMode = async () => {
+        paneRequestId++;
         captureDiffDraftFromEditors();
         void saveDiffDraft('退出 diff');
         destroyDiffEditor();
@@ -230,9 +235,17 @@ export const useDiffMode = (ctx: UseDiffModeCtx): UseDiffModeReturn => {
 
     // 子组件 onMounted：v-if 渲染了 .diff-editor-instance 后再创建 Monaco
     const handleDiffPaneMounted = () => {
-        createDiffEditor();
-        if (ctx.exactComparison?.value) ctx.onComparisonMounted?.();
-        else void restoreDiffDraftIntoEditors();
+        const request = ++paneRequestId;
+        void (async () => {
+            await createDiffEditor();
+            if (request !== paneRequestId || !isDiffMode.value || ctx.isTabPageClosing.value || !diffEditors.isDiffEditorReady()) return;
+            if (ctx.exactComparison?.value) ctx.onComparisonMounted?.();
+            else await restoreDiffDraftIntoEditors();
+        })().catch(async (error: unknown) => {
+            if (request !== paneRequestId || !isDiffMode.value || ctx.isTabPageClosing.value) return;
+            ctx.showMessageError(error instanceof Error ? error.message : String(error));
+            await exitDiffMode();
+        });
     };
 
     // ==================== 输入区 → Diff 草稿 ====================

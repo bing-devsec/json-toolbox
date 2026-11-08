@@ -7,9 +7,12 @@ export const idePalettes: Record<AppearanceMode, Palette> = {
     light: { bg: '#F8F8F8', surface: '#FFFFFF', soft: '#F8F8F8', text: '#3B3B3B', muted: '#616161', border: '#E5E5E5', accent: '#005FB8', editor: '#FFFFFF', gutter: '#F8F8F8', currentLine: '#F2F2F2', selection: '#ADD6FF', selected: '#E8E8E8', header: '#F8F8F8', radius: '3px', shadow: '0 6px 24px #00000020' },
     dark: { bg: '#181818', surface: '#222222', soft: '#181818', text: '#CCCCCC', muted: '#9D9D9D', border: '#2B2B2B', accent: '#0078D4', editor: '#1F1F1F', gutter: '#181818', currentLine: '#282828', selection: '#264F78', selected: '#094771', header: '#181818', radius: '3px', shadow: '0 6px 24px #00000060' },
 };
+// Shared with the lightweight SSR page palette, without loading control mappings.
+const lightLink = '#005FB8', darkLink = '#4DAAFC';
+export const idePageAccents = { light: lightLink, dark: darkLink } as const;
 export const ideControls = {
-    light: { link: '#005FB8', button: '#F3F3F3', hover: '#E8E8E8', pressed: '#DADADA', input: '#FFFFFF', controlBorder: '#868686', primaryHover: '#0258A8', primaryPressed: '#034C91', onPrimary: '#FFFFFF', onSelected: '#1F1F1F', danger: '#B42318', dangerBackground: '#FDE7E9', disabled: '#767676', disabledBackground: '#F3F3F3', disabledBorder: '#D0D0D0', code: '#E8E8E8', success: '#237B4B', successBackground: '#E9F4ED', warning: '#795E26', warningBackground: '#FFF4CE' },
-    dark: { link: '#4DAAFC', button: '#2B2B2B', hover: '#3C3C3C', pressed: '#454545', input: '#313131', controlBorder: '#7A7A7A', primaryHover: '#026EC1', primaryPressed: '#005A9E', onPrimary: '#FFFFFF', onSelected: '#FFFFFF', danger: '#F48771', dangerBackground: '#4B2727', disabled: '#777777', disabledBackground: '#252525', disabledBorder: '#3C3C3C', code: '#313131', success: '#89D185', successBackground: '#1E3624', warning: '#CCA700', warningBackground: '#3A3018' },
+    light: { link: lightLink, button: '#F3F3F3', hover: '#E8E8E8', pressed: '#DADADA', input: '#FFFFFF', controlBorder: '#868686', primaryHover: '#0258A8', primaryPressed: '#034C91', onPrimary: '#FFFFFF', onSelected: '#1F1F1F', danger: '#B42318', dangerBackground: '#FDE7E9', disabled: '#767676', disabledBackground: '#F3F3F3', disabledBorder: '#D0D0D0', code: '#E8E8E8', success: '#237B4B', successBackground: '#E9F4ED', warning: '#795E26', warningBackground: '#FFF4CE' },
+    dark: { link: darkLink, button: '#2B2B2B', hover: '#3C3C3C', pressed: '#454545', input: '#313131', controlBorder: '#7A7A7A', primaryHover: '#026EC1', primaryPressed: '#005A9E', onPrimary: '#FFFFFF', onSelected: '#FFFFFF', danger: '#F48771', dangerBackground: '#4B2727', disabled: '#777777', disabledBackground: '#252525', disabledBorder: '#3C3C3C', code: '#313131', success: '#89D185', successBackground: '#1E3624', warning: '#CCA700', warningBackground: '#3A3018' },
 } as const;
 // Docked surfaces stay flat; only temporary UI rises above the workbench.
 const ideElevation = {

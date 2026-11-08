@@ -6,8 +6,11 @@ export const calculateJsonStructure = (obj: any, mode: 'depth' | 'level' = 'dept
         return mode === 'depth' ? currentValue : currentValue - 1;
     }
 
-    // 空对象或空数组处理
-    if (Object.keys(obj).length === 0) {
+    const isArray = Array.isArray(obj);
+    // A normal parsed array has an enumerable first index. Avoid allocating all
+    // of its index strings just to prove it is nonempty. Keep the existing
+    // own-enumerable-key check for empty, sparse and nonstandard arrays.
+    if (!(isArray && Object.prototype.propertyIsEnumerable.call(obj, '0')) && Object.keys(obj).length === 0) {
         return currentValue;
     }
 
@@ -19,7 +22,7 @@ export const calculateJsonStructure = (obj: any, mode: 'depth' | 'level' = 'dept
     // 递归计算最大深度/层级
     let maxValue = currentValue;
 
-    if (Array.isArray(obj)) {
+    if (isArray) {
         for (const item of obj) {
             const childValue = calculateJsonStructure(item, mode, currentValue + 1);
             maxValue = Math.max(maxValue, childValue);
@@ -160,18 +163,17 @@ const detectInconsistentEscapeLevelsInSegment = (str: string): boolean => {
         return false;
     }
 
-    return unicodeRuns.some((unicodeRun) => {
-        let previousQuoteRun: { index: number; run: number } | undefined;
-        for (const quoteRun of escapedQuoteRuns) {
-            if (quoteRun.index < unicodeRun.index) {
-                previousQuoteRun = quoteRun;
-            } else {
-                break;
-            }
+    // Both lists are in source order. Advance once instead of rescanning all
+    // preceding quotes for every Unicode/hex escape (quadratic on large strings).
+    let quoteIndex = 0;
+    let previousQuoteRun: { index: number; run: number } | undefined;
+    for (const unicodeRun of unicodeRuns) {
+        while (quoteIndex < escapedQuoteRuns.length && escapedQuoteRuns[quoteIndex].index < unicodeRun.index) {
+            previousQuoteRun = escapedQuoteRuns[quoteIndex++];
         }
-        if (!previousQuoteRun) return false;
-        return !isEscapeRunConsistentWithQuoteRun(unicodeRun.run, previousQuoteRun.run);
-    });
+        if (previousQuoteRun && !isEscapeRunConsistentWithQuoteRun(unicodeRun.run, previousQuoteRun.run)) return true;
+    }
+    return false;
 };
 
 const collectJsonStringSegments = (str: string): string[] => {

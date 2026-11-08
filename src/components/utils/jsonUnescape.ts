@@ -7,6 +7,7 @@ import {
     type JsonFormatterOptions,
 } from './jsonEngine';
 import { detectIllegalEscapes, detectInconsistentEscapeLevels } from './jsonStructure';
+import { ChunkedStringBuilder } from './jsonEngine/stringBuilder';
 
 const DEFAULT_MAX_PARSE_ITERATIONS = 30;
 const DEFAULT_MAX_DEPTH = 100;
@@ -65,6 +66,7 @@ interface JsonUnescapeContext {
     formatterOptions: JsonFormatterOptions;
     escapeMap: Map<string, string>;
     nextEscapePlaceholderId: number;
+    literalEscapePlaceholders?: Set<string>;
     maxParseIterations: number;
     maxDepth: number;
 }
@@ -76,10 +78,11 @@ const createFormatterOptions = (options: JsonUnescapeOptions): JsonFormatterOpti
     encodingMode: false,
 });
 
-const createContext = (options: JsonUnescapeOptions): JsonUnescapeContext => ({
+const createContext = (options: JsonUnescapeOptions, input: string): JsonUnescapeContext => ({
     formatterOptions: createFormatterOptions(options),
     escapeMap: new Map<string, string>(),
     nextEscapePlaceholderId: 0,
+    literalEscapePlaceholders: collectLiteralEscapePlaceholders(input),
     maxParseIterations: options.maxParseIterations ?? DEFAULT_MAX_PARSE_ITERATIONS,
     maxDepth: options.maxDepth ?? DEFAULT_MAX_DEPTH,
 });
@@ -95,23 +98,74 @@ const createContextEscapePlaceholder = (ctx: JsonUnescapeContext): string => {
     return placeholder;
 };
 
-const allocateEscapePlaceholder = (ctx: JsonUnescapeContext, originalEscape: string, occupiedText: string): string => {
+const allocateEscapePlaceholder = (ctx: JsonUnescapeContext, originalEscape: string, occupiedPlaceholders: Set<string>): string => {
     let placeholder = createContextEscapePlaceholder(ctx);
-    while (ctx.escapeMap.has(placeholder) || occupiedText.includes(placeholder)) {
+    while (ctx.escapeMap.has(placeholder) || occupiedPlaceholders.has(placeholder)) {
         placeholder = createContextEscapePlaceholder(ctx);
     }
     ctx.escapeMap.set(placeholder, originalEscape);
     return placeholder;
 };
 
-const replaceEscapePlaceholdersInString = (value: string, placeholderMap: Map<string, string>): string => {
-    let output = value;
-    for (const [sourcePlaceholder, targetPlaceholder] of placeholderMap) {
-        if (sourcePlaceholder !== targetPlaceholder && output.includes(sourcePlaceholder)) {
-            output = output.split(sourcePlaceholder).join(targetPlaceholder);
+const collectStringEscapePlaceholders = (text: string, occupied: Set<string>, start: number): void => {
+    let index = start;
+    while (index !== -1 && index + ESCAPE_PLACEHOLDER_LENGTH <= text.length) {
+        occupied.add(text.slice(index, index + ESCAPE_PLACEHOLDER_LENGTH));
+        index = text.indexOf(ESCAPE_PLACEHOLDER_START, index + 1);
+    }
+};
+
+// Later parsers only see their own layer. Keep raw user tokens from the original
+// document reserved across every layer so they can never become registered escapes.
+const collectLiteralEscapePlaceholders = (input: string): Set<string> | undefined => {
+    const first = input.indexOf(ESCAPE_PLACEHOLDER_START);
+    if (first === -1) return undefined;
+    const occupied = new Set<string>();
+    collectStringEscapePlaceholders(input, occupied, first);
+    return occupied;
+};
+
+// Only collision handling needs the occupied tree tokens. Avoid serializing the
+// whole tree, and make candidate allocation a Set lookup rather than a text scan.
+const collectOccupiedEscapePlaceholders = (value: any, sourceEscapeMap: Map<string, string>, literals?: Set<string>): Set<string> => {
+    const occupied = new Set(sourceEscapeMap.keys());
+    if (literals) for (const token of literals) occupied.add(token);
+    const collectString = (text: string): void => collectStringEscapePlaceholders(text, occupied, text.indexOf(ESCAPE_PLACEHOLDER_START));
+    const pending = [value];
+    while (pending.length > 0) {
+        const current = pending.pop();
+        if (typeof current === 'string') {
+            collectString(current);
+        } else if (Array.isArray(current)) {
+            for (const item of current) pending.push(item);
+        } else if (current && typeof current === 'object') {
+            for (const key of Object.keys(current)) {
+                collectString(key);
+                pending.push(current[key]);
+            }
         }
     }
-    return output;
+    return occupied;
+};
+
+const replaceEscapePlaceholdersInString = (value: string, placeholderMap: Map<string, string>): string => {
+    const output = new ChunkedStringBuilder();
+    let unchangedStart = 0;
+    let index = value.indexOf(ESCAPE_PLACEHOLDER_START);
+    while (index !== -1 && index + ESCAPE_PLACEHOLDER_LENGTH <= value.length) {
+        const replacement = placeholderMap.get(value.slice(index, index + ESCAPE_PLACEHOLDER_LENGTH));
+        if (replacement !== undefined) {
+            output.append(value.slice(unchangedStart, index));
+            output.append(replacement);
+            unchangedStart = index + ESCAPE_PLACEHOLDER_LENGTH;
+            index = value.indexOf(ESCAPE_PLACEHOLDER_START, unchangedStart);
+        } else {
+            index = value.indexOf(ESCAPE_PLACEHOLDER_START, index + 1);
+        }
+    }
+    if (unchangedStart === 0) return value;
+    output.append(value.slice(unchangedStart));
+    return output.toString();
 };
 
 const replaceEscapePlaceholdersInValue = (value: any, placeholderMap: Map<string, string>): any => {
@@ -135,21 +189,20 @@ const replaceEscapePlaceholdersInValue = (value: any, placeholderMap: Map<string
 const registerParsedEscapes = (ctx: JsonUnescapeContext, value: any, sourceEscapeMap: Map<string, string>): any => {
     if (sourceEscapeMap.size === 0) return value;
 
-    const occupiedText = JSON.stringify(value) ?? '';
-    const placeholderMap = new Map<string, string>();
-    let needsRemap = false;
+    let occupiedPlaceholders: Set<string> | undefined;
+    let placeholderMap: Map<string, string> | undefined;
     for (const [sourcePlaceholder, originalEscape] of sourceEscapeMap) {
         const existingEscape = ctx.escapeMap.get(sourcePlaceholder);
-        if (existingEscape === undefined || existingEscape === originalEscape) {
+        if ((existingEscape === undefined || existingEscape === originalEscape) && !ctx.literalEscapePlaceholders?.has(sourcePlaceholder)) {
             ctx.escapeMap.set(sourcePlaceholder, originalEscape);
-            placeholderMap.set(sourcePlaceholder, sourcePlaceholder);
         } else {
-            placeholderMap.set(sourcePlaceholder, allocateEscapePlaceholder(ctx, originalEscape, occupiedText));
-            needsRemap = true;
+            occupiedPlaceholders ??= collectOccupiedEscapePlaceholders(value, sourceEscapeMap, ctx.literalEscapePlaceholders);
+            placeholderMap ??= new Map<string, string>();
+            placeholderMap.set(sourcePlaceholder, allocateEscapePlaceholder(ctx, originalEscape, occupiedPlaceholders));
         }
     }
 
-    return needsRemap ? replaceEscapePlaceholdersInValue(value, placeholderMap) : value;
+    return placeholderMap ? replaceEscapePlaceholdersInValue(value, placeholderMap) : value;
 };
 
 const parseJsonLayer = (ctx: JsonUnescapeContext, source: string, rejectIllegalEscapes: boolean): ParseLayerResult => {
@@ -314,7 +367,7 @@ export const unescapeJsonText = (input: string, options: JsonUnescapeOptions): J
         };
     }
 
-    const ctx = createContext(options);
+    const ctx = createContext(options, input);
     const parsedInput = parseJsonLayer(ctx, input, false);
     if (!parsedInput.ok) {
         return {

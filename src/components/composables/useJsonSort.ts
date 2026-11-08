@@ -1,3 +1,4 @@
+import { resolveSortPathSelection } from '../utils/sortPathSelection';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { nextTick, ref, watch, type Ref } from 'vue';
 
@@ -81,7 +82,6 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
     const demoGuideVisible = ctx.state?.demoGuideVisible ?? ref(false);
     const currentDemoStepData = ctx.state?.currentDemoStepData ?? ref<SortDemoStep | null>(null);
     const savedInputContent = ref<string | null>(null);
-    const demoResults = ref<any>({});
     const currentDemoStep = ctx.state?.currentDemoStep ?? ref(0);
     const demoStepsCount = ctx.state?.demoStepsCount ?? ref(0);
     const demoStartedFromDiff = ref(false);
@@ -469,47 +469,9 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
     };
 
     const handleRootPathSelect = (item: Record<string, any>) => {
-        const contextInput = rootPathQueryContext || '';
-        const selectedValue = item.value;
-
-        if (contextInput === selectedValue) {
-            sortRootPath.value = selectedValue;
-            lastRootPathInput = selectedValue;
-            return;
-        }
-
-        let newPath = selectedValue;
-
-        if (contextInput && contextInput !== selectedValue) {
-            if (selectedValue.startsWith(contextInput)) {
-                newPath = selectedValue;
-            } else if (contextInput.endsWith('.') || contextInput.endsWith('[')) {
-                newPath = contextInput + selectedValue;
-            } else if (contextInput.match(/\[\d*\]$/) || contextInput.endsWith(']')) {
-                newPath = contextInput + '.' + selectedValue;
-            } else {
-                const lastDotIndex = contextInput.lastIndexOf('.');
-                const lastBracketIndex = contextInput.lastIndexOf('[');
-
-                if (lastDotIndex !== -1 && (lastBracketIndex === -1 || lastDotIndex > lastBracketIndex)) {
-                    const basePath = contextInput.substring(0, lastDotIndex + 1);
-                    newPath = basePath + selectedValue;
-                } else if (lastBracketIndex !== -1) {
-                    const bracketEndIndex = contextInput.indexOf(']', lastBracketIndex);
-                    if (bracketEndIndex !== -1) {
-                        const basePath = contextInput.substring(0, bracketEndIndex + 1);
-                        newPath = basePath + '.' + selectedValue;
-                    } else {
-                        newPath = selectedValue;
-                    }
-                } else {
-                    newPath = selectedValue;
-                }
-            }
-        }
-
-        sortRootPath.value = newPath;
-        lastRootPathInput = newPath;
+        const path = resolveSortPathSelection(rootPathQueryContext || '', item.value);
+        sortRootPath.value = path;
+        lastRootPathInput = path;
     };
 
     const handleRootPathInput = (value: string | number) => {
@@ -519,47 +481,9 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
     };
 
     const handleFieldPathSelect = (item: Record<string, any>) => {
-        const contextInput = fieldPathQueryContext || '';
-        const selectedValue = item.value;
-
-        if (contextInput === selectedValue) {
-            sortFieldName.value = selectedValue;
-            lastFieldPathInput = selectedValue;
-            return;
-        }
-
-        let newPath = selectedValue;
-
-        if (contextInput && contextInput !== selectedValue) {
-            if (selectedValue.startsWith(contextInput)) {
-                newPath = selectedValue;
-            } else if (contextInput.endsWith('.') || contextInput.endsWith('[')) {
-                newPath = contextInput + selectedValue;
-            } else if (contextInput.match(/\[\d*\]$/) || contextInput.endsWith(']')) {
-                newPath = contextInput + '.' + selectedValue;
-            } else {
-                const lastDotIndex = contextInput.lastIndexOf('.');
-                const lastBracketIndex = contextInput.lastIndexOf('[');
-
-                if (lastDotIndex !== -1 && (lastBracketIndex === -1 || lastDotIndex > lastBracketIndex)) {
-                    const basePath = contextInput.substring(0, lastDotIndex + 1);
-                    newPath = basePath + selectedValue;
-                } else if (lastBracketIndex !== -1) {
-                    const bracketEndIndex = contextInput.indexOf(']', lastBracketIndex);
-                    if (bracketEndIndex !== -1) {
-                        const basePath = contextInput.substring(0, bracketEndIndex + 1);
-                        newPath = basePath + '.' + selectedValue;
-                    } else {
-                        newPath = selectedValue;
-                    }
-                } else {
-                    newPath = selectedValue;
-                }
-            }
-        }
-
-        sortFieldName.value = newPath;
-        lastFieldPathInput = newPath;
+        const path = resolveSortPathSelection(fieldPathQueryContext || '', item.value);
+        sortFieldName.value = path;
+        lastFieldPathInput = path;
     };
 
     const handleFieldPathInput = (value: string | number) => {
@@ -694,27 +618,12 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
             fieldSortTarget.value = 'input';
         }
 
-        const demoJson = JSON.stringify(demoData.value, null, 2);
-        const inputEditor = ctx.getInputEditor();
-        if (inputEditor && savedInputContent.value === null) {
-            try {
-                savedInputContent.value = inputEditor.getValue() || '';
-            } catch {
-                savedInputContent.value = '';
-            }
-        }
-        if (inputEditor) {
-            inputEditor.setValue(demoJson);
-            refreshEditorAfterDemoContentChange(inputEditor);
-        }
-
         startDemoMode();
     };
 
     const startDemoMode = () => {
         isDemoMode.value = true;
         currentDemoStep.value = 0;
-        demoResults.value = {};
 
         const inputEditor = ctx.getInputEditor();
         if (inputEditor && savedInputContent.value === null) {
@@ -739,10 +648,6 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
         sortFieldName.value = '';
         ctx.clearOutputEditor();
 
-        demoResults.value['id'] = performFieldSort(JSON.parse(JSON.stringify(demoData.value)), '', 'id');
-        demoResults.value['education'] = performFieldSort(JSON.parse(JSON.stringify(demoData.value)), '[*].education', 'graduationYear');
-        demoResults.value['map_id'] = performFieldSort(JSON.parse(JSON.stringify(demoMapData.value)), '', 'id');
-        demoResults.value['map_value_score'] = performFieldSort(JSON.parse(JSON.stringify(demoMapData.value)), '', 'value.score');
 
         showDemoStep(0);
     };
@@ -759,7 +664,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
 
     const execAndNext = (rootPath: string, fieldName: string, nextStep: number) => {
         const dataToUse = demoData.value;
-        const result = performFieldSort(JSON.parse(JSON.stringify(dataToUse)), rootPath, fieldName);
+        const result = performFieldSort(dataToUse, rootPath, fieldName);
         const finalOutput = ctx.formatDemoResult(result, dataToUse);
         const outputEditor = ctx.getOutputEditor();
         if (outputEditor) {
@@ -771,7 +676,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
 
     const execAndNextMap = (rootPath: string, fieldName: string, nextStep: number) => {
         const dataToUse = demoMapData.value;
-        const result = performFieldSort(JSON.parse(JSON.stringify(dataToUse)), rootPath, fieldName);
+        const result = performFieldSort(dataToUse, rootPath, fieldName);
         const finalOutput = ctx.formatDemoResult(result, dataToUse);
         const outputEditor = ctx.getOutputEditor();
         if (outputEditor) {
@@ -788,8 +693,6 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
             inputEditor.setValue(demoJson);
             refreshEditorAfterDemoContentChange(inputEditor);
         }
-        demoResults.value['map_id'] = performFieldSort(JSON.parse(JSON.stringify(demoMapData.value)), '', 'id');
-        demoResults.value['map_value_score'] = performFieldSort(JSON.parse(JSON.stringify(demoMapData.value)), '', 'value.score');
     };
 
     const showDemoStep: (step: number) => void = (step: number) => {

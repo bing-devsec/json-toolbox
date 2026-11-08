@@ -1,0 +1,18 @@
+/* Match quick input to the result list's 5px inset, including its visible focus ring. */
+.json-tool-root .monaco-editor .quick-input-widget:not(.hidden-input) .quick-input-header {
+    padding-inline: 5px;
+}
+
+/* Monaco keeps a left margin on this bar even when there are no actions. */
+.json-tool-root .monaco-editor .quick-input-widget .quick-input-inline-action-bar:has(> .actions-container:empty) {
+    display: none;
+}
+
+.json-tool-root .monaco-editor .quick-input-box .monaco-inputbox:focus-within {
+    outline: 2px solid var(--vscode-focusBorder, #005fcc);
+    outline-offset: -2px;
+}
+
+.json-tool-root .monaco-editor .quick-input-box .monaco-inputbox:focus-within input.input:focus {
+    outline: none;
+}

@@ -1,4 +1,4 @@
-import JSON5 from 'json5';
+import parseJSON5 from 'json5/lib/parse.js';
 
 /** Source slices remain authoritative; profiles describe relationships and never regenerate values. */
 export interface RepairRootCandidate {
@@ -75,7 +75,7 @@ function profile(input: string): Profile | undefined {
                 if (canonical(input[triviaEnd(input, index)]) === ':') {
                     // Decode key identity only. Numeric values and encoded payload strings stay opaque.
                     try {
-                        const decoded: unknown = JSON5.parse(input.slice(start, index));
+                        const decoded: unknown = parseJSON5(input.slice(start, index));
                         if (typeof decoded !== 'string') return undefined;
                         key = decoded;
                     } catch { return undefined; }

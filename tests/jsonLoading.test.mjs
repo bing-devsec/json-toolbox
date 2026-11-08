@@ -15,7 +15,8 @@ function fakeStorage(records, calls) {
     };
     const db = {
         objectStoreNames: { contains: (name) => records.has(name) },
-        transaction: (name) => ({ objectStore: () => ({
+        transaction: (name) => {
+            const tx = { objectStore: () => ({
             getAll() {
                 calls.push(['getAll', name]);
                 assert.equal(name, 'tabHeartbeats', 'GC must never clone archive or Diff bodies');
@@ -24,7 +25,11 @@ function fakeStorage(records, calls) {
             getAllKeys() { calls.push(['getAllKeys', name]); return request([...records.get(name).keys()]); },
             delete(key) { records.get(name).delete(key); return request(); },
             put(value) { records.get(name).set(value.tabId, value); return request(); },
-        }) }),
+            }) };
+            // A successful request precedes transaction completion in IndexedDB.
+            queueMicrotask(() => queueMicrotask(() => tx.oncomplete?.()));
+            return tx;
+        },
     };
     return { open: () => request(db) };
 }
@@ -88,5 +93,5 @@ test('Monaco core keeps optional language mode chunks lazy', () => {
     assert.equal(getJsonToolManualChunk('/node_modules/monaco-editor/esm/vs/language/json/jsonMode.js'),undefined);
     assert.equal(getJsonToolManualChunk('/node_modules/monaco-editor/esm/vs/basic-languages/yaml/yaml.js'),undefined);
     assert.equal(getJsonToolManualChunk('\0vite/preload-helper.js'),'module-runtime');
-    assert.equal(getJsonToolManualChunk('/src/components/JsonToolWorkbench.client.vue'),undefined);
+    assert.equal(getJsonToolManualChunk('/src/components/JsonToolWorkbench.vue'),undefined);
 });

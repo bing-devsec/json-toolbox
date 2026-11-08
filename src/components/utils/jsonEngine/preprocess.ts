@@ -1,7 +1,7 @@
-import { isIdentifierChar, isValuePosition } from './scanner';
+import { getNextSignificantChar, isIdentifierChar } from './scanner';
 import { ChunkedStringBuilder } from './stringBuilder';
 
-type ReplacementScanner = (input: string, index: number) => { replacement: string; nextIndex: number } | null;
+type ReplacementScanner = (input: string, index: number, previousSignificantChar: string) => { replacement: string; nextIndex: number } | null;
 
 const scanOutsideStringsAndComments = (input: string, scanner: ReplacementScanner): string => {
     const result = new ChunkedStringBuilder();
@@ -11,6 +11,7 @@ const scanOutsideStringsAndComments = (input: string, scanner: ReplacementScanne
     let stringChar = '';
     let inLineComment = false;
     let inBlockComment = false;
+    let previousSignificantChar = '';
 
     while (i < input.length) {
         const char = input[i];
@@ -40,6 +41,7 @@ const scanOutsideStringsAndComments = (input: string, scanner: ReplacementScanne
             if (char === stringChar) {
                 inString = false;
                 stringChar = '';
+                previousSignificantChar = char;
             }
             i++;
             continue;
@@ -70,15 +72,17 @@ const scanOutsideStringsAndComments = (input: string, scanner: ReplacementScanne
             continue;
         }
 
-        const replacement = scanner(input, i);
+        const replacement = scanner(input, i, previousSignificantChar);
         if (replacement) {
             result.append(input.slice(unchangedStart, i));
             result.append(replacement.replacement);
             i = replacement.nextIndex;
             unchangedStart = i;
+            previousSignificantChar = replacement.replacement.at(-1) ?? previousSignificantChar;
             continue;
         }
 
+        if (!/\s/.test(char)) previousSignificantChar = char;
         i++;
     }
 
@@ -89,10 +93,15 @@ const scanOutsideStringsAndComments = (input: string, scanner: ReplacementScanne
 
 export const replaceUndefinedValuesWithNull = (input: string): string => {
     const keyword = 'undefined';
-    return scanOutsideStringsAndComments(input, (source, index) => {
+    return scanOutsideStringsAndComments(input, (source, index, previousSignificantChar) => {
         if (!source.startsWith(keyword, index)) return null;
         if (isIdentifierChar(source[index - 1] || '') || isIdentifierChar(source[index + keyword.length] || '')) return null;
-        if (!isValuePosition(source, index, index + keyword.length)) return null;
+        // The outer scanner already knows the preceding syntax character.
+        // Rescanning from the line start for each token is quadratic on minified arrays.
+        const next = getNextSignificantChar(source, index + keyword.length);
+        if (next === ':') return null;
+        if (previousSignificantChar !== '' && !':[,'.includes(previousSignificantChar)) return null;
+        if (next !== '' && !',]}'.includes(next)) return null;
         return { replacement: 'null', nextIndex: index + keyword.length };
     });
 };

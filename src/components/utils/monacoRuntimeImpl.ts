@@ -16,6 +16,7 @@ import 'monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.css';
 import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding.css';
 import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
+import './monacoQuickInput.css';
 
 export { monacoApi };
 export { optimizeLargeEditorLineMapping } from './largeEditorLineMapping';

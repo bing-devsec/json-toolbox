@@ -145,9 +145,21 @@ const offsetLineChanges = (changes: DiffLineChange[], lineOffset: number): DiffL
     }));
 };
 
+// Only reached if histogram fails. Bound the recovery matrix before allocating rows.
+// Beyond this budget, a whole unmatched window is still an accurate edit, with coarser grouping.
+const LCS_FALLBACK_MAX_CELLS = 250_000;
+
 const computeLineDiffWithLcsFallback = (leftNorm: string[], rightNorm: string[]): DiffLineChange[] => {
     const m = leftNorm.length;
     const n = rightNorm.length;
+    if (m === 0 || n === 0 || n + 1 > LCS_FALLBACK_MAX_CELLS / (m + 1)) {
+        return m || n ? [{
+            originalStartLineNumber: 1,
+            originalEndLineNumber: m,
+            modifiedStartLineNumber: 1,
+            modifiedEndLineNumber: n,
+        }] : [];
+    }
     const dp: number[][] = [];
     for (let i = 0; i <= m; i++) dp.push(new Array(n + 1).fill(0));
     for (let i = 1; i <= m; i++) {
@@ -419,14 +431,5 @@ export const computeInlineDiff = (left: string, right: string): InlineDiffResult
     return { leftSegments, rightSegments, tooLarge: false };
 };
 
-/**
- * 给定一个 DiffLineChange，返回左右是否有内容、各自行数。
- * （endLineNumber < startLineNumber 表示该侧为空，对应"纯插入"或"纯删除"）
- */
-export const getDiffLineRangeInfo = (change: DiffLineChange) => {
-    const hasLeft = change.originalEndLineNumber >= change.originalStartLineNumber;
-    const hasRight = change.modifiedEndLineNumber >= change.modifiedStartLineNumber;
-    const leftLineCount = hasLeft ? change.originalEndLineNumber - change.originalStartLineNumber + 1 : 0;
-    const rightLineCount = hasRight ? change.modifiedEndLineNumber - change.modifiedStartLineNumber + 1 : 0;
-    return { hasLeft, hasRight, leftLineCount, rightLineCount };
-};
+// Shared range semantics are also used by the lazy Monaco presentation runtime.
+export { getDiffLineRangeInfo } from './diffLineRange';

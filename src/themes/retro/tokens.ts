@@ -99,13 +99,16 @@ const actionColors = {
     dark: { primary: '#AFD3FF', secondary: '#C2D1E0', success: '#AFDA9C', danger: '#FFB5AA' },
 } as const;
 
+const lightFace = '#eef4fb', darkFace = '#22384e';
+export const retroPageHeaders = { light: lightFace, dark: darkFace } as const;
+
 const material: Record<AppearanceMode, Record<string, string>> = {
     light: {
         '--retro-desktop': 'linear-gradient(180deg, #3f6f9f, #22496f)',
         '--retro-window': '#f6f9fc',
         '--retro-window-border': '#7f9db9',
         '--retro-face': 'linear-gradient(#fbfdff, #dfeaf5)',
-        '--retro-face-solid': '#eef4fb',
+        '--retro-face-solid': lightFace,
         '--retro-border': '#8aa5bf',
         '--retro-highlight': '#ffffff',
         '--retro-shadow': 'rgba(36,60,86,.22)',
@@ -177,7 +180,7 @@ const material: Record<AppearanceMode, Record<string, string>> = {
         '--retro-window': '#1b2d42',
         '--retro-window-border': '#3d5d7d',
         '--retro-face': 'linear-gradient(#2a435d, #1e344a)',
-        '--retro-face-solid': '#22384e',
+        '--retro-face-solid': darkFace,
         '--retro-border': '#3d5d7d',
         '--retro-highlight': 'rgba(255,255,255,.16)',
         '--retro-shadow': 'rgba(0,0,0,.4)',

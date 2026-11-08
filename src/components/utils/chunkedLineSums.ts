@@ -121,17 +121,15 @@ export class ChunkedLineSums {
     }
 
     removeValues(start: number, count: number) {
-        let remaining = Math.min(count, this.length - start);
-        while (remaining > 0) {
-            const i = this.findChunk(start);
-            const chunk = this.chunks[i];
-            const local = start - this.offsets[i];
-            const removed = Math.min(remaining, chunk.values.length - local);
-            chunk.values.splice(local, removed);
-            if (!chunk.values.length) this.chunks.splice(i, 1);
-            else this.chunks[i] = makeChunk(chunk.values);
-            remaining -= removed;
-            this.rebuildOffsets();
-        }
+        const removed = Math.min(count, this.length - start);
+        if (removed <= 0) return;
+        const first = this.findChunk(start);
+        const last = this.findChunk(start + removed - 1);
+        const retained = this.chunks[first].values.slice(0, start - this.offsets[first])
+            .concat(this.chunks[last].values.slice(start + removed - this.offsets[last]));
+        // Delete the entire covered block range at once. Rebuilding offsets once per
+        // removed block makes clearing a multi-million-line model quadratic in block count.
+        this.chunks.splice(first, last - first + 1, ...partition(retained));
+        this.rebuildOffsets();
     }
 }

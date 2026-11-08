@@ -53,7 +53,10 @@ export const optimizeLargeEditorLineMapping = (editor: monaco.editor.IStandalone
     let disposed = false;
     let scheduled = false;
     const adapted = new WeakSet<object>();
-    let pendingFolding: unknown;
+    // A fulfilled folding promise owns its FoldingModel, even after the editor replaces
+    // and disposes that model. Dedupe weakly so an empty/small replacement cannot keep
+    // the previous large fold topology alive through this editor's event listeners.
+    const observedFoldingPromises = new WeakSet<object>();
     const install = () => {
         scheduled = false;
         if (disposed) return;
@@ -73,14 +76,17 @@ export const optimizeLargeEditorLineMapping = (editor: monaco.editor.IStandalone
         if (!adapted.has(lines)) { adapted.add(lines); optimizeProjectedInsert(lines); optimizeLargeEditorVisibleRendering(lines); }
         if (!adapted.has(view)) { adapted.add(view); optimizeVisibleRanges(view); }
         optimizeLargeEditorTokenCaches((model as any).tokenization?._tokens, adapted);
-        const foldingPromise = (editor.getContribution('editor.contrib.folding') as any)?.getFoldingModel?.();
-        if (foldingPromise && foldingPromise !== pendingFolding) {
-            pendingFolding = foldingPromise;
+        const foldingController = editor.getContribution('editor.contrib.folding') as any;
+        const foldingPromise = foldingController?.getFoldingModel?.();
+        if (foldingPromise && (typeof foldingPromise === 'object' || typeof foldingPromise === 'function')
+            && typeof foldingPromise.then === 'function' && !observedFoldingPromises.has(foldingPromise)) {
+            observedFoldingPromises.add(foldingPromise);
             void foldingPromise.then((folding: any) => {
-                if (disposed || !folding || adapted.has(folding) || editor.getModel() !== model) return;
+                if (disposed || !folding || adapted.has(folding) || editor.getModel() !== model
+                    || editor.getContribution('editor.contrib.folding') !== foldingController) return;
                 adapted.add(folding);
                 optimizeLargeEditorFolding(folding);
-            });
+            }, () => { /* A cancelled/disposed native folding task needs no adapter. */ });
         }
     };
     const schedule = () => {

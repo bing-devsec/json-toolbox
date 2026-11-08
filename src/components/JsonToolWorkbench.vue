@@ -17,7 +17,7 @@
                 </div>
 
                 <!-- Diff 模式工具栏 -->
-                <div v-if="diffMode.isDiffMode.value" class="tool-bar diff-tool-bar">
+                <div v-if="diffMode.isDiffMode.value" class="tool-bar diff-tool-bar" tabindex="-1">
                     <el-button type="info" class="settings-tool-button" :aria-label="settingsTxt.dialogTitle" :disabled="repair.repairing.value" @click="openSettingsDialog">
                         <el-icon><Setting /></el-icon>
                     </el-button>
@@ -50,7 +50,7 @@
                 </div>
 
                 <!-- 普通模式工具栏 -->
-                <div v-else class="tool-bar" ref="toolBarRef" @scroll="handleToolBarScroll">
+                <div v-else class="tool-bar" ref="toolBarRef" tabindex="-1" @scroll="handleToolBarScroll">
                     <el-button type="info" class="settings-tool-button" :aria-label="settingsTxt.dialogTitle" :disabled="repair.repairing.value" @click="openSettingsDialog">
                         <el-icon>
                             <Setting />
@@ -116,7 +116,7 @@
                                 <el-option v-for="n in maxLevel" :key="n" :label="getFoldLevelOptionLabel(n)" :value="n" :disabled="isFoldLevelDisabled(n)" />
                             </el-select>
                             <el-button
-                                type="success"
+                                type="primary"
                                 class="level-action-button"
                                 :class="{ 'level-action-button-disabled-by-level': isSelectedFoldLevelDisabled }"
                                 @click="handleLevelAction"
@@ -159,6 +159,7 @@
                                 <button
                                     class="archive-header-action"
                                     type="button"
+                                    :aria-label="settingsTxt.dialogRenameArchive"
                                     :disabled="!activeArchiveId"
                                     @click.stop="handleRenameActiveArchive"
                                     @dblclick.stop>
@@ -171,6 +172,7 @@
                                 <button
                                     class="archive-header-action"
                                     type="button"
+                                    :aria-label="settingsTxt.archiveRefreshTip"
                                     :disabled="!activeArchiveId"
                                     @click.stop="handleRefreshActiveArchive"
                                     @dblclick.stop>
@@ -183,6 +185,7 @@
                                 <button
                                     class="archive-header-action danger"
                                     type="button"
+                                    :aria-label="settingsTxt.confirmDeleteArchiveTitle"
                                     :disabled="!activeArchiveId"
                                     @click.stop="handleDeleteActiveArchive"
                                     @dblclick.stop>
@@ -242,14 +245,17 @@
                                 </el-icon>
                                 <span>{{ settingsTxt.panelClear }}</span>
                             </el-button>
-                            <el-upload class="upload-json" accept=".json" :auto-upload="false" :show-file-list="false" :disabled="repair.repairing.value" :on-change="handleFileUpload">
-                                <el-button data-action-role="secondary" class="file-transfer-button" size="small" type="info" plain :disabled="repair.repairing.value">
-                                    <el-icon>
-                                        <Upload />
-                                    </el-icon>
-                                    <span>{{ settingsTxt.panelUpload }}</span>
-                                </el-button>
-                            </el-upload>
+                            <div class="upload-json">
+                                <div class="json-file-picker">
+                                    <el-button data-action-role="secondary" class="file-transfer-button" size="small" type="info" plain :disabled="repair.repairing.value" @click="openInputFilePicker">
+                                        <el-icon>
+                                            <Upload />
+                                        </el-icon>
+                                        <span>{{ settingsTxt.panelUpload }}</span>
+                                    </el-button>
+                                    <input ref="inputFilePicker" type="file" accept=".json" hidden :disabled="repair.repairing.value" @change="handleFileUpload" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div
@@ -490,7 +496,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, onUnmounted, nextTick
 // 第三方库
 import { parseTree, findNodeAtOffset, getNodePath, getLocation, type Node as JsonAstNode } from 'jsonc-parser';
 
-import { ElButton, ElButtonGroup, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElMessageBox, ElOption, ElSelect, ElUpload } from 'element-plus';
+import { ElButton, ElButtonGroup, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElOption, ElSelect } from 'element-plus';
 import 'element-plus/es/components/button/style/css';
 import 'element-plus/es/components/button-group/style/css';
 import 'element-plus/es/components/dropdown/style/css';
@@ -498,12 +504,9 @@ import 'element-plus/es/components/dropdown-item/style/css';
 import 'element-plus/es/components/dropdown-menu/style/css';
 import 'element-plus/es/components/icon/style/css';
 import 'element-plus/es/components/message/style/css';
-import 'element-plus/es/components/message-box/style/css';
 import 'element-plus/es/components/option/style/css';
 import 'element-plus/es/components/select/style/css';
-import 'element-plus/es/components/upload/style/css';
 
-import type { UploadFile } from 'element-plus';
 import { Loading, ArrowLeft, ArrowRight, ArrowDown, ArrowUp, CopyDocument, Download, Upload, Delete, Setting, WarningFilled, Edit, Refresh } from '@element-plus/icons-vue';
 import { bindJsonToolMessageToolbar, showMessageError, showMessageSuccess, showMessageWarning } from '@/utils/jsonToolMessage';
 
@@ -564,6 +567,14 @@ import { unescapeJsonText, type JsonUnescapeMessageKind } from './utils/jsonUnes
 import { getJsonToolThemeForLanguage } from './utils/monacoThemes';
 import { ensureMonacoTextareaAttrs, type MonacoTextareaAttrObserver } from './utils/monacoTextareaAttrs';
 import { getChangedLineRanges } from './utils/changedLineRanges';
+import { countSelectionMatches } from './utils/selectionMatchCount';
+import { getModelUtf8ByteLength } from './utils/modelUtf8ByteLength';
+import { findJsonStringRangeByPrefix } from './utils/jsonStringHitTest';
+import { loadJsonToolMessageBox } from './utils/loadJsonToolMessageBox';
+import { createModelLanguageSetter } from './utils/optionalLanguageLoader';
+import { captureTransferFolding, restoreTransferFolding, restoreTransferFoldingWhenReady } from './utils/editorTransferFolding';
+import { getModelDisplayIndentSize } from './utils/modelIndentSize';
+import { captureEditorSnapshot } from './utils/editorSnapshot';
 import type { JsonToolOutputType } from './utils/jsonToolLocaleTransition';
 
 import { createExternalImportGate, type ExternalJsonImport } from '../extension/externalImport';
@@ -594,7 +605,10 @@ let jsonConvertModulePromise: Promise<JsonConvertModule> | null = null;
 
 const loadJsonConvertModule = (): Promise<JsonConvertModule> => {
     if (!jsonConvertModulePromise) {
-        jsonConvertModulePromise = import('./utils/jsonConvert');
+        jsonConvertModulePromise = import('./utils/jsonConvert').catch(error => {
+            jsonConvertModulePromise = null;
+            throw error;
+        });
     }
     return jsonConvertModulePromise;
 };
@@ -744,6 +758,7 @@ const {
 } = useToolSettings();
 
 const {
+    isMonacoLanguageRegistered,
     ensureMonacoLanguageRegistered,
     loadMonacoLanguageContribution,
     initializeMonacoEnvironment,
@@ -876,6 +891,13 @@ let normalModeOutputSnapshot = '';
 let normalModeInputViewState: monaco.editor.ICodeEditorViewState | null = null;
 let normalModeOutputViewState: monaco.editor.ICodeEditorViewState | null = null;
 
+let normalEditorRestoreGeneration = 0;
+let normalEditorsDisposed = false;
+onBeforeUnmount(() => {
+    normalEditorsDisposed = true;
+    normalEditorRestoreGeneration++;
+});
+
 // ==================== Tab/Storage（IndexedDB + 标签页隔离） ====================
 const { tabId, runtimeInstanceId, isTabPageClosing, setupTabIdChannel, ensureUniqueTabIdForThisPage, disposeTabIdChannel } = useTabId();
 
@@ -906,13 +928,20 @@ const getOutputEditorLanguage = () => {
 
 const cacheNormalEditorsState = () => {
     repair.cancel();
-    normalModeInputSnapshot = inputEditor?.getValue() || '';
-    normalModeOutputSnapshot = outputEditor?.getValue() || '';
-    normalModeInputViewState = inputEditor?.saveViewState() || null;
-    normalModeOutputViewState = outputEditor?.saveViewState() || null;
+    // While optional languages load, the snapshots are the only owners of the text.
+    // Missing editors must not turn a rapid Diff/locale transition into an empty draft.
+    if (inputEditor) {
+        normalModeInputSnapshot = inputEditor.getValue();
+        normalModeInputViewState = inputEditor.saveViewState();
+    }
+    if (outputEditor) {
+        normalModeOutputSnapshot = outputEditor.getValue();
+        normalModeOutputViewState = outputEditor.saveViewState();
+    }
 };
 
 const destroyNormalEditors = () => {
+    normalEditorRestoreGeneration++;
     cancelPendingLevelAnalysis();
     if (inputEditorResizeObserver) {
         inputEditorResizeObserver.disconnect();
@@ -949,8 +978,14 @@ const destroyNormalEditors = () => {
 };
 
 const restoreNormalEditors = async () => {
+    const generation = ++normalEditorRestoreGeneration;
+    const isCurrent = () => generation === normalEditorRestoreGeneration
+        && !normalEditorsDisposed && !isTabPageClosing.value && !diffMode.isDiffMode.value;
+    if (!isCurrent() || inputEditor || outputEditor) return;
+    // Restore text immediately after Vue mounts the containers. The model language
+    // setter loads optional highlighting independently with per-model stale guards.
     await nextTick();
-    if (!inputEditorContainer.value || !outputEditorContainer.value) return;
+    if (!isCurrent() || inputEditor || outputEditor || !inputEditorContainer.value || !outputEditorContainer.value) return;
 
     createInputEditor();
     createOutputEditor();
@@ -973,7 +1008,11 @@ const restoreNormalEditors = async () => {
     setupResizeObservers();
     refreshInputEditorErrors();
 
+    // Creation helpers assign these outer refs; TypeScript cannot track those writes.
+    const restoredInput = inputEditor as monaco.editor.IStandaloneCodeEditor | null;
+    const restoredOutput = outputEditor as monaco.editor.IStandaloneCodeEditor | null;
     nextTick(() => {
+        if (!isCurrent() || inputEditor !== restoredInput || outputEditor !== restoredOutput) return;
         if (normalModeInputViewState) {
             inputEditor?.restoreViewState(normalModeInputViewState);
         }
@@ -1024,6 +1063,7 @@ const diffMode = useDiffMode({
     setupSelectionListener: (editor, statusRef) => setupSelectionListener(editor, statusRef),
     updateLineNumberWidth: (editor) => updateLineNumberWidth(editor),
     detectIndentSize: (content) => detectIndentSizeWrapper(content),
+    getBuiltinIndentFallback: () => indentSize.value,
     onBeforeDisposeEditor: (editor) => {
         if (lastFocusedEditor === editor) lastFocusedEditor = null;
     },
@@ -1088,7 +1128,7 @@ const createJsonSort = async (): Promise<UseJsonSortReturn> => {
         writeOutputJson: (content: string) => {
             setOutputEditorValue(content, 'json', true);
             if (shouldPrecomputeFoldingInfo(content.length)) {
-                schedulePrecomputeFoldingInfo(content, getFoldingInfoPrecomputeDelay(content.length)).catch(() => {
+                schedulePrecomputeFoldingInfo(undefined, getFoldingInfoPrecomputeDelay(content.length)).catch(() => {
                     /* 静默处理 */
                 });
             } else {
@@ -1127,6 +1167,9 @@ const ensureJsonSort = async (): Promise<UseJsonSortReturn> => {
         jsonSortPromise = createJsonSort().then((instance) => {
             jsonSort = instance;
             return instance;
+        }).catch(error => {
+            jsonSortPromise = null;
+            throw error;
         });
     }
     return jsonSortPromise;
@@ -1293,11 +1336,16 @@ const updateModelDisplayOptions = (
     model.updateOptions(options);
 };
 
+const modelLanguageSetter = createModelLanguageSetter<monaco.editor.ITextModel>(
+    isMonacoLanguageRegistered,
+    ensureMonacoLanguageRegistered,
+    (model, language) => monacoApi.editor.setModelLanguage(model, language),
+);
+onBeforeUnmount(() => modelLanguageSetter.dispose());
 const ensureModelLanguage = (model: monaco.editor.ITextModel, language: string) => {
-    ensureMonacoLanguageRegistered(language);
-    if (model.getLanguageId() !== language) {
-        monacoApi.editor.setModelLanguage(model, language);
-    }
+    void modelLanguageSetter.set(model, language).catch(() => {
+        if (!isTabPageClosing.value) showMessageError(settingsTxt.value.msgConvertFail(language));
+    });
 };
 
 const updateEditorDisplayIndentOptions = (editor: monaco.editor.IStandaloneCodeEditor, displayIndentSize: number) => {
@@ -1312,8 +1360,9 @@ const syncEditorDisplayOptions = (
 ): number => {
     const model = editor.getModel();
     const resolvedLanguage = language ?? model?.getLanguageId() ?? 'json';
-    const value = content ?? model?.getValue() ?? '';
-    const displayIndentSize = getDisplayIndentSizeForContent(resolvedLanguage, value, fallbackIndentSize);
+    const displayIndentSize = content == null
+        ? getModelDisplayIndentSize(model, resolvedLanguage, fallbackIndentSize)
+        : getDisplayIndentSizeForContent(resolvedLanguage, content, fallbackIndentSize);
 
     if (model && !model.isDisposed()) {
         updateModelDisplayOptions(model, displayIndentSize);
@@ -1653,13 +1702,19 @@ const showOutputActions = computed(() => {
     return rightPanelWidthPx >= BUTTON_MIN_WIDTH;
 });
 
+const getLineNumbersMinChars = (lineCount: number) => Math.max(2, String(lineCount).length) + 1;
+
 // 更新编辑器行号宽度
 const updateLineNumberWidth = (editor: monaco.editor.IStandaloneCodeEditor | null) => {
     if (!editor) return;
 
     const lineCount = editor.getModel()?.getLineCount() || 0;
-    const digitCount = lineCount < 99 ? 2 : String(lineCount).length;
-    const minChars = digitCount + 1;
+    const minChars = getLineNumbersMinChars(lineCount);
+    // Monaco layout() renders synchronously, even when its options and size did
+    // not change. Read the current options so model swaps and other callers that
+    // change line-number settings cannot leave a cached width stale.
+    const options = editor.getRawOptions();
+    if (options.lineNumbers === 'on' && options.lineNumbersMinChars === minChars) return;
 
     editor.updateOptions({
         lineNumbers: 'on',
@@ -1782,6 +1837,8 @@ const getEditorOptions = (
         language,
         theme: getJsonToolThemeForLanguage(language, themeMode.value),
         readOnly: isReadOnly,
+        // Keep the native textarea truthful without changing editable paste handling.
+        domReadOnly: isReadOnly,
         ariaLabel: props.locale === 'en'
             ? (isReadOnly ? 'JSON preview editor' : 'JSON input editor')
             : (isReadOnly ? 'JSON 预览编辑器' : 'JSON 输入编辑器'),
@@ -1795,6 +1852,7 @@ const getEditorOptions = (
         renderLineHighlight: 'line' as const,
         minimap: { enabled: !isLargeEditor && showMinimap.value },
         lineNumbers: 'on' as const, // 启用行号
+        lineNumbersMinChars: getLineNumbersMinChars(lineCount),
         roundedSelection: false, // 启用圆角选择
         renderIndentGuides: true, // 始终显示缩进指南线
         lineDecorationsWidth: 2, // 缩小行号与折叠箭头之间的 gutter 间距
@@ -1944,7 +2002,7 @@ const updateOutputEditorConfig = (language: string = 'json', enableLargeFileFold
     if (model) {
         ensureModelLanguage(model, language);
         monacoApi.editor.setTheme(getJsonToolThemeForLanguage(language, themeMode.value));
-        displayIndentSize = getDisplayIndentSizeForContent(language, model.getValue(), fallbackIndentSize);
+        displayIndentSize = getModelDisplayIndentSize(model, language, fallbackIndentSize);
         updateModelDisplayOptions(model, displayIndentSize);
     }
 
@@ -1976,7 +2034,7 @@ const syncInputEditorIndentFromContent = () => {
     const model = inputEditor.getModel();
     if (!model || model.isDisposed()) return;
 
-    syncEditorDisplayOptions(inputEditor, model.getLanguageId(), indentSize.value, model.getValue());
+    syncEditorDisplayOptions(inputEditor, model.getLanguageId(), indentSize.value);
 };
 
 const syncOutputEditorIndentFromContent = () => {
@@ -1985,7 +2043,7 @@ const syncOutputEditorIndentFromContent = () => {
     const model = outputEditor.getModel();
     if (!model || model.isDisposed()) return;
 
-    syncEditorDisplayOptions(outputEditor, model.getLanguageId(), indentSize.value, model.getValue());
+    syncEditorDisplayOptions(outputEditor, model.getLanguageId(), indentSize.value);
 };
 
 watch([themeMode, interfaceStyle], ([mode]) => {
@@ -2094,6 +2152,15 @@ const findStringRangeByAst = (model: monaco.editor.ITextModel, position: monaco.
     }
 
     const content = model.getValue();
+    const maxOffset = content.length;
+    const rawOffset = model.getOffsetAt(position);
+    const prefixMatch = findJsonStringRangeByPrefix(content, Math.min(rawOffset, maxOffset));
+    if (prefixMatch) {
+        const start = model.getPositionAt(prefixMatch.offset);
+        const end = model.getPositionAt(prefixMatch.offset + prefixMatch.length);
+        return new monacoApi.Range(start.lineNumber, start.column, end.lineNumber, end.column);
+    }
+
     const root = parseTree(content, [], {
         allowTrailingComma: true,
         disallowComments: false,
@@ -2104,8 +2171,6 @@ const findStringRangeByAst = (model: monaco.editor.ITextModel, position: monaco.
         return null;
     }
 
-    const maxOffset = content.length;
-    const rawOffset = model.getOffsetAt(position);
     const candidateOffsets = Array.from(new Set([Math.min(rawOffset, maxOffset), Math.min(Math.max(rawOffset - 1, 0), maxOffset)]));
 
     const findInnermostStringNode = (node: JsonAstNode, targetOffset: number): JsonAstNode | null => {
@@ -2382,27 +2447,26 @@ const updateEditorStatus = (editor: monaco.editor.IStandaloneCodeEditor | null, 
         // 计算选中的行数
         const selectedLines = endLine - startLine + 1;
 
-        // 使用 Monaco Editor 的 API 获取选中文本，然后计算字符数
-        const selectedText = model.getValueInRange(selection);
-        const selectedChars = selectedText.length;
-
         // 如果是全选，显示文件大小
         if (isFullSelection) {
-            // 计算文件大小（UTF-8编码，中文字符占3字节，英文字符占1字节）
-            const fileSizeBytes = new Blob([selectedText]).size;
+            // 不提取全文或创建整份 UTF-8 Blob，保留原有字符数与字节数语义。
+            const selectedChars = model.getValueLengthInRange(selection);
+            const fileSizeBytes = getModelUtf8ByteLength(model);
             const fileSize = formatFileSize(fileSizeBytes);
             statusRef.value = settingsTxt.value.statusSelectedAll(selectedLines, selectedChars, fileSize);
             return;
         }
+
+        // 非全选仍需选中文本来统计匹配项。
+        const selectedText = model.getValueInRange(selection);
+        const selectedChars = selectedText.length;
 
         // 对于非全选的选中内容，搜索匹配项（两个区域都支持）
         if (selectedText.trim()) {
             try {
                 // 在整个文档中查找所有完全匹配的位置
                 // findMatches 的 isRegex 为 false 时，searchString 为纯字面量，无需转义
-                const matches = model.findMatches(selectedText, false, false, true, null, false, 1073741824);
-
-                const matchCount = matches.length;
+                const matchCount = countSelectionMatches(model, selectedText);
 
                 // 格式化显示：行数 字符数 匹配数
                 if (selectedLines === 1) {
@@ -2679,7 +2743,7 @@ const writeProcessingResultToOutput = (text: string, outputKind: 'json' | 'text'
     setOutputEditorValue(text, outputKind === 'json' ? 'json' : 'plaintext', outputKind === 'json');
     if (outputKind === 'json') {
         if (shouldPrecomputeFoldingInfo(text.length)) {
-            schedulePrecomputeFoldingInfo(text, getFoldingInfoPrecomputeDelay(text.length)).catch(() => {});
+            schedulePrecomputeFoldingInfo(undefined, getFoldingInfoPrecomputeDelay(text.length)).catch(() => {});
         } else {
             clearOutputFoldingInfo();
         }
@@ -2704,6 +2768,7 @@ const {
 } = useEditorContextMenu({
     settingsTxt,
     getInputEditor: () => inputEditor,
+    getOutputEditor: () => outputEditor,
     sortMethod,
     sortOrder,
     affix: {
@@ -2812,13 +2877,15 @@ const refreshInputMarkersListener = () => {
     refreshInputEditorErrors();
 };
 
-const setInputEditorValue = (content: string, language: EditorContentLanguage = 'json'): boolean => {
+const setInputEditorValue = (content: string, language: EditorContentLanguage = 'json',
+    beforeWrite?: (model: monaco.editor.ITextModel, version: number) => void): boolean => {
     if (!inputEditor) return false;
 
     if (language === 'json' && shouldUsePreparedJsonModel(content)) {
         const previousModel = inputEditor.getModel();
         const displayIndentSize = getDisplayIndentSizeForContent('json', content, indentSize.value);
         const nextModel = monacoApi.editor.createModel(content, 'json');
+        beforeWrite?.(nextModel, nextModel.getVersionId());
 
         updateModelDisplayOptions(nextModel, displayIndentSize);
         forceJsonModelTokenization(nextModel);
@@ -2829,6 +2896,8 @@ const setInputEditorValue = (content: string, language: EditorContentLanguage = 
         }
         refreshInputMarkersListener();
     } else {
+        const model = inputEditor.getModel();
+        if (model) beforeWrite?.(model, model.getVersionId() + 1);
         inputEditor.setValue(content);
     }
 
@@ -2931,7 +3000,7 @@ const createInputEditor = () => {
             inputEditor.onDidPaste(() => {
                 const model = editor.getModel();
                 if (!model) return;
-                syncEditorDisplayOptions(editor, model.getLanguageId(), indentSize.value, model.getValue());
+                syncEditorDisplayOptions(editor, model.getLanguageId(), indentSize.value);
             });
         }
     });
@@ -3036,9 +3105,12 @@ const configureInputEditor: () => void = () => {
             return replacedLines >= prevInputLineCount && change.text.includes('\n');
         });
         if (isFullReplace && lineCount < LARGE_EDITOR_LINE_THRESHOLD) {
-            inputEditor?.updateOptions({ folding: false });
+            const resettingEditor = inputEditor;
+            resettingEditor?.updateOptions({ folding: false });
             nextTick(() => {
-                inputEditor?.updateOptions({ folding: true });
+                if (resettingEditor && inputEditor === resettingEditor && resettingEditor.getModel() === model && !model?.isDisposed()) {
+                    resettingEditor.updateOptions({ folding: true });
+                }
             });
         }
         if (e.isUndoing || e.isRedoing || isFullReplace) {
@@ -3073,6 +3145,7 @@ const configureOutputEditor: () => void = () => {
 
     let prevOutputLineCount = getEditorLineCount(outputEditor);
     outputEditor.onDidChangeModel(() => {
+        clearOutputFoldingInfo();
         scheduleUnsafeLongLineDetection('output', outputEditor);
         prevOutputLineCount = getEditorLineCount(outputEditor);
         syncOutputEditorIndentFromContent();
@@ -3080,6 +3153,7 @@ const configureOutputEditor: () => void = () => {
         debouncedUpdateOutputLineNumberWidth();
     });
     outputEditor.onDidChangeModelContent((e) => {
+        clearOutputFoldingInfo();
         if (!applyingFormatResult) { repair.cancel(); repair.comparisonId.value = ''; }
         scheduleUnsafeLongLineDetection('output', outputEditor, e);
         const lineCount = getEditorLineCount(outputEditor);
@@ -3297,6 +3371,7 @@ const setupResizeObservers = () => {
 
 // ==================== onMounted 辅助函数结束 ====================
 
+let toolbarResizeObserver: ResizeObserver | null = null;
 let toolbarScrollTimer: ReturnType<typeof setTimeout> | null = null;
 const pendingAnimationFrames = new Set<number>();
 
@@ -3384,10 +3459,8 @@ onMounted(async () => {
         checkToolBarScroll();
         // 监听窗口大小变化，更新滚动状态
         if (typeof ResizeObserver !== 'undefined' && toolBarRef.value) {
-            const resizeObserver = new ResizeObserver(() => {
-                checkToolBarScroll();
-            });
-            resizeObserver.observe(toolBarRef.value);
+            toolbarResizeObserver = new ResizeObserver(checkToolBarScroll);
+            toolbarResizeObserver.observe(toolBarRef.value);
 
             // 监听窗口resize事件
             window.addEventListener('resize', checkToolBarScroll);
@@ -3405,6 +3478,8 @@ onBeforeUnmount(() => {
     destroyLevelAnalysisWorker();
     cancelFoldingInfoWorker();
     stopResize();
+    toolbarResizeObserver?.disconnect();
+    toolbarResizeObserver = null;
     if (toolbarScrollTimer) {
         clearTimeout(toolbarScrollTimer);
         toolbarScrollTimer = null;
@@ -3463,7 +3538,13 @@ onUnmounted(() => {
 });
 
 // 处理转换
+let conversionSequence = 0;
 const handleConvert = async (command: string) => {
+    if (!ensureProcessingFeatureAvailable()) return;
+    const sequence = ++conversionSequence;
+    const inputIsCurrent = captureEditorSnapshot(() => inputEditor);
+    const outputIsCurrent = captureEditorSnapshot(() => outputEditor);
+    const isCurrent = () => !isTabPageClosing.value && sequence === conversionSequence && !repair.busy.value && inputIsCurrent() && outputIsCurrent();
     reviewConversionBusy.value++;
     try {
         const value = inputEditor?.getValue() || '';
@@ -3475,6 +3556,7 @@ const handleConvert = async (command: string) => {
         // 处理 Cookie 转换
         if (command === 'cookie') {
             const { cookieToJSON } = await loadJsonConvertModule();
+            if (!isCurrent()) return;
             const jsonStr = cookieToJSON(value);
             outputType.value = 'json';
             setOutputEditorValue(jsonStr, 'json', true);
@@ -3508,30 +3590,25 @@ const handleConvert = async (command: string) => {
             typescript: 'TypeScript',
         };
         const jsonConvert = await loadJsonConvertModule();
+        if (!isCurrent()) return;
         switch (command) {
             case 'yaml':
-                outputType.value = 'yaml';
                 editorLanguage = 'yaml';
                 result = await jsonConvert.convertToYAML(parsed);
                 break;
             case 'toml':
-                outputType.value = 'toml';
                 editorLanguage = 'toml';
                 result = await jsonConvert.convertToTOML(parsed);
                 break;
             case 'xml':
-                outputType.value = 'xml';
                 editorLanguage = 'xml';
                 result = await jsonConvert.convertToXML(parsed);
                 break;
             case 'go':
-                outputType.value = 'go';
                 editorLanguage = 'go';
-                outputEditor?.getModel()?.updateOptions({ tabSize: 4, indentSize: 4 });
                 result = jsonConvert.convertToGo(parsed);
                 break;
             case 'typescript':
-                outputType.value = 'typescript';
                 editorLanguage = 'typescript';
                 result = jsonConvert.convertToTypeScript(parsed);
                 break;
@@ -3548,13 +3625,15 @@ const handleConvert = async (command: string) => {
             const customIndentSize = command === 'go' ? 4 : command === 'typescript' ? 2 : undefined;
             const enableLargeFile = editorLanguage === 'json';
             await loadMonacoLanguageContribution(editorLanguage);
+            if (!isCurrent()) return;
+            outputType.value = command as JsonToolOutputType;
             setOutputEditorValue(result, editorLanguage, enableLargeFile, customIndentSize);
 
             recordReviewUse('convert');
             showMessageSuccess(settingsTxt.value.msgConvertSuccess(convertSuccessLabelMap[command] || command.toUpperCase()));
         }
     } catch (error: any) {
-        showMessageError(settingsTxt.value.msgConvertFail(localizeConvertError(error)));
+        if (isCurrent()) showMessageError(settingsTxt.value.msgConvertFail(localizeConvertError(error)));
     } finally {
         reviewConversionBusy.value--;
     }
@@ -3584,6 +3663,7 @@ const formatJSON = async () => {
     const model = inputEditor?.getModel();
     const version = model?.getVersionId();
     const startTime = performance.now();
+    let outputIsCurrent: (() => boolean) | undefined;
     try {
         const result = await repair.format(value, {
             indentSize: indentSize.value, arrayNewLine: arrayNewLine.value,
@@ -3593,10 +3673,13 @@ const formatJSON = async () => {
         outputType.value = 'json';
         applyingFormatResult = true;
         try { setOutputEditorValue(result.formatted, 'json', true); } finally { applyingFormatResult = false; }
+        outputIsCurrent = captureEditorSnapshot(() => outputEditor);
         recordReviewUse('format');
         if (result.comparisonId) {
             const comparisonId = result.comparisonId;
-            void ElMessageBox.confirm(settingsTxt.value.repairSuccessPrompt, settingsTxt.value.repairSuccessTitle, {
+            const messageBox = await loadJsonToolMessageBox();
+            if (isTabPageClosing.value || inputEditor?.getModel() !== model || model?.getVersionId() !== version || !outputIsCurrent()) return;
+            void messageBox.confirm(settingsTxt.value.repairSuccessPrompt, settingsTxt.value.repairSuccessTitle, {
                 confirmButtonText: settingsTxt.value.repairViewDiff,
                 cancelButtonText: settingsTxt.value.repairSkip,
                 closeOnClickModal: false,
@@ -3615,10 +3698,11 @@ const formatJSON = async () => {
                 ? settingsTxt.value.msgFormatSuccessWithTime(elapsed.toFixed(0)) : settingsTxt.value.msgFormatSuccess);
         }
         if (shouldPrecomputeFoldingInfo(result.formatted.length)) {
-            schedulePrecomputeFoldingInfo(result.formatted, getFoldingInfoPrecomputeDelay(result.formatted.length)).catch(() => {});
+            schedulePrecomputeFoldingInfo(undefined, getFoldingInfoPrecomputeDelay(result.formatted.length)).catch(() => {});
         } else clearOutputFoldingInfo();
     } catch (error: any) {
-        if (error?.name === 'AbortError') return;
+        if (error?.name === 'AbortError' || isTabPageClosing.value
+            || inputEditor?.getModel() !== model || model?.getVersionId() !== version || outputIsCurrent?.() === false) return;
         showMessageError(settingsTxt.value.msgFormatFail(error.message));
     }
 };
@@ -3749,23 +3833,27 @@ const compressAndEscapeJSON = () => {
 };
 
 // 收缩只改变编辑器折叠状态；已有 JSON 预览时不重新格式化，避免改变简单数组单行等展示结构。
-const prepareJsonOutputForFolding = (): string | null => {
+const prepareJsonOutputForFolding = (): boolean => {
     if (!outputEditor) {
         showMessageError(settingsTxt.value.msgEditorNotInit);
-        return null;
+        return false;
     }
 
-    const currentOutput = outputEditor.getValue();
-    if (outputType.value === 'json' && currentOutput.trim()) {
-        updateOutputEditorConfig('json', true);
-        return currentOutput;
+    const outputModel = outputEditor.getModel();
+    if (outputType.value === 'json' && outputModel && !outputModel.isDisposed()) {
+        // Folding an unchanged preview must not flatten its full piece tree on every click.
+        for (let line = 1; line <= outputModel.getLineCount(); line++) {
+            if (!outputModel.getLineContent(line).trim()) continue;
+            updateOutputEditorConfig('json', true);
+            return true;
+        }
     }
 
     const value = inputEditor?.getValue() || '';
     if (!value.trim()) {
         showMessageError(settingsTxt.value.msgInputJsonRequired);
         selectedLevel.value = 1;
-        return null;
+        return false;
     }
 
     let formatted = '';
@@ -3773,14 +3861,28 @@ const prepareJsonOutputForFolding = (): string | null => {
         formatted = jsonEngine.formatInput(value).formatted;
     } catch {
         showMessageError(settingsTxt.value.msgInvalidJson);
-        return null;
+        return false;
     }
 
     clearOutputFoldingInfo();
     outputType.value = 'json';
     setOutputEditorValue(formatted, 'json', true);
-    return formatted;
+    return true;
 };
+
+// Fold timers belong to this workbench; never keep disposed editors alive.
+let foldRequestSequence = 0;
+const foldTimers = new Set<ReturnType<typeof setTimeout>>();
+const scheduleFoldTask = (callback: () => void, delay: number) => {
+    const timer = setTimeout(() => { foldTimers.delete(timer); callback(); }, delay);
+    foldTimers.add(timer);
+};
+onBeforeUnmount(() => {
+    foldRequestSequence++;
+    isFoldOperationLocked = false;
+    foldTimers.forEach(timer => clearTimeout(timer));
+    foldTimers.clear();
+});
 
 // 处理层级收缩
 const handleLevelAction = () => {
@@ -3791,16 +3893,21 @@ const handleLevelAction = () => {
         return;
     }
 
+    isFoldOperationLocked = true;
     try {
-        const foldingSourceText = prepareJsonOutputForFolding();
-        if (foldingSourceText === null) return;
+        if (!prepareJsonOutputForFolding() || !outputEditor) { isFoldOperationLocked = false; return; }
+        const sequence = ++foldRequestSequence;
+        const targetEditor = outputEditor;
+        const targetLevel = selectedLevel.value;
+        const outputIsCurrent = captureEditorSnapshot(() => outputEditor);
+        const isCurrent = () => !isTabPageClosing.value && sequence === foldRequestSequence
+            && selectedLevel.value === targetLevel && outputIsCurrent();
 
         const performFold = async () => {
-            if (!outputEditor) return;
-
-            isFoldOperationLocked = true;
             try {
-                const resolvedMaxFoldableLevel = await resolveMaxFoldableLevel(outputEditor);
+                if (!isCurrent()) return;
+                const resolvedMaxFoldableLevel = await resolveMaxFoldableLevel(targetEditor);
+                if (!isCurrent()) return;
                 maxFoldableLevel.value = resolvedMaxFoldableLevel;
                 if (resolvedMaxFoldableLevel !== null && resolvedMaxFoldableLevel > 0 && selectedLevel.value > resolvedMaxFoldableLevel) {
                     showMessageWarning(settingsTxt.value.msgCollapseMaxLevel(resolvedMaxFoldableLevel));
@@ -3811,8 +3918,7 @@ const handleLevelAction = () => {
                 // 避免出现“收缩发生在很靠后位置但视图仍停留在顶部”的体验问题。
                 const getVisibleLineRange = (): { start: number; end: number } | null => {
                     try {
-                        if (!outputEditor) return null;
-                        const visibleRanges = outputEditor.getVisibleRanges();
+                        const visibleRanges = targetEditor.getVisibleRanges();
                         if (!visibleRanges || visibleRanges.length === 0) return null;
                         let minLine = Infinity;
                         let maxLine = 0;
@@ -3829,6 +3935,7 @@ const handleLevelAction = () => {
 
                 const beforeFoldVisible = getVisibleLineRange();
                 const foldResult = await foldByIndentation();
+                if (!isCurrent()) return;
                 if (foldResult.targetRegionCount === 0) {
                     const fallbackMaxLevel = maxFoldableLevel.value && maxFoldableLevel.value > 0 ? maxFoldableLevel.value : null;
                     showMessageWarning(settingsTxt.value.msgCollapseNoRegion(selectedLevel.value, fallbackMaxLevel));
@@ -3837,8 +3944,8 @@ const handleLevelAction = () => {
                 showMessageSuccess(settingsTxt.value.msgCollapseSuccess(selectedLevel.value));
 
                 // 折叠完成后，启用折叠信息更新并立即刷新，然后重新计算
-                setTimeout(() => {
-                    if (!outputEditor) return;
+                scheduleFoldTask(() => {
+                    if (!isCurrent()) return;
                     try {
                         const revealLine = foldResult.firstTargetLevelLine ?? foldResult.firstCollapsedLine;
                         if (revealLine && beforeFoldVisible) {
@@ -3846,43 +3953,46 @@ const handleLevelAction = () => {
                             const isOutside = line < beforeFoldVisible.start || line > beforeFoldVisible.end;
                             if (isOutside) {
                                 // Monaco 新版本支持 revealLineInCenterIfOutsideViewport，这里做兼容兜底
-                                const editorAny = outputEditor as any;
+                                const editorAny = targetEditor as any;
                                 if (typeof editorAny.revealLineInCenterIfOutsideViewport === 'function') {
                                     editorAny.revealLineInCenterIfOutsideViewport(line);
                                 } else {
-                                    outputEditor.revealLineInCenter(line);
+                                    targetEditor.revealLineInCenter(line);
                                 }
                             }
                         }
 
                         // 先重新建立折叠范围缓存，再刷新 n keys / n items，避免从非 JSON 输出收缩时无统计信息。
-                        if (!shouldPrecomputeFoldingInfo(foldingSourceText.length)) {
+                        if (!shouldPrecomputeFoldingInfo(targetEditor.getModel()?.getValueLength() ?? 0)) {
                             clearOutputFoldingInfo();
                             return;
                         }
 
-                        precomputeFoldingInfo(foldingSourceText)
+                        precomputeFoldingInfo()
                             .then((hasFoldingInfo) => {
-                                if (!hasFoldingInfo) return;
-                                const refreshFunc = (outputEditor as any).__enableFoldingInfoUpdateAndRefresh;
+                                if (!hasFoldingInfo || !isCurrent()) return;
+                                const refreshFunc = (targetEditor as any).__enableFoldingInfoUpdateAndRefresh;
                                 if (refreshFunc) {
                                     refreshFunc();
-                                    setTimeout(refreshFunc, 200);
+                                    scheduleFoldTask(() => { if (isCurrent()) refreshFunc(); }, 200);
                                 }
                             })
                             .catch(() => {});
                     } catch (e) {}
                 }, 300); // 等待折叠动画完成
+            } catch (error: any) {
+                if (isCurrent()) showMessageError(settingsTxt.value.msgCollapseFail(error.message));
             } finally {
-                // 无论成功还是失败，都要释放锁定
-                isFoldOperationLocked = false;
+                // A stale task must never unlock a newer operation.
+                if (sequence === foldRequestSequence) isFoldOperationLocked = false;
             }
         };
 
-        setTimeout(() => {
-            performFold();
+        scheduleFoldTask(() => {
+            void performFold();
         }, 100);
     } catch (error: any) {
+        isFoldOperationLocked = false;
         showMessageError(settingsTxt.value.msgCollapseFail(error.message));
     }
 };
@@ -4067,7 +4177,8 @@ const handleSaveArchive = () => {
                     showMessageSuccess(settingsTxt.value.msgArchiveSavedWithSize(getArchivesTotalSizeInfo()));
                 } else {
                     // 保存失败时，从内存数组中移除刚刚添加的存档
-                    archives.value.shift();
+                    const failedIndex = archives.value.indexOf(archive);
+                    if (failedIndex >= 0) archives.value.splice(failedIndex, 1);
                     if (activeArchiveId.value === archive.id) {
                         activeArchiveId.value = null;
                     }
@@ -4100,7 +4211,8 @@ const handleSaveArchive = () => {
                 showMessageSuccess(settingsTxt.value.msgArchiveSavedWithSize(getArchivesTotalSizeInfo()));
             } else {
                 // 保存失败时，从内存数组中移除刚刚添加的存档
-                archives.value.shift();
+                const failedIndex = archives.value.indexOf(archive);
+                if (failedIndex >= 0) archives.value.splice(failedIndex, 1);
                 if (activeArchiveId.value === archive.id) {
                     activeArchiveId.value = null;
                 }
@@ -4240,8 +4352,18 @@ const handleRefreshArchive = async (item: JsonArchive) => {
 
 // 删除单个存档
 const handleDeleteArchive = async (item: JsonArchive) => {
+    let messageBox: Awaited<ReturnType<typeof loadJsonToolMessageBox>>;
     try {
-        await ElMessageBox.confirm(settingsTxt.value.confirmDeleteArchiveContent(item.name), settingsTxt.value.confirmDeleteArchiveTitle, {
+        messageBox = await loadJsonToolMessageBox();
+    } catch (error: unknown) {
+        if (!isTabPageClosing.value) {
+            showMessageError(settingsTxt.value.msgArchiveUpdateFail(error instanceof Error ? error.message : settingsTxt.value.msgUnknownError));
+        }
+        return;
+    }
+    if (isTabPageClosing.value || !archives.value.some(archive => archive.id === item.id)) return;
+    try {
+        await messageBox.confirm(settingsTxt.value.confirmDeleteArchiveContent(item.name), settingsTxt.value.confirmDeleteArchiveTitle, {
             confirmButtonText: settingsTxt.value.confirmDeleteArchiveBtn,
             cancelButtonText: settingsTxt.value.confirmDeleteArchiveCancelBtn,
             customClass: 'delete-archive-message-box',
@@ -4252,6 +4374,7 @@ const handleDeleteArchive = async (item: JsonArchive) => {
         return;
     }
 
+    if (isTabPageClosing.value) return;
     const index = archives.value.findIndex((a) => a.id === item.id);
     if (index !== -1) {
         const deletedArchive = archives.value.splice(index, 1)[0];
@@ -4335,7 +4458,12 @@ const isFileDragEvent = (event: DragEvent): boolean => {
     return Array.from(types).includes('Files');
 };
 
+let inputFileSequence = 0;
 const processInputFileUpload = async (file: File | null | undefined) => {
+    const sequence = ++inputFileSequence;
+    const inputIsCurrent = captureEditorSnapshot(() => inputEditor);
+    const outputIsCurrent = captureEditorSnapshot(() => outputEditor);
+    const isCurrent = () => !isTabPageClosing.value && sequence === inputFileSequence && inputIsCurrent() && outputIsCurrent();
     if (!file) {
         showMessageError(settingsTxt.value.msgFileGetFail);
         return;
@@ -4382,8 +4510,9 @@ const processInputFileUpload = async (file: File | null | undefined) => {
             reader.readAsText(file, 'utf-8');
         });
 
+        if (!isCurrent()) return;
         // 保留上传文件的原始内容，不强制重新缩进
-        let formattedContent = content;
+        const formattedContent = content;
 
         // 更新编辑器 - 将格式化后的内容展示到编辑区域
         if (inputEditor) {
@@ -4398,13 +4527,25 @@ const processInputFileUpload = async (file: File | null | undefined) => {
 
         showMessageSuccess(settingsTxt.value.msgFileUploadSuccessLoaded);
     } catch (error: any) {
-        showMessageError(settingsTxt.value.msgFileProcessFail(error.message));
+        if (isCurrent()) showMessageError(settingsTxt.value.msgFileProcessFail(error.message));
     }
 };
 
 // 文件上传
-const handleFileUpload = async (uploadFile: UploadFile) => {
-    const file = uploadFile.raw as File;
+const inputFilePicker = ref<HTMLInputElement | null>(null);
+const openInputFilePicker = () => {
+    const input = inputFilePicker.value;
+    if (!input || repair.repairing.value || isTabPageClosing.value) return;
+    // Keep the browser picker in the original click/keyboard activation gesture.
+    input.value = '';
+    input.click();
+};
+const handleFileUpload = async (event: Event) => {
+    const input = event.currentTarget as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    // Release the FileList and allow choosing the same file after success or failure.
+    if (input) input.value = '';
+    if (!file || repair.repairing.value || isTabPageClosing.value) return;
     await processInputFileUpload(file);
 };
 
@@ -4513,6 +4654,7 @@ const copyOutput = async () => {
 
 // 下载内容
 const downloadOutput = async () => {
+    const downloadType = outputType.value;
     const content = outputEditor?.getValue();
     if (!content) {
         showMessageWarning('没有可下载的内容');
@@ -4534,7 +4676,7 @@ const downloadOutput = async () => {
             typescript: '.ts',
             text: '.txt',
         };
-        const fileExtension = fileExtensionMap[outputType.value];
+        const fileExtension = fileExtensionMap[downloadType];
 
         const mimeTypeMap: Record<'json' | 'yaml' | 'toml' | 'xml' | 'go' | 'typescript' | 'text', string> = {
             json: 'application/json',
@@ -4545,7 +4687,7 @@ const downloadOutput = async () => {
             typescript: 'text/typescript',
             text: 'text/plain',
         };
-        const mimeType = mimeTypeMap[outputType.value];
+        const mimeType = mimeTypeMap[downloadType];
 
         // 创建 Blob 对象
         const blob = new Blob([content], { type: mimeType });
@@ -4843,20 +4985,26 @@ const startResize = (e: PointerEvent) => {
 };
 
 // 添加将预览区域内容转移到编辑区域的方法
+let transferRequestSequence = 0;
+onBeforeUnmount(() => { transferRequestSequence++; });
 const transferToInput = (e: MouseEvent) => {
     // 阻止事件冒泡，防止触发分割线的拖动
     e.stopPropagation();
+    const sequence = ++transferRequestSequence;
 
     try {
-        const outputContent = outputEditor?.getValue() || '';
+        const sourceEditor = outputEditor, targetEditor = inputEditor;
+        if (!sourceEditor || !targetEditor) return;
+        const outputContent = sourceEditor.getValue();
         if (!outputContent.trim()) {
             showMessageWarning(settingsTxt.value.msgTransferOutputEmpty);
             return;
         }
 
-        // 保存预览区域的视图状态（包含折叠状态、滚动位置等）
-        const viewState = outputEditor?.saveViewState();
-
+        const sourceIsCurrent = captureEditorSnapshot(() => outputEditor);
+        const previousInputModel = targetEditor.getModel();
+        const previousInputVersion = previousInputModel?.getVersionId();
+        const sourceLanguage = sourceEditor.getModel()?.getLanguageId();
         const targetIndentSize = indentSize.value; // 使用用户设置的缩进大小
         const shouldReformatOnTransfer = outputType.value === 'json';
         let formattedContent = outputContent;
@@ -4874,35 +5022,43 @@ const transferToInput = (e: MouseEvent) => {
             targetInputLanguage = detectInputLanguage(outputContent);
         }
 
-        // 转移内容到编辑区域
-        if (inputEditor) {
-            setInputEditorValue(formattedContent, targetInputLanguage);
-            syncEditorDisplayOptions(inputEditor, targetInputLanguage, targetIndentSize, formattedContent);
+        const viewState = sourceEditor.saveViewState();
+        const unchangedText = formattedContent === outputContent;
+        const foldingSnapshot = captureTransferFolding(sourceEditor, viewState, unchangedText);
+        if (!sourceIsCurrent() || sourceEditor.getModel()?.getLanguageId() !== sourceLanguage
+            || inputEditor !== targetEditor || targetEditor.getModel() !== previousInputModel
+            || previousInputModel?.getVersionId() !== previousInputVersion || isTabPageClosing.value) return;
 
-            // 恢复视图状态（折叠状态、滚动位置等）
-            if (viewState) {
-                // 使用 nextTick 确保内容更新后再恢复状态
-                nextTick(() => {
-                    // 先强制展开所有折叠，确保与预览区域状态一致（特别是预览区域全展开的情况）
-                    // 使用 run() 方法确保执行完成
-                    const unfoldAction = inputEditor?.getAction('editor.unfoldAll');
-                    if (unfoldAction) {
-                        unfoldAction.run().then(() => {
-                            // 展开完成后，再恢复预览区域的视图状态（如果有折叠，会再次应用）
-                            inputEditor?.restoreViewState(viewState);
-                            refreshEditorStatus(inputEditor, inputEditorStatus);
-                        });
-                    } else {
-                        // 如果找不到 unfoldAll 动作，直接恢复
-                        inputEditor?.restoreViewState(viewState);
-                        refreshEditorStatus(inputEditor, inputEditorStatus);
-                    }
+        let transferredModel: monaco.editor.ITextModel | null = null;
+        let transferredVersion = -1;
+        if (!setInputEditorValue(formattedContent, targetInputLanguage, (model, version) => {
+            transferredModel = model;
+            transferredVersion = version;
+        })) return;
+        // Native setValue increments once; the prepared-small-model branch starts at version 1.
+        // Reject synchronous content listeners that changed/replaced this transfer's text.
+        const isCurrent = () => sequence === transferRequestSequence && !isTabPageClosing.value && !normalEditorsDisposed
+            && !diffMode.isDiffMode.value && !comparisonMode.value && inputEditor === targetEditor
+            && targetEditor.getModel() === transferredModel && Boolean(transferredModel && !transferredModel.isDisposed()
+                && transferredModel.getVersionId() === transferredVersion) && inputContentLanguage.value === targetInputLanguage;
+        if (!isCurrent()) return;
+        syncEditorDisplayOptions(targetEditor, targetInputLanguage, targetIndentSize, formattedContent);
+        if (!isCurrent()) return;
+        const restored = viewState && restoreTransferFolding(targetEditor, foldingSnapshot, viewState, unchangedText, isCurrent);
+        if (viewState && !restored) {
+            nextTick(() => {
+                if (!isCurrent()) return;
+                void restoreTransferFoldingWhenReady(targetEditor, foldingSnapshot, viewState, unchangedText, isCurrent).then(() => {
+                    if (isCurrent()) refreshEditorStatus(targetEditor, inputEditorStatus);
+                }, (error: unknown) => {
+                    if (isCurrent()) showMessageError(settingsTxt.value.msgTransferFail(error instanceof Error ? error.message : String(error)));
                 });
-            }
+            });
         }
+        if (!isCurrent() || !sourceIsCurrent()) return;
 
         // 清空预览区域
-        if (outputEditor) {
+        if (outputEditor === sourceEditor) {
             clearOutputFoldingInfo();
             setOutputEditorValue('', 'json', true);
         }
@@ -5075,6 +5231,11 @@ body[data-interface-style="default"] .json-tool-root.theme-dark {
     /* IE/Edge 隐藏滚动条 */
 }
 
+/* Keep keyboard focus on controls rather than the scrollable toolbar container. */
+.tool-bar:focus {
+    outline: none;
+}
+
 /* 工具栏滚动条隐藏 */
 .tool-bar::-webkit-scrollbar {
     display: none;
@@ -5162,6 +5323,17 @@ body[data-interface-style="default"] .json-tool-root.theme-dark {
     width: 32px;
     padding: 8px !important;
     border-radius: var(--theme-radius, 4px) !important;
+}
+
+.settings-tool-button .el-icon {
+    font-size: 16px;
+}
+
+/* Match the gear's visual weight to the adjacent semibold toolbar labels. */
+.settings-tool-button :deep(svg) {
+    stroke: currentColor;
+    stroke-width: 24;
+    stroke-linejoin: round;
 }
 
 .tool-bar :deep(.el-button:not(.settings-tool-button)) {
@@ -5320,14 +5492,14 @@ body[data-interface-style="default"] .json-tool-root.theme-dark {
     /* 为“第 99 层”预留完整文字、箭头和边距，所有层级及语言保持同宽。 */
     width: 88px;
     flex-shrink: 0;
-    --json-tool-level-select-border: var(--theme-accent, var(--el-color-success, #67c23a));
-    --json-tool-level-select-hover-border: color-mix(in srgb, var(--theme-accent, var(--el-color-success-dark-2, #529b2e)) 82%, var(--json-tool-text, #303133));
-    --json-tool-level-select-disabled-border: color-mix(in srgb, var(--theme-accent, var(--el-color-success-light-5, #b3e19d)) 42%, var(--json-tool-surface, #ffffff));
+    --json-tool-level-select-border: var(--theme-accent, var(--el-color-primary, #409eff));
+    --json-tool-level-select-hover-border: color-mix(in srgb, var(--theme-accent, var(--el-color-primary-dark-2, #337ecc)) 82%, var(--json-tool-text, #303133));
+    --json-tool-level-select-disabled-border: color-mix(in srgb, var(--theme-accent, var(--el-color-primary-light-5, #a0cfff)) 42%, var(--json-tool-surface, #ffffff));
 }
 
 body[data-interface-style="default"] .json-tool-root.theme-dark .collapse-control .level-select {
-    --json-tool-level-select-border: #327a4c;
-    --json-tool-level-select-hover-border: #409a61;
+    --json-tool-level-select-border: #28658e;
+    --json-tool-level-select-hover-border: #3478a5;
 }
 
 .collapse-control .level-action-button {
@@ -5996,6 +6168,39 @@ body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select
     }
 }
 
+/* 默认主题的设置按钮与网页端退出全屏按钮共用灰色操作风格。 */
+body[data-interface-style="default"] .settings-tool-button {
+    background-color: #72767d !important;
+    border-color: #72767d !important;
+    color: #fff !important;
+}
+
+body[data-interface-style="default"] .settings-tool-button:hover {
+    background-color: #6b6f76 !important;
+    border-color: #6b6f76 !important;
+}
+
+body[data-interface-style="default"] .settings-tool-button:active {
+    background-color: #64676d !important;
+    border-color: #64676d !important;
+}
+
+body[data-interface-style="default"] .json-tool-root.theme-dark .settings-tool-button {
+    background-color: #3a3a3a !important;
+    border-color: #4a4a4a !important;
+    color: #e0e0e0 !important;
+}
+
+body[data-interface-style="default"] .json-tool-root.theme-dark .settings-tool-button:hover {
+    background-color: #464646 !important;
+    border-color: #5a5a5a !important;
+}
+
+body[data-interface-style="default"] .json-tool-root.theme-dark .settings-tool-button:active {
+    background-color: #303030 !important;
+    border-color: #464646 !important;
+}
+
 /* 同步滚动按钮自定义为蓝色 */
 .editor-container {
     display: flex;
@@ -6156,6 +6361,12 @@ body[data-interface-style="default"] .json-tool-root.theme-dark .resizer.resizer
 .panel-title i {
     margin-right: 6px;
     color: var(--theme-accent, #409eff);
+}
+
+.json-file-picker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .panel-actions {
@@ -6629,9 +6840,9 @@ body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide
 :global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled),
 :global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled:hover),
 :global(body[data-interface-style="default"].json-tool-theme-dark .json-tool-root.theme-dark .collapse-control .level-action-button.level-action-button-disabled-by-level.is-disabled:focus) {
-    background-color: #203126 !important;
+    background-color: #1d2d3a !important;
     border-color: var(--json-tool-level-select-border) !important;
-    color: rgba(232, 255, 240, 0.56) !important;
+    color: rgba(232, 244, 255, 0.56) !important;
     opacity: 1;
 }
 

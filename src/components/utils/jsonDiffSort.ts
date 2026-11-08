@@ -1,4 +1,5 @@
 // JSON 规范排序工具：Diff 模式与右键数组排序共用同一套递归比较规则。
+import { compareJsonNumberLiterals } from './jsonEngine/compareNumberLiterals';
 import { normalizeJsonNumberLiteral, tryParseHighPrecisionWrapper, tryReadHighPrecisionWrapperObject } from './jsonEngine/numberLiteral';
 
 export type JsonCanonicalSortOrder = 'asc' | 'desc';
@@ -20,40 +21,6 @@ const applySortOrder = (result: number, order: DiffSortOptions['sortOrder']): nu
 const getHighPrecisionNumberLiteral = (value: any): string | null => {
     const literal = typeof value === 'string' ? tryParseHighPrecisionWrapper(value) : tryReadHighPrecisionWrapperObject(value);
     return literal === null ? null : normalizeJsonNumberLiteral(literal);
-};
-
-const normalizeIntegerLiteral = (literal: string) => {
-    const sign = literal.startsWith('-') ? -1 : 1;
-    const digits = literal.replace(/^[+-]?0+(?=\d)/, '').replace(/^[+-]/, '');
-    return { sign, digits: digits || '0' };
-};
-
-const compareIntegerLiterals = (a: string, b: string): number => {
-    const left = normalizeIntegerLiteral(a);
-    const right = normalizeIntegerLiteral(b);
-
-    if (left.sign !== right.sign) return left.sign - right.sign;
-    if (left.digits.length !== right.digits.length) {
-        return left.sign === 1 ? left.digits.length - right.digits.length : right.digits.length - left.digits.length;
-    }
-    if (left.digits === right.digits) return 0;
-    return left.sign === 1 ? (left.digits > right.digits ? 1 : -1) : left.digits > right.digits ? -1 : 1;
-};
-
-const compareNumberLiterals = (a: string, b: string): number => {
-    if (/^-?\d+$/.test(a) && /^-?\d+$/.test(b)) {
-        return compareIntegerLiterals(a, b);
-    }
-
-    const left = Number(a);
-    const right = Number(b);
-    if (Number.isFinite(left) && Number.isFinite(right)) {
-        if (left < right) return -1;
-        if (left > right) return 1;
-        return compareText(a, b);
-    }
-
-    return compareText(a, b);
 };
 
 const getDiffSortRank = (value: any): 0 | 1 | 2 | 3 | 4 | 5 => {
@@ -86,7 +53,9 @@ const compareDiffSortValues = (a: any, b: any): number => {
         case 1:
             return a === b ? 0 : a ? 1 : -1;
         case 2:
-            return compareNumberLiterals(getNumberLiteralForDiffSort(a), getNumberLiteralForDiffSort(b));
+            // Native finite numbers already have their represented numeric value.
+            if (typeof a === 'number' && typeof b === 'number') return a - b;
+            return compareJsonNumberLiterals(getNumberLiteralForDiffSort(a), getNumberLiteralForDiffSort(b));
         case 3:
             return compareText(String(a), String(b));
         case 4:
@@ -165,7 +134,11 @@ const normalizeNodeForDiffSort = (value: any, options: DiffSortOptions, seen: We
     seen.set(value, result);
 
     for (const key of Object.keys(value).sort((a, b) => applySortOrder(compareText(a, b), options.sortOrder))) {
-        result[key] = normalizeNodeForDiffSort(value[key], options, seen);
+        // JSON keys are data, including __proto__; never invoke inherited setters.
+        Object.defineProperty(result, key, {
+            value: normalizeNodeForDiffSort(value[key], options, seen),
+            enumerable: true, configurable: true, writable: true,
+        });
     }
 
     return result;

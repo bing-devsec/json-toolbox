@@ -5,9 +5,11 @@
 // 不持有任何业务状态：所有 ref 都从 ctx 读，工具函数都从 ctx 调。
 // 主文件保留：affix 对话框模板，并注入 jsonEngine 相关包装函数。
 
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { ElMessageBox } from 'element-plus';
-import type { Ref } from 'vue';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { loadJsonToolMessageBox } from '../utils/loadJsonToolMessageBox';
+import { createRetryableModuleLoader } from '../utils/jsonToolLoadController';
+import { onBeforeUnmount, type Ref } from 'vue';
+import { captureEditorSnapshot } from '../utils/editorSnapshot';
 
 import type { SettingsTxt } from '../utils/i18n';
 import { sortJsonArrayByCanonicalKey } from '../utils/jsonDiffSort';
@@ -15,14 +17,7 @@ import { sortStringLines, type SortMethod, type SortOrder } from '../utils/jsonS
 
 type Base64Module = typeof import('js-base64');
 
-let base64ModulePromise: Promise<Base64Module> | null = null;
-
-const loadBase64Module = (): Promise<Base64Module> => {
-    if (!base64ModulePromise) {
-        base64ModulePromise = import('js-base64');
-    }
-    return base64ModulePromise;
-};
+const loadBase64Module = createRetryableModuleLoader<Base64Module>(() => import('js-base64'));
 
 export type AffixMode = 'none' | 'add' | 'remove';
 
@@ -43,6 +38,7 @@ export interface EditorContextMenuCtx {
 
     // 编辑器引用（用 getter 避免循环引用，主文件还没创建编辑器时 composable 也能初始化）
     getInputEditor: () => monaco.editor.IStandaloneCodeEditor | null;
+    getOutputEditor: () => monaco.editor.IStandaloneCodeEditor | null;
 
     // 排序设置（与设置面板共用）
     sortMethod: Ref<SortMethod>;
@@ -91,6 +87,9 @@ interface MonacoContextMenuContributionLike {
 }
 
 export function useEditorContextMenu(ctx: EditorContextMenuCtx) {
+    let disposed = false;
+    let extractionRequest = 0;
+    onBeforeUnmount(() => { disposed = true; extractionRequest++; });
     const {
         settingsTxt,
         sortMethod,
@@ -400,6 +399,12 @@ export function useEditorContextMenu(ctx: EditorContextMenuCtx) {
             contextMenuGroupId: '4_array',
             contextMenuOrder: 4,
             run: async () => {
+                const request = ++extractionRequest;
+                const inputIsCurrent = captureEditorSnapshot(() => ctx.getInputEditor());
+                const outputIsCurrent = captureEditorSnapshot(() => ctx.getOutputEditor());
+                const isCurrent = () => !disposed && request === extractionRequest
+                    && ctx.getInputEditor() === editor && inputIsCurrent() && outputIsCurrent();
+                if (!isCurrent()) return;
                 const source = getEditorSelectedOrFullSource(editor);
                 if (!source) return;
                 if (!source.text.trim()) {
@@ -422,7 +427,9 @@ export function useEditorContextMenu(ctx: EditorContextMenuCtx) {
                 // 弹窗让用户输入要提取的 key 名。
                 let targetKey = '';
                 try {
-                    const { value } = (await ElMessageBox.prompt(
+                    const messageBox = await loadJsonToolMessageBox();
+                    if (!isCurrent()) return;
+                    const { value } = (await messageBox.prompt(
                         settingsTxt.value.promptExtractValuesByKeyMessage,
                         settingsTxt.value.promptExtractValuesByKeyTitle,
                         {
@@ -432,9 +439,12 @@ export function useEditorContextMenu(ctx: EditorContextMenuCtx) {
                             inputValidator: (input: string) => (input && input.trim().length > 0 ? true : settingsTxt.value.promptExtractValuesByKeyEmpty),
                         },
                     )) as { value: string };
+                    if (!isCurrent()) return;
                     targetKey = (value || '').trim();
-                } catch {
-                    // 用户取消
+                } catch (error) {
+                    if (!isCurrent()) return;
+                    // Dialog cancellation is expected; failed imports should remain visible and retryable.
+                    if (error !== 'cancel' && error !== 'close') showMessageError(settingsTxt.value.msgUnknownError);
                     return;
                 }
                 if (!targetKey) return;
@@ -684,7 +694,9 @@ export function useEditorContextMenu(ctx: EditorContextMenuCtx) {
                 const selectedText = model.getValueInRange(selection);
                 if (!selectedText) return;
                 try {
+                    const version = model.getVersionId();
                     const { Base64 } = await loadBase64Module();
+                    if (model.isDisposed() || ed.getModel() !== model || model.getVersionId() !== version) return;
                     const encoded = Base64.encode(selectedText);
                     ed.executeEdits('base64-encode', [{ range: selection, text: encoded }]);
                     showMessageSuccess(settingsTxt.value.msgBase64EncodeOk);
@@ -708,7 +720,9 @@ export function useEditorContextMenu(ctx: EditorContextMenuCtx) {
                 const selectedText = model.getValueInRange(selection);
                 if (!selectedText) return;
                 try {
+                    const version = model.getVersionId();
                     const { Base64 } = await loadBase64Module();
+                    if (model.isDisposed() || ed.getModel() !== model || model.getVersionId() !== version) return;
                     const decoded = Base64.decode(selectedText);
                     ed.executeEdits('base64-decode', [{ range: selection, text: decoded }]);
                     showMessageSuccess(settingsTxt.value.msgBase64DecodeOk);

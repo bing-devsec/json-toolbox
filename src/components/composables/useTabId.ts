@@ -57,6 +57,8 @@ export const useTabId = (): UseTabIdReturn => {
 
     let tabIdChannel: BroadcastChannel | null = null;
     let tabIdConflictResponseCount = 0;
+    let channelGeneration = 0;
+    let uniquenessCheck: Promise<void> | null = null;
 
     const setCurrentTabId = (nextTabId: string) => {
         tabId.value = nextTabId;
@@ -106,19 +108,29 @@ export const useTabId = (): UseTabIdReturn => {
         return tabIdConflictResponseCount > 0;
     };
 
-    const ensureUniqueTabIdForThisPage = async () => {
-        if (typeof window === 'undefined') return;
-        const hasExistingTabId = (() => {
-            try {
-                return !!sessionStorage.getItem(TAB_ID_STORAGE_KEY);
-            } catch {
-                return false;
-            }
+    const ensureUniqueTabIdForThisPage = (): Promise<void> => {
+        if (typeof window === 'undefined' || isTabPageClosing.value) return Promise.resolve();
+        if (uniquenessCheck) return uniquenessCheck;
+        const generation = channelGeneration;
+        const checkedTabId = tabId.value;
+        const check = (async () => {
+            const hasExistingTabId = (() => {
+                try {
+                    return !!sessionStorage.getItem(TAB_ID_STORAGE_KEY);
+                } catch {
+                    return false;
+                }
+            })();
+            if (!hasExistingTabId) return;
+            const hasConflict = await probeExistingTabIdConflict();
+            if (!hasConflict || isTabPageClosing.value || generation !== channelGeneration || tabId.value !== checkedTabId) return;
+            setCurrentTabId(generateFreshTabId());
         })();
-        if (!hasExistingTabId) return;
-        const hasConflict = await probeExistingTabIdConflict();
-        if (!hasConflict) return;
-        setCurrentTabId(generateFreshTabId());
+        uniquenessCheck = check;
+        void check.finally(() => {
+            if (uniquenessCheck === check) uniquenessCheck = null;
+        }).catch(() => {});
+        return check;
     };
 
     const setupTabIdChannel = () => {
@@ -129,6 +141,8 @@ export const useTabId = (): UseTabIdReturn => {
     };
 
     const disposeTabIdChannel = () => {
+        channelGeneration++;
+        uniquenessCheck = null;
         if (tabIdChannel) {
             tabIdChannel.removeEventListener('message', handleTabIdChannelMessage as EventListener);
             tabIdChannel.close();

@@ -1,4 +1,4 @@
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { nextTick, ref, watch, type Ref } from 'vue';
 
 import { JSON_TOOL_EDITOR_HORIZONTAL_SCROLLBAR_THICKNESS } from '../utils/editorScrollbar';
@@ -124,11 +124,6 @@ export const useJsonToolSettingsDialog = (ctx: UseJsonToolSettingsDialogCtx) => 
         if (!ctx.getInputEditor()?.getValue()?.trim()) {
             ctx.selectedLevel.value = 0;
             return;
-        }
-        try {
-            JSON.parse(ctx.getInputEditor()?.getValue() || '');
-        } catch {
-            // 解析失败不做处理
         }
     });
 

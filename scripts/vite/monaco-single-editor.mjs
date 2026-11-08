@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { assertNoNativeMonacoDiffConsumers, pruneUnusedMonacoWorkerDiff } from './monaco-worker-diff.mjs';
 
 const MODULE_ROOT = '/monaco-editor/esm/vs/editor/standalone/browser/';
 /** @type {Record<string, string>} */
@@ -16,10 +17,8 @@ const reviewedSources = {
  * Remove only those two factory exports and the native Diff subclass. The normal
  * editor, services, language API and contributions retain their original source.
  * Refuse unreviewed Monaco releases instead of guessing at changed internals.
- * @param {string} code
- * @param {string} id
- * @returns {string | null}
  */
+/** @param {string} code @param {string} id */
 export function pruneUnusedMonacoDiffWidgets(code, id) {
     const normalized = id.replaceAll('\\', '/').split('?')[0];
     const name = Object.keys(reviewedSources).find(name => normalized.endsWith(MODULE_ROOT + name));
@@ -50,7 +49,10 @@ export const monacoSingleEditorPlugin = () => ({
     name: 'monaco-single-editor',
     enforce: 'pre',
     transform(code, id) {
-        const result = pruneUnusedMonacoDiffWidgets(code, id);
+        const result = pruneUnusedMonacoDiffWidgets(code, id) ?? pruneUnusedMonacoWorkerDiff(code, id);
         return result === null ? null : { code: result, map: null };
+    },
+    generateBundle(_options, bundle) {
+        assertNoNativeMonacoDiffConsumers(bundle);
     },
 });

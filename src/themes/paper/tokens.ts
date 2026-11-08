@@ -15,20 +15,20 @@ const control = (background: string, foreground: string, border: string, hoverBa
 });
 export const paperControls = {
     light: {
-        neutral: control('#FAF7EF', '#3D3931', '#958674', '#F1ECDF', '#E5DBCB', '#805735'),
-        secondary: control('#FAF7EF', '#805735', '#958674', '#EFE6D6', '#E9DECC'),
-        primary: control('#805735', '#FFFCF4', '#805735', '#6D482B', '#59391F', '#59391F'),
-        danger: control('#FAF7EF', '#963C30', '#B65B4D', '#F5E4DF', '#EBCDC5'),
+        neutral: /* @__PURE__ */ control('#FAF7EF', '#3D3931', '#958674', '#F1ECDF', '#E5DBCB', '#805735'),
+        secondary: /* @__PURE__ */ control('#FAF7EF', '#805735', '#958674', '#EFE6D6', '#E9DECC'),
+        primary: /* @__PURE__ */ control('#805735', '#FFFCF4', '#805735', '#6D482B', '#59391F', '#59391F'),
+        danger: /* @__PURE__ */ control('#FAF7EF', '#963C30', '#B65B4D', '#F5E4DF', '#EBCDC5'),
         disabled: { background: '#F1ECDF', foreground: '#8B8172', border: '#D6CDBD' },
         focus: '#805735', selectedBackground: '#EEE2CA', selectedForeground: '#6D482B',
         success: '#476145', successBackground: '#ECF0E7', warning: '#775B20', warningBackground: '#F5EDD9',
         dangerBackground: '#F5E4DF', borderStrong: '#958674', grip: '#958674',
     },
     dark: {
-        neutral: control('#302D27', '#E9E0CF', '#8E806C', '#3B352B', '#4A4032', '#D7B88C'),
-        secondary: control('#302D27', '#D7B88C', '#968166', '#43392B', '#514432'),
-        primary: control('#D7B88C', '#292720', '#D7B88C', '#E6CBA7', '#C9A77A', '#E6CBA7'),
-        danger: control('#302D27', '#F2B1A2', '#C98476', '#4B302B', '#5B352E'),
+        neutral: /* @__PURE__ */ control('#302D27', '#E9E0CF', '#8E806C', '#3B352B', '#4A4032', '#D7B88C'),
+        secondary: /* @__PURE__ */ control('#302D27', '#D7B88C', '#968166', '#43392B', '#514432'),
+        primary: /* @__PURE__ */ control('#D7B88C', '#292720', '#D7B88C', '#E6CBA7', '#C9A77A', '#E6CBA7'),
+        danger: /* @__PURE__ */ control('#302D27', '#F2B1A2', '#C98476', '#4B302B', '#5B352E'),
         disabled: { background: '#292720', foreground: '#8E8475', border: '#514A3E' },
         focus: '#D7B88C', selectedBackground: '#514634', selectedForeground: '#F0D8B7',
         success: '#ADCCA1', successBackground: '#283226', warning: '#E0C58D', warningBackground: '#3E3524',

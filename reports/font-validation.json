@@ -1,0 +1,68 @@
+{
+  "glyphs": 462,
+  "codepoints": 462,
+  "identicalDecodedTables": [
+    "GSUB",
+    "OS/2",
+    "glyf",
+    "hhea",
+    "hmtx",
+    "loca",
+    "maxp",
+    "name",
+    "post"
+  ],
+  "allowedTableChanges": {
+    "cmap": "Only duplicate (0,4,format12)/(3,10,format12) removed; all retained records and mappings equal.",
+    "head": "Only checkSumAdjustment at bytes 8-11 differs."
+  },
+  "retainedCmaps": [
+    [
+      0,
+      3,
+      4
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      3,
+      1,
+      4
+    ]
+  ],
+  "sourceBytes": 80340,
+  "woff2Bytes": 34336,
+  "sourceSha256": "0f1d5219934e96e83b8db162d60b4d8c09b5de1e7d38031cbafe4a3c0f2889c9",
+  "woff2Sha256": "90245a4bad9152143aca864cf3afa67f85c485871ad650b6a957f8ad6b027971",
+  "baselineCompleteWoff2": {
+    "bytes": 36064,
+    "sha256": "9b3fdf002aa8d8e75869bb2017d80838a7665dc83ef7818c5f4ffe4e812b69a6"
+  },
+  "savedBytes": 1728,
+  "generator": {
+    "fontTools": "4.61.1",
+    "brotli": "1.2.1"
+  },
+  "result": "All glyphs, outlines, metrics, mappings, instructions and unrelated decoded tables preserved; deterministic regeneration verified.",
+  "rasterValidation": {
+    "pillow": "13.0.0",
+    "freeType": "2.14.3",
+    "fontFormatLoaded": "WOFF2 directly, without conversion to TTF",
+    "codepoints": 462,
+    "sizes": [
+      12,
+      14,
+      16,
+      20,
+      24,
+      32,
+      48,
+      64
+    ],
+    "comparisons": 3696,
+    "result": "All raster masks, bounds and advances equal. This is not a browser test."
+  }
+}

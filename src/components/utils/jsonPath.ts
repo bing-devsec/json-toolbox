@@ -70,6 +70,9 @@ export const parsePathToParts = (path: string): PathPart[] => {
     return parts;
 };
 
+const ownArrayValue = (array: any[], index: number): any =>
+    Object.hasOwn(array, index) ? array[index] ?? null : null;
+
 // 根据路径获取JSON对象中的值
 export const getValueByPathParts = (obj: any, parts: PathPart[]): any => {
     let current = obj;
@@ -83,19 +86,19 @@ export const getValueByPathParts = (obj: any, parts: PathPart[]): any => {
         if (part.isArray && !part.key && Array.isArray(current)) {
             if (part.arrayIndex === '*') {
                 // 通配符，返回第一个元素用于获取下一级key
-                current = current.length > 0 ? current[0] : null;
+                current = ownArrayValue(current, 0);
             } else if (typeof part.arrayIndex === 'number') {
                 // 具体索引
-                current = current[part.arrayIndex] || null;
+                current = ownArrayValue(current, part.arrayIndex);
             } else {
                 // 默认返回第一个元素
-                current = current.length > 0 ? current[0] : null;
+                current = ownArrayValue(current, 0);
             }
             continue;
         }
 
         if (part.key) {
-            if (typeof current === 'object' && part.key in current) {
+            if (typeof current === 'object' && Object.hasOwn(current, part.key)) {
                 current = current[part.key];
             } else {
                 return null;
@@ -106,13 +109,13 @@ export const getValueByPathParts = (obj: any, parts: PathPart[]): any => {
             // 如果是数组，根据arrayIndex返回对应元素
             if (part.arrayIndex === '*') {
                 // 通配符，返回第一个元素用于获取下一级key
-                current = current.length > 0 ? current[0] : null;
+                current = ownArrayValue(current, 0);
             } else if (typeof part.arrayIndex === 'number') {
                 // 具体索引
-                current = current[part.arrayIndex] || null;
+                current = ownArrayValue(current, part.arrayIndex);
             } else {
                 // 默认返回第一个元素
-                current = current.length > 0 ? current[0] : null;
+                current = ownArrayValue(current, 0);
             }
         }
     }
@@ -156,16 +159,16 @@ export const setValueByPath = (obj: any, path: string, value: any): boolean => {
                 if (part.arrayIndex < 0 || part.arrayIndex >= current.length) {
                     return false;
                 }
-                current = current[part.arrayIndex];
+                current = ownArrayValue(current, part.arrayIndex);
             } else {
                 // 默认访问第一个元素
-                current = current.length > 0 ? current[0] : null;
+                current = ownArrayValue(current, 0);
             }
             continue;
         }
 
         if (part.key) {
-            if (typeof current === 'object' && part.key in current) {
+            if (typeof current === 'object' && Object.hasOwn(current, part.key)) {
                 current = current[part.key];
             } else {
                 return false;
@@ -182,10 +185,10 @@ export const setValueByPath = (obj: any, path: string, value: any): boolean => {
                 if (part.arrayIndex < 0 || part.arrayIndex >= current.length) {
                     return false;
                 }
-                current = current[part.arrayIndex];
+                current = ownArrayValue(current, part.arrayIndex);
             } else {
                 // 默认访问第一个元素
-                current = current.length > 0 ? current[0] : null;
+                current = ownArrayValue(current, 0);
             }
         }
     }
@@ -206,12 +209,12 @@ export const setValueByPath = (obj: any, path: string, value: any): boolean => {
             if (lastPart.arrayIndex < 0) {
                 return false;
             }
-            current[lastPart.arrayIndex] = value;
+            Object.defineProperty(current, lastPart.arrayIndex, { value, enumerable: true, configurable: true, writable: true });
             return true;
         } else {
             // 默认设置第一个元素
             if (current.length > 0) {
-                current[0] = value;
+                Object.defineProperty(current, 0, { value, enumerable: true, configurable: true, writable: true });
                 return true;
             }
             return false;
@@ -223,6 +226,7 @@ export const setValueByPath = (obj: any, path: string, value: any): boolean => {
         // 必须先取得属性对应的数组，再写入指定下标；直接给属性赋值会把
         // 整个数组替换掉，导致同级的其他元素丢失。
         if (lastPart.isArray) {
+            if (!Object.hasOwn(current, lastPart.key)) return false;
             const target = current[lastPart.key];
             if (!Array.isArray(target) || lastPart.arrayIndex === '*') {
                 return false;
@@ -232,18 +236,19 @@ export const setValueByPath = (obj: any, path: string, value: any): boolean => {
                 if (lastPart.arrayIndex < 0) {
                     return false;
                 }
-                target[lastPart.arrayIndex] = value;
+                Object.defineProperty(target, lastPart.arrayIndex, { value, enumerable: true, configurable: true, writable: true });
                 return true;
             }
 
             if (target.length > 0) {
-                target[0] = value;
+                Object.defineProperty(target, 0, { value, enumerable: true, configurable: true, writable: true });
                 return true;
             }
             return false;
         }
 
-        current[lastPart.key] = value;
+        if (lastPart.key in current && !Object.hasOwn(current, lastPart.key)) return false;
+        Object.defineProperty(current, lastPart.key, { value, enumerable: true, configurable: true, writable: true });
         return true;
     }
 
@@ -257,12 +262,12 @@ export const setValueByPath = (obj: any, path: string, value: any): boolean => {
             if (lastPart.arrayIndex < 0) {
                 return false;
             }
-            current[lastPart.arrayIndex] = value;
+            Object.defineProperty(current, lastPart.arrayIndex, { value, enumerable: true, configurable: true, writable: true });
             return true;
         } else {
             // 默认设置第一个元素
             if (current.length > 0) {
-                current[0] = value;
+                Object.defineProperty(current, 0, { value, enumerable: true, configurable: true, writable: true });
                 return true;
             }
             return false;
