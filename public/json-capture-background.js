@@ -4,6 +4,26 @@ import {
     normalizeJsonMime, isHttpUrl, displaySource, isTicketId, extensionPage, captureError,
 } from './json-capture-core.js';
 
+const ACTION_TITLE = '打开 JSON 工具箱 / Open JSON Toolbox';
+
+async function clearCaptureAction(api, tabId) {
+    const target = Number.isInteger(tabId) ? { tabId } : {};
+    // A closed tab or an unavailable badge API must not block title cleanup or import.
+    await Promise.allSettled([
+        (async () => api.action.setBadgeText({ ...target, text: '' }))(),
+        (async () => api.action.setTitle({ ...target, title: ACTION_TITLE }))(),
+    ]);
+}
+
+/** Remove legacy warnings when the worker starts, including existing per-tab overrides. */
+export async function resetCaptureToolbar(api) {
+    await clearCaptureAction(api);
+    try {
+        const tabs = await api.tabs.query({});
+        await Promise.all(tabs.filter(tab => Number.isInteger(tab.id)).map(tab => clearCaptureAction(api, tab.id)));
+    } catch { /* Browser shutdown must not prevent the local toolbox from opening. */ }
+}
+
 const TRANSIENT_KEY = 'json-tool-capture-transient-v1';
 const withoutHash = value => { const url = new URL(value); url.hash = ''; return url.href; };
 const webOriginPatterns = value => {
@@ -83,13 +103,6 @@ export function createCaptureController({ chrome: api, store, now = Date.now, ra
             throw captureError('EXPIRED', 'JSON import expired or was removed. Please reopen the original response.');
         return ticket;
     }
-    async function badge(tabId, error) {
-        try {
-            await api.action.setBadgeText({ tabId, text: error ? '!' : '' });
-            if (error) await api.action.setBadgeBackgroundColor({ tabId, color: '#d97706' });
-            await api.action.setTitle({ tabId, title: error ? `JSON 工具箱 / JSON Toolbox: ${error}` : '打开 JSON 工具箱 / Open JSON Toolbox' });
-        } catch { /* The source tab may have closed. */ }
-    }
     async function dispatch(message, sender) {
         if (message?.type !== CAPTURE_TYPE) return undefined;
         if (['status', 'enable', 'disable'].includes(message.action)) {
@@ -135,7 +148,7 @@ export function createCaptureController({ chrome: api, store, now = Date.now, ra
                 mode: manual ? 'manual' : 'auto', stage: 'uploading', createdAt: now(), expiresAt: now() + CAPTURE_UPLOAD_TTL_MS,
                 totalChars: message.totalChars, totalBytes: message.totalBytes, receivedChars: 0, receivedBytes: 0, chunkSizes: [],
             }, now());
-            await badge(sender.tab.id);
+            await clearCaptureAction(api, sender.tab.id);
             return { ok: true, id, token, maxChunkChars: CAPTURE_CHUNK_CHARS };
         }
         if (message.action === 'chunk') {
@@ -216,8 +229,10 @@ export function createCaptureController({ chrome: api, store, now = Date.now, ra
         handle: (message, sender) => serialized(async () => {
             try { return await dispatch(message, sender); }
             catch (error) {
-                if (['begin', 'chunk', 'commit'].includes(message?.action) && sender?.id === api.runtime.id && Number.isInteger(sender.tab?.id)
-                    && !['DISABLED', 'SKIP_ONCE', 'BUSY'].includes(error.code)) await badge(sender.tab.id, error.message);
+                if (['begin', 'chunk', 'commit'].includes(message?.action)
+                    && sender?.id === api.runtime.id && Number.isInteger(sender.tab?.id)) {
+                    await clearCaptureAction(api, sender.tab.id);
+                }
                 return { ok: false, code: typeof error.code === 'string' ? error.code : 'FAILED', error: error.message || 'JSON import failed.' };
             }
         }),
@@ -227,6 +242,7 @@ export function createCaptureController({ chrome: api, store, now = Date.now, ra
             await store.cleanup(now(), tabId);
         }),
         actionClicked: tab => serialized(async () => {
+            if (Number.isInteger(tab?.id)) await clearCaptureAction(api, tab.id);
             if (!Number.isInteger(tab?.id) || !isHttpUrl(tab.url)) return api.tabs.create({ url: api.runtime.getURL('index.html') });
             try {
                 const inspected = await api.scripting.executeScript({ target: { tabId: tab.id }, func: () => ({ mime: document.contentType, top: window.top === window }) });
@@ -239,7 +255,6 @@ export function createCaptureController({ chrome: api, store, now = Date.now, ra
                 await api.scripting.executeScript({ target: { tabId: tab.id }, func: token => { globalThis.__JSON_TOOL_CAPTURE_REQUEST__ = { mode: 'manual', manualToken: token }; }, args: [token] });
                 await api.scripting.executeScript({ target: { tabId: tab.id }, files: ['json-capture-content.js'] });
             } catch (error) {
-                await badge(tab.id, '无法读取此页面 / Cannot read this page. Open JSON Toolbox and use file import.');
                 // A rapid successful automatic navigation also invalidates the activeTab injection.
                 const current = await api.tabs.get(tab.id).catch(() => null);
                 if (current?.url?.startsWith(api.runtime.getURL('index.html'))) return;

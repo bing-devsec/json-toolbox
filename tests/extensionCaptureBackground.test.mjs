@@ -3,6 +3,7 @@ import test from 'node:test';
 import { build } from 'esbuild';
 import { runInNewContext } from 'node:vm';
 import { createCaptureController } from '../public/json-capture-background.js';
+import * as captureBackground from '../public/json-capture-background.js';
 import { CAPTURE_TYPE, CAPTURE_SETTINGS_KEY, CAPTURE_SCRIPT_ID, CAPTURE_LIMIT_BYTES } from '../public/json-capture-core.js';
 
 const clone = value => value === undefined ? undefined : structuredClone(value);
@@ -28,7 +29,7 @@ function memoryStore() {
 }
 function fixture({ enabled = true, origins = ['https://example.com/*'] } = {}) {
     let sequence = 0; let time = 1_700_000_000_000;
-    const updates = []; const created = []; const scripts = []; const badges = []; const registered = [];
+    const updates = []; const created = []; const scripts = []; const badges = []; const titles = []; const registered = [];
     const local = { [CAPTURE_SETTINGS_KEY]: { enabled } }; const session = {};
     const tabs = new Map([[101, { id: 101, url: 'https://example.com/orders?token=secret', documentId: 'document-a', mime: 'application/json' }]]);
     const area = values => ({ async get(key) { return { [key]: clone(values[key]) }; }, async set(value) { Object.assign(values, clone(value)); } });
@@ -46,15 +47,15 @@ function fixture({ enabled = true, origins = ['https://example.com/*'] } = {}) {
                 return [{ frameId: 0, documentId: tab.documentId, result: { top: true, url: tab.url, mime: tab.mime } }];
             } },
         tabs: { async get(id) { return clone(tabs.get(id)); }, async update(id, value) { updates.push({ id, ...value }); Object.assign(tabs.get(id), value); return clone(tabs.get(id)); },
-            async create(value) { created.push(value); return value; } },
-        action: { async setBadgeText(value) { badges.push(value); }, async setBadgeBackgroundColor() {}, async setTitle() {} },
+            async create(value) { created.push(value); return value; }, async query() { return [...tabs.values()].map(clone); } },
+        action: { async setBadgeText(value) { badges.push(value); }, async setBadgeBackgroundColor() {}, async setTitle(value) { titles.push(value); } },
     };
     const store = memoryStore();
     const controller = createCaptureController({ chrome: api, store, now: () => time, randomId: () => `00000000-0000-4000-8000-${String(++sequence).padStart(12, '0')}` });
     const sender = (tabId = 101) => { const tab = tabs.get(tabId); return { id: api.runtime.id, tab: { id: tabId }, frameId: 0, documentId: tab.documentId, documentLifecycle: 'active', url: tab.url }; };
     const tool = (tabId = 101) => ({ id: api.runtime.id, tab: { id: tabId }, frameId: 0, url: api.runtime.getURL('index.html') });
     const call = (action, details = {}, from = sender()) => controller.handle({ type: CAPTURE_TYPE, action, ...details }, from);
-    return { api, store, controller, tabs, local, session, updates, created, scripts, badges, registered, sender, tool, call,
+    return { api, store, controller, tabs, local, session, updates, created, scripts, badges, titles, registered, sender, tool, call,
         advance(ms) { time += ms; }, setOrigins(value) { origins = value; } };
 }
 const bytes = text => new TextEncoder().encode(text).length;
@@ -293,4 +294,57 @@ test('editor operations reject unsupported ticket modes without reading, consumi
         assert.equal(f.updates.length, navigations);
         assert.equal(f.store.tickets.get(ticket.id).stage, 'ready');
     }
+});
+
+
+const normalTitle = '打开 JSON 工具箱 / Open JSON Toolbox';
+const assertQuietToolbar = f => {
+    assert.ok(f.badges.length > 0);
+    assert.ok(f.badges.every(value => value.text === ''));
+    assert.ok(f.titles.length > 0);
+    assert.ok(f.titles.every(value => value.title === normalTitle));
+};
+test('manual page-read failures open the toolbox without a warning badge or error tooltip', async () => {
+    const f=fixture();f.api.scripting.executeScript=async()=>{throw new Error('Cannot access contents of this page');};
+    await f.controller.actionClicked(clone(f.tabs.get(101)));
+    assertQuietToolbar(f);
+    assert.deepEqual(f.created,[{url:f.api.runtime.getURL('index.html')}]);
+});
+test('an automatic navigation race keeps the successful tool tab and never marks it as failed', async () => {
+    const f=fixture();f.api.scripting.executeScript=async()=>{
+        f.tabs.get(101).url=f.api.runtime.getURL('index.html?capture=ready');throw new Error('document changed');
+    };
+    await f.controller.actionClicked(clone(f.tabs.get(101)));
+    assertQuietToolbar(f);assert.equal(f.created.length,0);
+});
+test('automatic begin, chunk and commit failures remain failures without toolbar warnings', async () => {
+    for(const action of ['begin','chunk','commit']) {
+        const f=fixture();
+        const details=action==='begin'?{totalChars:CAPTURE_LIMIT_BYTES+1,totalBytes:CAPTURE_LIMIT_BYTES+1,mimeType:'application/json'}
+            :action==='chunk'?{...(await begin(f)),index:1,text:'bad'}:await begin(f);
+        const result=await f.call(action,details);assert.equal(result.ok,false);assertQuietToolbar(f);
+    }
+});
+test('ordinary HTML and restricted browser pages clear a legacy tab warning before opening the toolbox', async () => {
+    for(const url of ['https://example.com/page','chrome://settings/',undefined]) {
+        const f=fixture();Object.assign(f.tabs.get(101),{url,mime:'text/html'});
+        await f.controller.actionClicked(clone(f.tabs.get(101)));
+        assertQuietToolbar(f);assert.equal(f.created.length,1);
+    }
+});
+test('worker initialization clears global and per-tab legacy state independently', async () => {
+    const f=fixture();f.tabs.set(202,{id:202,url:'chrome://settings/'});
+    await captureBackground.resetCaptureToolbar(f.api);
+    assertQuietToolbar(f);
+    assert.deepEqual(f.badges.map(v=>v.tabId),[undefined,101,202]);
+    assert.deepEqual(f.titles.map(v=>v.tabId),[undefined,101,202]);
+});
+test('a closed tab or failed badge reset never prevents title cleanup or the toolbox fallback', async () => {
+    const f=fixture();f.api.action.setBadgeText=async()=>{throw new Error('Tab gone');};
+    f.api.scripting.executeScript=async()=>{throw new Error('Restricted');};
+    await f.controller.actionClicked(clone(f.tabs.get(101)));
+    assert.equal(f.titles.at(-1).title,normalTitle);assert.equal(f.created.length,1);
+    f.api.tabs.query=async()=>{throw new Error('Browser shutting down');};
+    await captureBackground.resetCaptureToolbar(f.api);
+    assert.equal(f.titles.at(-1).title,normalTitle);
 });

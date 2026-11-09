@@ -2,7 +2,10 @@ import { REVIEW_TYPE } from './json-review-policy.js';
 import { createReviewController } from './json-review-background.js';
 import { CAPTURE_TYPE } from './json-capture-core.js';
 import { createCaptureStore } from './json-capture-store.js';
-import { createCaptureController } from './json-capture-background.js';
+import { createCaptureController, resetCaptureToolbar } from './json-capture-background.js';
+
+// Toolbar cleanup is independent of capture configuration and permission failures.
+void resetCaptureToolbar(chrome);
 
 // The normal local tool remains available in builds without the capture APIs.
 const permissions = chrome.runtime.getManifest().permissions ?? [];
