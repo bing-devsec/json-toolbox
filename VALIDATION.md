@@ -328,3 +328,12 @@ Chrome 尚未单独进行交互实测；项目采用标准 Chrome Manifest V3 �
 - package.json、package-lock.json 根项目和public/manifest.json统一为1.1.5，未变更本次已验证的依赖版本。当前提交汇总近期网站JSON能力同步、扩展GET响应导入和本地评价邀请；不包含已撤销的DevTools面板，以及尚在讨论的右键导入、快捷键、侧栏。
 - 提交前完整npm test：876/876通过，零失败、零跳过。npm run build通过类型检查、生产构建、本地处理约束与构建来源记录，既有Monaco大chunk提示保留。实际行为检查见前面的GET与评价邀请记录。
 - 用户要求先推送源码，再生成1.1.5安装包。发行使用npm run package及npm run verify-package，防覆盖脚本保留历史release；本次包的提交、源码指纹、字节数与SHA-256以release/json-tool-extension-1.1.5.build-info.json和.zip.sha256为准。未授权也不执行Chrome商店提交或线上隐私政策部署。
+
+## 2026-11-11：1.2.3 文字字体与 SVG 图标同步
+
+- 完整 npm test：1232 项全部通过，0 失败、0 跳过。覆盖字体延迟加载/失败回退、SVG 图标范围、菜单 Shadow DOM、高对比度、插件组合及包指纹。
+- npm run build：类型检查、Vite 生产构建及本地处理约束检查通过。保留既有 Monaco 大 chunk 提示，未修改阈值。
+- 独立临时 Chrome 配置加载实际 dist 扩展：17 项检查通过，包含五个主题明暗版本、真实字体渲染、折叠、查找、跳转行、右键菜单、Diff 两侧和高对比度图标。
+- DevTools 实际渲染字体为 JetBrainsMono-Regular；中文使用 PingFang SC 后备。资源记录仅加载内置 JetBrains Mono WOFF2，没有 Codicon 字体请求，没有新增 HTTP(S) 请求，页面错误为 0。
+- JetBrains 字体与网页资源 SHA-256 一致；SVG 范围经插件实际入口审查为 626 模块、52 图形、80 图标标识。生产产物保留两份许可证。
+- 测试浏览器已正常关闭，临时配置目录已清理。安装包按新提交执行 npm run package，并用 npm run verify-package 校验。

@@ -37,6 +37,45 @@ test('editor runtime loads once and publishes API and large-file helpers togethe
     assert.equal(loads, 1);
 });
 
+test('late web font completion refreshes glyph widths once without blocking editor readiness', async () => {
+    let completeFont;
+    const pendingFont = new Promise(resolve => { completeFont = resolve; });
+    let fontLoads = 0;
+    let measurements = 0;
+    const fixture = { api: { editor: { remeasureFonts: () => { measurements++; } } } };
+    const module = { exports: {} };
+    runInNewContext(runtimeBundle.outputFiles[0].text, { module, exports: module.exports,
+        readRuntimeFixture: () => fixture,
+        document: { fonts: { load: font => {
+            assert.equal(font, '12px "JetBrains Mono"');
+            fontLoads++;
+            return pendingFont;
+        } } },
+    });
+    assert.equal(await module.exports.loadMonacoRuntime(), fixture.api);
+    assert.equal(measurements, 0, 'editor is ready while the font is still downloading');
+    completeFont([{}]);
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(measurements, 1, 'late font must invalidate Monaco fallback metrics');
+    await module.exports.loadMonacoRuntime();
+    assert.equal(fontLoads, 1);
+    assert.equal(measurements, 1);
+});
+
+test('failed or unavailable web fonts preserve the usable system-font editor', async () => {
+    for (const fonts of [undefined, { load: () => Promise.reject(new Error('font offline')) }, { load: () => Promise.resolve([]) }]) {
+        let measurements = 0;
+        const fixture = { api: { editor: { remeasureFonts: () => { measurements++; } } } };
+        const module = { exports: {} };
+        runInNewContext(runtimeBundle.outputFiles[0].text, { module, exports: module.exports,
+            readRuntimeFixture: () => fixture, document: { fonts },
+        });
+        assert.equal(await module.exports.loadMonacoRuntime(), fixture.api);
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(measurements, 0);
+    }
+});
+
 const guideBundle = await build({
     entryPoints: ['src/components/composables/useJsonToolFirstUseGuide.ts'], bundle: true, write: false,
     platform: 'node', format: 'cjs', plugins: [{ name: 'vue-lifecycle', setup(builder) {

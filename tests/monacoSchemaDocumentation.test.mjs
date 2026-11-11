@@ -7,7 +7,7 @@ import ts from 'typescript';
 import { monacoSchemaDocumentationPlugin, pruneMonacoSchemaDocumentation } from '../scripts/vite/monaco-schema-documentation.mjs';
 import { monacoLargeFoldingPlugin, patchMonacoEditorOptions } from '../scripts/vite/monaco-large-folding.mjs';
 import { monacoSingleEditorPlugin } from '../scripts/vite/monaco-single-editor.mjs';
-import { monacoFontPlugin } from '../scripts/vite/monaco-font.mjs';
+import { monacoSvgPlugin } from '../scripts/vite/monaco-svg.mjs';
 import { monacoColorDocumentationPlugin } from '../scripts/vite/monaco-color-documentation.mjs';
 import { monacoJsonModeTypesPlugin, pruneUnusedJsonModeTypes } from '../scripts/vite/monaco-json-mode-types.mjs';
 import { monacoJsonDiagnosticsPlugin, patchMonacoJsonDiagnostics } from '../scripts/vite/monaco-json-diagnostics.mjs';
@@ -70,7 +70,7 @@ test('actual Vite Monaco plugin order validates editor options and JSON lifecycl
         ts.forEachChild(node, visit);
     };
     visit(source);
-    const factories = { monacoSchemaDocumentationPlugin, monacoColorDocumentationPlugin, monacoLargeFoldingPlugin, monacoSingleEditorPlugin, monacoFontPlugin, monacoJsonModeTypesPlugin, monacoJsonDiagnosticsPlugin, monacoJsonFoldingPlugin };
+    const factories = { monacoSchemaDocumentationPlugin, monacoColorDocumentationPlugin, monacoLargeFoldingPlugin, monacoSingleEditorPlugin, monacoSvgPlugin, monacoJsonModeTypesPlugin, monacoJsonDiagnosticsPlugin, monacoJsonFoldingPlugin };
     assert(pluginNames.indexOf('monacoSchemaDocumentationPlugin') < pluginNames.indexOf('monacoLargeFoldingPlugin'));
     assert.deepEqual(pluginNames.filter(name => ['monacoJsonModeTypesPlugin', 'monacoJsonDiagnosticsPlugin', 'monacoJsonFoldingPlugin'].includes(name)),
         ['monacoJsonModeTypesPlugin', 'monacoJsonDiagnosticsPlugin', 'monacoJsonFoldingPlugin']);

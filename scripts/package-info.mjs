@@ -16,6 +16,8 @@ export const getSourceInfo = (root) => {
         }
     };
     for (const directory of ['src', 'public', 'scripts', 'assets']) visit(directory);
+    // The SVG scope is a build input; other reports are historical evidence only.
+    files.push('reports/monaco-svg-scope.json');
     for (const name of fs.readdirSync(root)) {
         if (/^(?:package(?:-lock)?\.json|index\.html|vite\.config\.[^/]+|tsconfig[^/]*\.json)$/.test(name)) files.push(name);
     }

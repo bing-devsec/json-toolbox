@@ -20,7 +20,7 @@ const reviewedExternalPackages = new Set([
     'diff', 'histogram-diff', 'js-base64', 'js-yaml',
     'json5', 'jsonc-parser', 'jsonrepair', 'monaco-editor',
 ]);
-const LOCK_SHA = 'c971f632b9d144bf8022e2a8832557b7d16986bda41a1d5476803090bdf77db4';
+const LOCK_SHA = 'ae12046f4bd0e2a30a6f44216113a20ce5479a87954690c532b50f12fd83d6b5';
 const allowedExports = new Set([
     'ElAlert', 'ElAutocomplete', 'ElButton', 'ElButtonGroup', 'ElCheckbox', 'ElCollapse', 'ElCollapseItem',
     'ElCollapseTransition', 'ElDialog', 'ElDropdown', 'ElDropdownItem', 'ElDropdownMenu', 'ElEmpty',

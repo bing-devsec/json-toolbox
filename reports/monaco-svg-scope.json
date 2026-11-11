@@ -1,0 +1,3310 @@
+{
+  "scope": "Conservative static import closure; applies reviewed native Diff factory removal; excludes worker entry points. Counts include unused exports within imported modules.",
+  "moduleCount": 626,
+  "glyphCodepoints": [
+    "0xea76",
+    "0xea77",
+    "0xea83",
+    "0xea86",
+    "0xea87",
+    "0xea88",
+    "0xea8a",
+    "0xea8b",
+    "0xea8c",
+    "0xea8f",
+    "0xea90",
+    "0xea91",
+    "0xea92",
+    "0xea93",
+    "0xea94",
+    "0xea95",
+    "0xea96",
+    "0xea9a",
+    "0xea9b",
+    "0xeaa1",
+    "0xeab1",
+    "0xeab2",
+    "0xeab4",
+    "0xeab6",
+    "0xeb0c",
+    "0xeb19",
+    "0xeb2e",
+    "0xeb38",
+    "0xeb3c",
+    "0xeb3d",
+    "0xeb5b",
+    "0xeb5c",
+    "0xeb5d",
+    "0xeb5e",
+    "0xeb5f",
+    "0xeb60",
+    "0xeb61",
+    "0xeb62",
+    "0xeb64",
+    "0xeb65",
+    "0xeb66",
+    "0xeb6e",
+    "0xeb6f",
+    "0xeb70",
+    "0xeb71",
+    "0xeb7e",
+    "0xeb83",
+    "0xeb85",
+    "0xeb8d",
+    "0xeb99",
+    "0xec0d",
+    "0xec11"
+  ],
+  "ids": [
+    "account",
+    "arrow-down",
+    "arrow-up",
+    "case-sensitive",
+    "chevron-down",
+    "chevron-right",
+    "close",
+    "debug-gripper",
+    "error",
+    "find-collapsed",
+    "find-expanded",
+    "find-next-match",
+    "find-previous-match",
+    "find-replace",
+    "find-replace-all",
+    "find-selection",
+    "folding-collapsed",
+    "folding-expanded",
+    "folding-manual-collapsed",
+    "folding-manual-expanded",
+    "goto-next-location",
+    "goto-previous-location",
+    "insert",
+    "issues",
+    "list-filter",
+    "loading",
+    "menu-selection",
+    "menu-submenu",
+    "preserve-case",
+    "quick-input-back",
+    "regex",
+    "replace",
+    "replace-all",
+    "scrollbar-button-down",
+    "scrollbar-button-left",
+    "scrollbar-button-right",
+    "scrollbar-button-up",
+    "search-fuzzy",
+    "selection",
+    "symbol-array",
+    "symbol-boolean",
+    "symbol-class",
+    "symbol-color",
+    "symbol-constant",
+    "symbol-constructor",
+    "symbol-customcolor",
+    "symbol-enum",
+    "symbol-enum-member",
+    "symbol-event",
+    "symbol-field",
+    "symbol-file",
+    "symbol-folder",
+    "symbol-function",
+    "symbol-interface",
+    "symbol-key",
+    "symbol-keyword",
+    "symbol-method",
+    "symbol-module",
+    "symbol-namespace",
+    "symbol-null",
+    "symbol-number",
+    "symbol-object",
+    "symbol-operator",
+    "symbol-package",
+    "symbol-property",
+    "symbol-reference",
+    "symbol-snippet",
+    "symbol-string",
+    "symbol-struct",
+    "symbol-text",
+    "symbol-type-parameter",
+    "symbol-unit",
+    "symbol-value",
+    "symbol-variable",
+    "sync",
+    "tree-item-expanded",
+    "tree-item-loading",
+    "whole-word",
+    "widget-close",
+    "x"
+  ],
+  "files": [
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/browser.js",
+      "sha256": "343ceffd454a653d80a4711abde00396606b4d44c11cd7a671c15c3c43569224",
+      "analyzedSha256": "343ceffd454a653d80a4711abde00396606b4d44c11cd7a671c15c3c43569224"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/canIUse.js",
+      "sha256": "96ba985beae201be84de59e58cbbf3142633d83640f7ca55e31aea8dff305c57",
+      "analyzedSha256": "96ba985beae201be84de59e58cbbf3142633d83640f7ca55e31aea8dff305c57"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/defaultWorkerFactory.js",
+      "sha256": "10234a085a585e5bd9617b4efa767188117450652f5459974225a1335a74cb8c",
+      "analyzedSha256": "10234a085a585e5bd9617b4efa767188117450652f5459974225a1335a74cb8c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/dnd.js",
+      "sha256": "9944d9b6d24ea5668afdffadc29a3b9280b83721b84191713315f084cc24fde1",
+      "analyzedSha256": "9944d9b6d24ea5668afdffadc29a3b9280b83721b84191713315f084cc24fde1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/dom.js",
+      "sha256": "978afe6e6c74fca49d3a57c95ba37839dc38e12566b7efd764900b63b0100563",
+      "analyzedSha256": "978afe6e6c74fca49d3a57c95ba37839dc38e12566b7efd764900b63b0100563"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/dompurify/dompurify.js",
+      "sha256": "0935a5a20f9046bda3874d9b0bd8b81fc63f1db5b15a5f6076e1a0d590281cb0",
+      "analyzedSha256": "0935a5a20f9046bda3874d9b0bd8b81fc63f1db5b15a5f6076e1a0d590281cb0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/event.js",
+      "sha256": "e5d3635b2ffc7dad690401d36d402803bc1a20a457978e4b6195fa378047a573",
+      "analyzedSha256": "e5d3635b2ffc7dad690401d36d402803bc1a20a457978e4b6195fa378047a573"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/fastDomNode.js",
+      "sha256": "1aa5dd07dd0a4f5ba93d71c8a796381d498d09f46a1fd5ab5d9e3e6a37d492c6",
+      "analyzedSha256": "1aa5dd07dd0a4f5ba93d71c8a796381d498d09f46a1fd5ab5d9e3e6a37d492c6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/fonts.js",
+      "sha256": "fa86732dcf4d80860ead4dbb9a3ff28ddf61e4cf444ce69e85823c12ef8e5df5",
+      "analyzedSha256": "fa86732dcf4d80860ead4dbb9a3ff28ddf61e4cf444ce69e85823c12ef8e5df5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/formattedTextRenderer.js",
+      "sha256": "227230067bf28a6b4c3146c4177549d1df5dcc9c954492cf45e71268a3fe0013",
+      "analyzedSha256": "227230067bf28a6b4c3146c4177549d1df5dcc9c954492cf45e71268a3fe0013"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/globalPointerMoveMonitor.js",
+      "sha256": "bc8648395576ecb475315ef726ff3260b3a64cd38c9bf6151dda09c446fba7a5",
+      "analyzedSha256": "bc8648395576ecb475315ef726ff3260b3a64cd38c9bf6151dda09c446fba7a5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/iframe.js",
+      "sha256": "96e4d7a5827cd3cedbf276bbe523ebb30e6f3ace8a3322632583387f7514acfb",
+      "analyzedSha256": "96e4d7a5827cd3cedbf276bbe523ebb30e6f3ace8a3322632583387f7514acfb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/keyboardEvent.js",
+      "sha256": "3e98b2dd8abcbfb59730306cca39d07e8d56b7f164832169b66820acacc1a5cf",
+      "analyzedSha256": "3e98b2dd8abcbfb59730306cca39d07e8d56b7f164832169b66820acacc1a5cf"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/markdownRenderer.js",
+      "sha256": "b92c96d39084906ab67f94cf831a80c50f298a7b1b2a77be7513d79825bff99a",
+      "analyzedSha256": "b92c96d39084906ab67f94cf831a80c50f298a7b1b2a77be7513d79825bff99a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/mouseEvent.js",
+      "sha256": "c2f497a82db3c96a6f50dc5ef93811025ecce97a0dbf530c405e3657042acc52",
+      "analyzedSha256": "c2f497a82db3c96a6f50dc5ef93811025ecce97a0dbf530c405e3657042acc52"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/performance.js",
+      "sha256": "ac5cbe51c64d21ec9b90f099cfa47fc0ad10aa80a711205185f5cf69259344cc",
+      "analyzedSha256": "ac5cbe51c64d21ec9b90f099cfa47fc0ad10aa80a711205185f5cf69259344cc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/pixelRatio.js",
+      "sha256": "74c96b1d747c08486c1f1a1ab1ac884b24f36d06d6d8b3e86236ed591ef6703c",
+      "analyzedSha256": "74c96b1d747c08486c1f1a1ab1ac884b24f36d06d6d8b3e86236ed591ef6703c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/touch.js",
+      "sha256": "a35423c7152e064a0be72dfdc0fb8dcf7df9fd67627e30f84138c3bf681bdde6",
+      "analyzedSha256": "a35423c7152e064a0be72dfdc0fb8dcf7df9fd67627e30f84138c3bf681bdde6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/trustedTypes.js",
+      "sha256": "1fda6b6d7d17a8055981831553aab71990389285e04674eafd446d30da785916",
+      "analyzedSha256": "1fda6b6d7d17a8055981831553aab71990389285e04674eafd446d30da785916"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/actionbar/actionbar.css",
+      "sha256": "1b6493c8758f4a9f1ed93484037fb2aeb613d50bf2083a0651ad34c5134af99f",
+      "analyzedSha256": "1b6493c8758f4a9f1ed93484037fb2aeb613d50bf2083a0651ad34c5134af99f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/actionbar/actionbar.js",
+      "sha256": "da322d35791ccf8c30c81dc2d55ac03ba131fb95cba559166266d3f30fed9e6c",
+      "analyzedSha256": "da322d35791ccf8c30c81dc2d55ac03ba131fb95cba559166266d3f30fed9e6c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/actionbar/actionViewItems.js",
+      "sha256": "f738e98a203bb93a20bb417e2f591dd5168d56de658b1d90f4ae658589371cb7",
+      "analyzedSha256": "f738e98a203bb93a20bb417e2f591dd5168d56de658b1d90f4ae658589371cb7"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/aria/aria.css",
+      "sha256": "f684c3c5beccb27afc61a66c1dadc4d78900041f27879bff9186e992b4c2b5de",
+      "analyzedSha256": "f684c3c5beccb27afc61a66c1dadc4d78900041f27879bff9186e992b4c2b5de"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/aria/aria.js",
+      "sha256": "6db3699030b5745367f60ad4bf45f7197ab73b64c7aec58f6195f6244aeaf8c2",
+      "analyzedSha256": "6db3699030b5745367f60ad4bf45f7197ab73b64c7aec58f6195f6244aeaf8c2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/button/button.css",
+      "sha256": "8f42248c42960c6f4dcfb8b86785e8abdd9fa737075cedeffd50de43dfa95f77",
+      "analyzedSha256": "8f42248c42960c6f4dcfb8b86785e8abdd9fa737075cedeffd50de43dfa95f77"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/button/button.js",
+      "sha256": "5343262676f77545336a16f5482958dc7e2b98774947e04b63b89cec2f132d88",
+      "analyzedSha256": "5343262676f77545336a16f5482958dc7e2b98774947e04b63b89cec2f132d88"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.css",
+      "sha256": "1ce4b06d1e3b7f1a877c4ff2d2c7060deadda126be5b80f2417d6eddfed68417",
+      "analyzedSha256": "1ce4b06d1e3b7f1a877c4ff2d2c7060deadda126be5b80f2417d6eddfed68417"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/contextview/contextview.css",
+      "sha256": "5730822c82bcb49ccf6c92a20f1428d5281b009392ce8512626bb2e6e1bbdd7a",
+      "analyzedSha256": "5730822c82bcb49ccf6c92a20f1428d5281b009392ce8512626bb2e6e1bbdd7a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/contextview/contextview.js",
+      "sha256": "38e92188f56f68da841e0807ef6bb5922d4b42b16c5b65d5bc8fc3de627589c1",
+      "analyzedSha256": "38e92188f56f68da841e0807ef6bb5922d4b42b16c5b65d5bc8fc3de627589c1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/countBadge/countBadge.css",
+      "sha256": "d7d1c3b723f4954916ab8c7138e741f1ecd47f022c3fb727b13606bda80b600d",
+      "analyzedSha256": "d7d1c3b723f4954916ab8c7138e741f1ecd47f022c3fb727b13606bda80b600d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/countBadge/countBadge.js",
+      "sha256": "caee88d88746d1ce8587845502bbbc45de81f9c827db664b807b404623ba8388",
+      "analyzedSha256": "caee88d88746d1ce8587845502bbbc45de81f9c827db664b807b404623ba8388"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/dropdown/dropdown.css",
+      "sha256": "781655865f06a3550b298f01bb48a4da3fd3faceb8f6b7ec5f5ecaf875abbeed",
+      "analyzedSha256": "781655865f06a3550b298f01bb48a4da3fd3faceb8f6b7ec5f5ecaf875abbeed"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/dropdown/dropdown.js",
+      "sha256": "b093d0a0ac312b15e05c67809dfece7327a0c69f125ca76b43f241a85b0beb25",
+      "analyzedSha256": "b093d0a0ac312b15e05c67809dfece7327a0c69f125ca76b43f241a85b0beb25"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/dropdown/dropdownActionViewItem.js",
+      "sha256": "25485cdeb836c2053c5276f53e112535398c0f6b895ca405c5b7bb01360705fd",
+      "analyzedSha256": "25485cdeb836c2053c5276f53e112535398c0f6b895ca405c5b7bb01360705fd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/findinput/findInput.css",
+      "sha256": "549fbde7e4af0e00ce08f18b804ea93b0581e549e8e7bdb963ddf1b077fc9058",
+      "analyzedSha256": "549fbde7e4af0e00ce08f18b804ea93b0581e549e8e7bdb963ddf1b077fc9058"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/findinput/findInput.js",
+      "sha256": "6750744bffc96e39fc66ff21b8b0ccbd7f7feec04af2c3b33942df0487d50aff",
+      "analyzedSha256": "6750744bffc96e39fc66ff21b8b0ccbd7f7feec04af2c3b33942df0487d50aff"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/findinput/findInputToggles.js",
+      "sha256": "d1c533d58d6cc42142c5b8185cb977f522b22365445bd0f88a6ec6de3d457ee2",
+      "analyzedSha256": "d1c533d58d6cc42142c5b8185cb977f522b22365445bd0f88a6ec6de3d457ee2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/findinput/replaceInput.js",
+      "sha256": "5a0643d8887d4385a2fef215307198ca8400117af592e9476731e58dae78cec2",
+      "analyzedSha256": "5a0643d8887d4385a2fef215307198ca8400117af592e9476731e58dae78cec2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/highlightedlabel/highlightedLabel.js",
+      "sha256": "d05fb1c54535489e97d1179a84113872c3342f5e21551a45db9805b611bad6a4",
+      "analyzedSha256": "d05fb1c54535489e97d1179a84113872c3342f5e21551a45db9805b611bad6a4"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverDelegate2.js",
+      "sha256": "ecd5f80e17e2e0fcee6d00d034c2ec89fc77b2cbf07db10ece10baa43a580ef8",
+      "analyzedSha256": "ecd5f80e17e2e0fcee6d00d034c2ec89fc77b2cbf07db10ece10baa43a580ef8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverDelegateFactory.js",
+      "sha256": "a47e213e59d47e57a66a29df625bb7ba7046008d2d6d3fa005eb41f847deee15",
+      "analyzedSha256": "a47e213e59d47e57a66a29df625bb7ba7046008d2d6d3fa005eb41f847deee15"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverWidget.css",
+      "sha256": "01a7aab1bc4d9eb713c156f4fdb33c175ba035a9537fdd843f34084fa3755676",
+      "analyzedSha256": "01a7aab1bc4d9eb713c156f4fdb33c175ba035a9537fdd843f34084fa3755676"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverWidget.js",
+      "sha256": "b15e8cc96d165303af5e0e6a2ca7acd73ad988b037e0ea280964acb9e25a7e29",
+      "analyzedSha256": "b15e8cc96d165303af5e0e6a2ca7acd73ad988b037e0ea280964acb9e25a7e29"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/iconLabel/iconlabel.css",
+      "sha256": "4cee9c26a6110124902db48201bb00aab64fd7225dc7a0b9498afe74fb90cdcc",
+      "analyzedSha256": "4cee9c26a6110124902db48201bb00aab64fd7225dc7a0b9498afe74fb90cdcc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/iconLabel/iconLabel.js",
+      "sha256": "09c1ac1f8cd928f08b7abfa84b5c8f9cb36269472755d6934cbf12dd19bbc4ab",
+      "analyzedSha256": "09c1ac1f8cd928f08b7abfa84b5c8f9cb36269472755d6934cbf12dd19bbc4ab"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/iconLabel/iconLabels.js",
+      "sha256": "66d139a17472d6c45df9649dc30a2d1e0386f05c2186282d9e32adf7cc1d707b",
+      "analyzedSha256": "66d139a17472d6c45df9649dc30a2d1e0386f05c2186282d9e32adf7cc1d707b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/inputbox/inputBox.css",
+      "sha256": "8c9c8e5fab40e31785b73deba78f6a4e18985b469070d980666222771295bfed",
+      "analyzedSha256": "8c9c8e5fab40e31785b73deba78f6a4e18985b469070d980666222771295bfed"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/inputbox/inputBox.js",
+      "sha256": "03adaba9290b01cee2daa7bcb7e4c409863b7260a3580bcde6408bc93cee3ac6",
+      "analyzedSha256": "03adaba9290b01cee2daa7bcb7e4c409863b7260a3580bcde6408bc93cee3ac6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/keybindingLabel/keybindingLabel.css",
+      "sha256": "23a01c4bb4b2e7a9baf99262cc69a47a3b1e5cf576bb4b3f081f5053f3fc1627",
+      "analyzedSha256": "23a01c4bb4b2e7a9baf99262cc69a47a3b1e5cf576bb4b3f081f5053f3fc1627"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/keybindingLabel/keybindingLabel.js",
+      "sha256": "a207bbd3ecba72ea44859a0795f58dd97b8fd210029d76ef02da42edc6b76699",
+      "analyzedSha256": "a207bbd3ecba72ea44859a0795f58dd97b8fd210029d76ef02da42edc6b76699"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/list/list.css",
+      "sha256": "4bce11abe4d891724a1624668d45248814422060e9464bc0997189862a8d3f0f",
+      "analyzedSha256": "4bce11abe4d891724a1624668d45248814422060e9464bc0997189862a8d3f0f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/list/list.js",
+      "sha256": "67869fbff7992250c2f0ea175833fbd80239bbc2bfe5d0a4278c6a813ad7f490",
+      "analyzedSha256": "67869fbff7992250c2f0ea175833fbd80239bbc2bfe5d0a4278c6a813ad7f490"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/list/listPaging.js",
+      "sha256": "ed68be6267b47a9ca391986694e5dd02dd2f389c266cf0647c9785ad0610f829",
+      "analyzedSha256": "ed68be6267b47a9ca391986694e5dd02dd2f389c266cf0647c9785ad0610f829"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/list/listView.js",
+      "sha256": "cff02bf10bab091f892f954d07955e946c25a2517f276c6cf434dd60ebed901b",
+      "analyzedSha256": "cff02bf10bab091f892f954d07955e946c25a2517f276c6cf434dd60ebed901b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/list/listWidget.js",
+      "sha256": "d68d3e128a8c3fa83ff367a0555337cc769f794cb7ea645d866c6488e13ec286",
+      "analyzedSha256": "d68d3e128a8c3fa83ff367a0555337cc769f794cb7ea645d866c6488e13ec286"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/list/rangeMap.js",
+      "sha256": "375f2ea222d71af06a2b90949e27f6e8ce065aab3fbc64632be12f814c28e4e3",
+      "analyzedSha256": "375f2ea222d71af06a2b90949e27f6e8ce065aab3fbc64632be12f814c28e4e3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/list/rowCache.js",
+      "sha256": "3013018606bbbc1d7789be8fe63bf970d82cf0755ce91fa93ecb54b442e2e662",
+      "analyzedSha256": "3013018606bbbc1d7789be8fe63bf970d82cf0755ce91fa93ecb54b442e2e662"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/list/splice.js",
+      "sha256": "d36a24fef123b293209442c6c0833d3471ea71921b3a42d76aa9c717976f70df",
+      "analyzedSha256": "d36a24fef123b293209442c6c0833d3471ea71921b3a42d76aa9c717976f70df"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/menu/menu.js",
+      "sha256": "9b667361ef5c1b7ecfc041860cc408350a8431e3e6ffa4cbfa2ba4502400f4bb",
+      "analyzedSha256": "9b667361ef5c1b7ecfc041860cc408350a8431e3e6ffa4cbfa2ba4502400f4bb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/mouseCursor/mouseCursor.css",
+      "sha256": "a7f054d6941e06753d44114ad410c9cc37026633c7c3151f3dbce83dbd31ed4b",
+      "analyzedSha256": "a7f054d6941e06753d44114ad410c9cc37026633c7c3151f3dbce83dbd31ed4b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/mouseCursor/mouseCursor.js",
+      "sha256": "220a1b9b75b5b446e926caa34d2477d52de0a6455318aca3ca3be70b04e12f82",
+      "analyzedSha256": "220a1b9b75b5b446e926caa34d2477d52de0a6455318aca3ca3be70b04e12f82"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/progressbar/progressbar.css",
+      "sha256": "8c67efa51409ab88aeb10e8c79e517b56193c7f852da8c5401865246b21d4460",
+      "analyzedSha256": "8c67efa51409ab88aeb10e8c79e517b56193c7f852da8c5401865246b21d4460"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/progressbar/progressbar.js",
+      "sha256": "a9f95ebea5c684959a481b8f2c9d51bcdeee7922b2f7d65f26044886e4e3243b",
+      "analyzedSha256": "a9f95ebea5c684959a481b8f2c9d51bcdeee7922b2f7d65f26044886e4e3243b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/sash/sash.css",
+      "sha256": "2b0c663b48370ff31a460aff3034962770dfa975b8032503d15d6d64fa361be7",
+      "analyzedSha256": "2b0c663b48370ff31a460aff3034962770dfa975b8032503d15d6d64fa361be7"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/sash/sash.js",
+      "sha256": "9e9cdfde8b4d1f4b4c34f53ce57c37f2273afa5324ae82d1cd438844eaffb73e",
+      "analyzedSha256": "9e9cdfde8b4d1f4b4c34f53ce57c37f2273afa5324ae82d1cd438844eaffb73e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/abstractScrollbar.js",
+      "sha256": "82130a7337d1084649939ec5e0a90c5e375b83b78486656e567cf7a6c08b75e6",
+      "analyzedSha256": "82130a7337d1084649939ec5e0a90c5e375b83b78486656e567cf7a6c08b75e6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/horizontalScrollbar.js",
+      "sha256": "db5cfa5f46505347b2d0f2056eae30df97198fb5f2a7faebf184d0953b5b0a7d",
+      "analyzedSha256": "db5cfa5f46505347b2d0f2056eae30df97198fb5f2a7faebf184d0953b5b0a7d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/media/scrollbars.css",
+      "sha256": "e7f41898f8b50c67649bec525121417f716e008d820c51f1ce27807c687c6781",
+      "analyzedSha256": "e7f41898f8b50c67649bec525121417f716e008d820c51f1ce27807c687c6781"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollableElement.js",
+      "sha256": "1207d24b6bcb8ec5e348cc15b31a6ff95a2269df1ecc17c66134af7656163a93",
+      "analyzedSha256": "1207d24b6bcb8ec5e348cc15b31a6ff95a2269df1ecc17c66134af7656163a93"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollbarArrow.js",
+      "sha256": "ecf935a37c1d09e82f46b679d6058f6eb5ea65b532cea665ea9135e27365c65a",
+      "analyzedSha256": "ecf935a37c1d09e82f46b679d6058f6eb5ea65b532cea665ea9135e27365c65a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollbarState.js",
+      "sha256": "8fe3a4ded77cc58f7d614dd90a40cbd806ba8c5fbe9c858f3af0b6e0c331da88",
+      "analyzedSha256": "8fe3a4ded77cc58f7d614dd90a40cbd806ba8c5fbe9c858f3af0b6e0c331da88"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollbarVisibilityController.js",
+      "sha256": "ff23a9d44797f9e698f6a2cd7b3c9dc52d02bfaf207d1fab3dbabed0b3fc0697",
+      "analyzedSha256": "ff23a9d44797f9e698f6a2cd7b3c9dc52d02bfaf207d1fab3dbabed0b3fc0697"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/verticalScrollbar.js",
+      "sha256": "d383de65e714bd0ee4444c00582f158a610816bbaafabf196cb589872c64d3b4",
+      "analyzedSha256": "d383de65e714bd0ee4444c00582f158a610816bbaafabf196cb589872c64d3b4"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBox.css",
+      "sha256": "d8056e497bf67b4821a46165c5f08ae9d4e91b9c10f35fbe68e4a04b0f759df3",
+      "analyzedSha256": "d8056e497bf67b4821a46165c5f08ae9d4e91b9c10f35fbe68e4a04b0f759df3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBox.js",
+      "sha256": "d145565b6d5344266d621106791e2080b3e27d4d56f131e998116e71f0cbd8cb",
+      "analyzedSha256": "d145565b6d5344266d621106791e2080b3e27d4d56f131e998116e71f0cbd8cb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBoxCustom.css",
+      "sha256": "13fea12804ee0d1bb6f4eccb1a713598296f8c539d95765bfa9f4b77038770af",
+      "analyzedSha256": "13fea12804ee0d1bb6f4eccb1a713598296f8c539d95765bfa9f4b77038770af"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBoxCustom.js",
+      "sha256": "48802dab8a7914f04fd642e5e6e030b86d214a59bfe86d3478723ba543852d38",
+      "analyzedSha256": "48802dab8a7914f04fd642e5e6e030b86d214a59bfe86d3478723ba543852d38"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBoxNative.js",
+      "sha256": "8e077b180fb5c31e0d7fbdf886bd1b96f993d4ec930ee9cc7a7f95b804197fcb",
+      "analyzedSha256": "8e077b180fb5c31e0d7fbdf886bd1b96f993d4ec930ee9cc7a7f95b804197fcb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/splitview/splitview.css",
+      "sha256": "d8fe7c928757ccf073c81ca5457ddf01059851588c66f53f13261d0537f9332d",
+      "analyzedSha256": "d8fe7c928757ccf073c81ca5457ddf01059851588c66f53f13261d0537f9332d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/splitview/splitview.js",
+      "sha256": "a53d27650391015c9138b63e26ebc2f8a7aca146f565d264252d37e373a877f6",
+      "analyzedSha256": "a53d27650391015c9138b63e26ebc2f8a7aca146f565d264252d37e373a877f6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/table/table.css",
+      "sha256": "6f75c1d159608af6035a5ca64f74ae5e9215bbc1c10f834bbd71ffe21476518e",
+      "analyzedSha256": "6f75c1d159608af6035a5ca64f74ae5e9215bbc1c10f834bbd71ffe21476518e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/table/tableWidget.js",
+      "sha256": "2356c96d8dcbab08db77bd50083573b4a55bc2a3fd57c6acc5411a4b3c5b27bb",
+      "analyzedSha256": "2356c96d8dcbab08db77bd50083573b4a55bc2a3fd57c6acc5411a4b3c5b27bb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/toggle/toggle.css",
+      "sha256": "65001ad43f776389c9c80c202f319b3d7c6ae14a241837f6ca00ed24d5675467",
+      "analyzedSha256": "65001ad43f776389c9c80c202f319b3d7c6ae14a241837f6ca00ed24d5675467"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/toggle/toggle.js",
+      "sha256": "533fc7f3d490b815d6548faa79689d7fb3af0d0861c59be51001e2826e16adaf",
+      "analyzedSha256": "533fc7f3d490b815d6548faa79689d7fb3af0d0861c59be51001e2826e16adaf"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/tree/abstractTree.js",
+      "sha256": "9413ec3e93da093bd7adfe761bc6675ec7a61ad0051c7dbd76e87604785b1374",
+      "analyzedSha256": "9413ec3e93da093bd7adfe761bc6675ec7a61ad0051c7dbd76e87604785b1374"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/tree/asyncDataTree.js",
+      "sha256": "01ca4c36210c83cfb4fa749709ed6a4c4b6f01e1008b3ed6ebeadd7345cdb340",
+      "analyzedSha256": "01ca4c36210c83cfb4fa749709ed6a4c4b6f01e1008b3ed6ebeadd7345cdb340"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/tree/compressedObjectTreeModel.js",
+      "sha256": "3457fad7f118884b326bdbd1fe85b3c1f37803eb553b2f048300344a41e45b6b",
+      "analyzedSha256": "3457fad7f118884b326bdbd1fe85b3c1f37803eb553b2f048300344a41e45b6b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/tree/dataTree.js",
+      "sha256": "cfacf713cc13431402cbb44daac2bb4fb9912d51a662ea48ebb14e18e76d0f83",
+      "analyzedSha256": "cfacf713cc13431402cbb44daac2bb4fb9912d51a662ea48ebb14e18e76d0f83"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/tree/indexTreeModel.js",
+      "sha256": "64c87c554805afa42078dce79d61790c533bb77fe7f38dc8bdd78d88492bb0f2",
+      "analyzedSha256": "64c87c554805afa42078dce79d61790c533bb77fe7f38dc8bdd78d88492bb0f2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/tree/media/tree.css",
+      "sha256": "d87b727b1384eaff8724930e5c96da10a542b443427f52806170a446b8ab4439",
+      "analyzedSha256": "d87b727b1384eaff8724930e5c96da10a542b443427f52806170a446b8ab4439"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/tree/objectTree.js",
+      "sha256": "2fdc7390e95e9db14dc5b3ca21d0619abfbd76626430e32b1a433ad94635e28a",
+      "analyzedSha256": "2fdc7390e95e9db14dc5b3ca21d0619abfbd76626430e32b1a433ad94635e28a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/tree/objectTreeModel.js",
+      "sha256": "432c9f4b13e9b6dcde830fa78900e1e6d54755ec8ee490eb51b6a41ff0c0fef1",
+      "analyzedSha256": "432c9f4b13e9b6dcde830fa78900e1e6d54755ec8ee490eb51b6a41ff0c0fef1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/tree/tree.js",
+      "sha256": "dccedc2ebc4c70ea31eadc581e0b52ade58ee7371cf8f9283e13bdada1ed3d95",
+      "analyzedSha256": "dccedc2ebc4c70ea31eadc581e0b52ade58ee7371cf8f9283e13bdada1ed3d95"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/ui/widget.js",
+      "sha256": "f558573bf20ee76d99d03fa1c467bafe4842d2ce1c29186f30908f478123d517",
+      "analyzedSha256": "f558573bf20ee76d99d03fa1c467bafe4842d2ce1c29186f30908f478123d517"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/browser/window.js",
+      "sha256": "740477eaca3eccce54ad0fa5f9789a2af4f9517dacb820d3fffe8f135beca692",
+      "analyzedSha256": "740477eaca3eccce54ad0fa5f9789a2af4f9517dacb820d3fffe8f135beca692"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/actions.js",
+      "sha256": "ade3359cbaebf73b19a2715e46a89931c0162bcac624e185c892e67eb9351ade",
+      "analyzedSha256": "ade3359cbaebf73b19a2715e46a89931c0162bcac624e185c892e67eb9351ade"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/arrays.js",
+      "sha256": "f2b7406b4d20a6f9e98fd5f4c321cf48dd90ea399726deb9941dead4c160cb6c",
+      "analyzedSha256": "f2b7406b4d20a6f9e98fd5f4c321cf48dd90ea399726deb9941dead4c160cb6c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/arraysFind.js",
+      "sha256": "962b0ee77afb29f4c8c702ed0916585e58a9be64cd538cbdd9b774a4e2965300",
+      "analyzedSha256": "962b0ee77afb29f4c8c702ed0916585e58a9be64cd538cbdd9b774a4e2965300"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/assert.js",
+      "sha256": "41f011cd8cade820c0b3c82f7f746466a48ea3dec376f5620df85926e3f5b6fc",
+      "analyzedSha256": "41f011cd8cade820c0b3c82f7f746466a48ea3dec376f5620df85926e3f5b6fc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/async.js",
+      "sha256": "bc2d4f2bdee8380757017cd60e544e8dcba7941a035c12abd8fbdf90bbcff0ea",
+      "analyzedSha256": "bc2d4f2bdee8380757017cd60e544e8dcba7941a035c12abd8fbdf90bbcff0ea"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/buffer.js",
+      "sha256": "168325e7df17613b2f60fb1c63191f961f02cafd5615ed80ae509169e9669f48",
+      "analyzedSha256": "168325e7df17613b2f60fb1c63191f961f02cafd5615ed80ae509169e9669f48"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/cache.js",
+      "sha256": "48a7f62372c24c2e4c55a7127929b7a850889345579049994a8a110d2a3ed59f",
+      "analyzedSha256": "48a7f62372c24c2e4c55a7127929b7a850889345579049994a8a110d2a3ed59f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/cancellation.js",
+      "sha256": "952237e0f8904f962ee4c81b90d116ba8e9b4b40e421ecb73833b03db46d29a1",
+      "analyzedSha256": "952237e0f8904f962ee4c81b90d116ba8e9b4b40e421ecb73833b03db46d29a1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/codicons.js",
+      "sha256": "61302bf978a87fbfc92169ea530764d8699a963e5c3ec2f28c6978ffe18e4a06",
+      "analyzedSha256": "61302bf978a87fbfc92169ea530764d8699a963e5c3ec2f28c6978ffe18e4a06"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/codiconsLibrary.js",
+      "sha256": "493a79c339666e08235e57c08ee3c9c183db5cde15eabac2f73c5ae5eccb107d",
+      "analyzedSha256": "493a79c339666e08235e57c08ee3c9c183db5cde15eabac2f73c5ae5eccb107d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/codiconsUtil.js",
+      "sha256": "e26c580f3aeb01727eb4d0fedfc91aeee3dc87428e5c80636ccefb93f0a54669",
+      "analyzedSha256": "e26c580f3aeb01727eb4d0fedfc91aeee3dc87428e5c80636ccefb93f0a54669"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/collections.js",
+      "sha256": "b5a2f3378e8dc8ae1d22d8eea1eb421f297bce88bf0a55406a3fca2f6373a10a",
+      "analyzedSha256": "b5a2f3378e8dc8ae1d22d8eea1eb421f297bce88bf0a55406a3fca2f6373a10a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/color.js",
+      "sha256": "4f01911e41285aff5666c9dd903052fbddcd3ebd61a3cbb1d36e14e8cb146390",
+      "analyzedSha256": "4f01911e41285aff5666c9dd903052fbddcd3ebd61a3cbb1d36e14e8cb146390"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/comparers.js",
+      "sha256": "e63da5274a58e91b2771af5f395b3ccc8751f2ac94925dcf0f10ebb416d1d7e3",
+      "analyzedSha256": "e63da5274a58e91b2771af5f395b3ccc8751f2ac94925dcf0f10ebb416d1d7e3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/dataTransfer.js",
+      "sha256": "151f4d58442b61510216971d34b42eaeb14bc791126925add41181e90c393a27",
+      "analyzedSha256": "151f4d58442b61510216971d34b42eaeb14bc791126925add41181e90c393a27"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/decorators.js",
+      "sha256": "1493bf294cfd2ab705c7758d2f110b7dde215d413a6d33f01a472380be69e9f6",
+      "analyzedSha256": "1493bf294cfd2ab705c7758d2f110b7dde215d413a6d33f01a472380be69e9f6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/diff/diff.js",
+      "sha256": "b4bb452ece1cd351dfb0ed2b3c21d44dcfedda681ae76b056a4351afc39c43d0",
+      "analyzedSha256": "b4bb452ece1cd351dfb0ed2b3c21d44dcfedda681ae76b056a4351afc39c43d0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/diff/diffChange.js",
+      "sha256": "d34858338e5dd0604c39707cf811b6a807afa8e12d8e0303e1ee3b6a02cb48d8",
+      "analyzedSha256": "d34858338e5dd0604c39707cf811b6a807afa8e12d8e0303e1ee3b6a02cb48d8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/equals.js",
+      "sha256": "9cdd71f7276a4eac8e85ce8c0097878a9916095ecac4b2e849f51ed8102affd2",
+      "analyzedSha256": "9cdd71f7276a4eac8e85ce8c0097878a9916095ecac4b2e849f51ed8102affd2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/errorMessage.js",
+      "sha256": "69c0f305cfdf47aa0378b5e3470bbf2dccd68da45a83735afce35b76130803dc",
+      "analyzedSha256": "69c0f305cfdf47aa0378b5e3470bbf2dccd68da45a83735afce35b76130803dc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/errors.js",
+      "sha256": "a9a7b1c1e0044e594733329579e3b564c5906d64a2653af90a79bf4f8b9de115",
+      "analyzedSha256": "a9a7b1c1e0044e594733329579e3b564c5906d64a2653af90a79bf4f8b9de115"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/event.js",
+      "sha256": "ce4546a2bbe6ec098ecdd4059f0f4d4d129aa07ea3d8004f4bb7813d760c77f3",
+      "analyzedSha256": "ce4546a2bbe6ec098ecdd4059f0f4d4d129aa07ea3d8004f4bb7813d760c77f3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/extpath.js",
+      "sha256": "12eb88e6a0afcc79a8e005328078c203f19dfaea48e11df844f9efe36c588832",
+      "analyzedSha256": "12eb88e6a0afcc79a8e005328078c203f19dfaea48e11df844f9efe36c588832"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/filters.js",
+      "sha256": "c7b74a1c91bac808f2f06bb7846b7053064a509b80fd25a76373af27e17a1657",
+      "analyzedSha256": "c7b74a1c91bac808f2f06bb7846b7053064a509b80fd25a76373af27e17a1657"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/functional.js",
+      "sha256": "a9888550c07c9d2fc1f6d64a6f9feaec2314174b0877b95ec01933effab4811a",
+      "analyzedSha256": "a9888550c07c9d2fc1f6d64a6f9feaec2314174b0877b95ec01933effab4811a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/glob.js",
+      "sha256": "ec62e953e454bfebfae2767f521868d28170160d47a8e49f9b220da3cbe68b52",
+      "analyzedSha256": "ec62e953e454bfebfae2767f521868d28170160d47a8e49f9b220da3cbe68b52"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/hash.js",
+      "sha256": "8d91a110c192b93a14d0031f98a4bdcc01c067de4fb943ff113f78ce1e94d2c7",
+      "analyzedSha256": "8d91a110c192b93a14d0031f98a4bdcc01c067de4fb943ff113f78ce1e94d2c7"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/hierarchicalKind.js",
+      "sha256": "ef338d7b20154f6a644a5f7b11ccd1e0ae87995c721cf6037ec090b4a944755d",
+      "analyzedSha256": "ef338d7b20154f6a644a5f7b11ccd1e0ae87995c721cf6037ec090b4a944755d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/history.js",
+      "sha256": "aa9ddbdc1856cf644aa7bf471d79fcffb9f6df8cea071526543055570f02819b",
+      "analyzedSha256": "aa9ddbdc1856cf644aa7bf471d79fcffb9f6df8cea071526543055570f02819b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/htmlContent.js",
+      "sha256": "f35fddd4208311e500b0d7140eed8dc90ef14da12e01e843038126bd54ed0007",
+      "analyzedSha256": "f35fddd4208311e500b0d7140eed8dc90ef14da12e01e843038126bd54ed0007"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/iconLabels.js",
+      "sha256": "cf41238f0b74098750829d654a6ee239e98d74e199b641a43857096f80397083",
+      "analyzedSha256": "cf41238f0b74098750829d654a6ee239e98d74e199b641a43857096f80397083"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/idGenerator.js",
+      "sha256": "5c17e80498f551f726eebbc19b4cc71ce9501e9365f0df7c16063972097270cd",
+      "analyzedSha256": "5c17e80498f551f726eebbc19b4cc71ce9501e9365f0df7c16063972097270cd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/ime.js",
+      "sha256": "9f5736ffe61640b7f936422046f5356afd91c9555cfad13700fc3fe2fe34f9cd",
+      "analyzedSha256": "9f5736ffe61640b7f936422046f5356afd91c9555cfad13700fc3fe2fe34f9cd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/iterator.js",
+      "sha256": "5819c7a9d7c9349f10e6af44ba326caedb77e562e11b64c61aa12abe905486d1",
+      "analyzedSha256": "5819c7a9d7c9349f10e6af44ba326caedb77e562e11b64c61aa12abe905486d1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/keybindingLabels.js",
+      "sha256": "2f5813d392d5b58956b5fe0aa47f8f1a8b682dbc65614a964006cf6cbe918dc2",
+      "analyzedSha256": "2f5813d392d5b58956b5fe0aa47f8f1a8b682dbc65614a964006cf6cbe918dc2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/keybindings.js",
+      "sha256": "af6c5ee6cf260c10b6a695e5160a34f2f9d2fd9d8f6504069c12999f8349b1c0",
+      "analyzedSha256": "af6c5ee6cf260c10b6a695e5160a34f2f9d2fd9d8f6504069c12999f8349b1c0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/keyCodes.js",
+      "sha256": "7530c09e56c2358a21ae01862c47e6de9a32acde7bd08b2188f47e5c1704455c",
+      "analyzedSha256": "7530c09e56c2358a21ae01862c47e6de9a32acde7bd08b2188f47e5c1704455c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/lazy.js",
+      "sha256": "39305af3e6978bfaf373b0e5f7c65fb35db080b83e7c9710596cc216743dc0f4",
+      "analyzedSha256": "39305af3e6978bfaf373b0e5f7c65fb35db080b83e7c9710596cc216743dc0f4"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/lifecycle.js",
+      "sha256": "4ce75f13db14e21a184e9ecf6a6fd028db716cd5bc192822306c857e53acc479",
+      "analyzedSha256": "4ce75f13db14e21a184e9ecf6a6fd028db716cd5bc192822306c857e53acc479"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/linkedList.js",
+      "sha256": "32184db29c439c533dd3b61f67b378c633a0463b613b8320c81c8091e257e2b1",
+      "analyzedSha256": "32184db29c439c533dd3b61f67b378c633a0463b613b8320c81c8091e257e2b1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/linkedText.js",
+      "sha256": "5cd7599d62ed495256981556cb2c33731b06c534235507648cd80115545cf668",
+      "analyzedSha256": "5cd7599d62ed495256981556cb2c33731b06c534235507648cd80115545cf668"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/map.js",
+      "sha256": "182643c6ab01e34d919ca8f8b4b8e02119d4a26dcb7293a4c28612ff5fe91b1c",
+      "analyzedSha256": "182643c6ab01e34d919ca8f8b4b8e02119d4a26dcb7293a4c28612ff5fe91b1c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/marked/marked.js",
+      "sha256": "c60f29372e4bc9f0a8f32f004beb2fe0b12709511034bcc61aef5d51c756bcc8",
+      "analyzedSha256": "c60f29372e4bc9f0a8f32f004beb2fe0b12709511034bcc61aef5d51c756bcc8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/marshalling.js",
+      "sha256": "d8292b4467ed5352051c9af1830d9e972cf5d1c07403a50dea323b71af8410fe",
+      "analyzedSha256": "d8292b4467ed5352051c9af1830d9e972cf5d1c07403a50dea323b71af8410fe"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/mime.js",
+      "sha256": "daa3fbcfc8e4f0785ccb76a70371fa59a70fb77a3e72608336e47c930da535e4",
+      "analyzedSha256": "daa3fbcfc8e4f0785ccb76a70371fa59a70fb77a3e72608336e47c930da535e4"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/naturalLanguage/korean.js",
+      "sha256": "1ce6cdfd7397f9e67dc13e0038ff817c5d4589253c164081f9c75523e11903e3",
+      "analyzedSha256": "1ce6cdfd7397f9e67dc13e0038ff817c5d4589253c164081f9c75523e11903e3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/navigator.js",
+      "sha256": "2ac96228a96f29edb0f3f162c68aaaf555383f635a303bba6609ab1841a46a7c",
+      "analyzedSha256": "2ac96228a96f29edb0f3f162c68aaaf555383f635a303bba6609ab1841a46a7c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/network.js",
+      "sha256": "af861d6516d7710d9816e9e6a069f55e0aef179bbf3dd744023e011d8d84d0fe",
+      "analyzedSha256": "af861d6516d7710d9816e9e6a069f55e0aef179bbf3dd744023e011d8d84d0fe"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/numbers.js",
+      "sha256": "97013f0b8673cb02e0ae108992c5ae03a297413e67457bdf6280bf144bac5751",
+      "analyzedSha256": "97013f0b8673cb02e0ae108992c5ae03a297413e67457bdf6280bf144bac5751"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/objects.js",
+      "sha256": "f2b71c195bc9fe839140bfc935820b15007fce327c4ccc2bbe95b1bb497d2183",
+      "analyzedSha256": "f2b71c195bc9fe839140bfc935820b15007fce327c4ccc2bbe95b1bb497d2183"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/observable.js",
+      "sha256": "c2f963c0ec549b34781c7c4637bafdf41ee1b375580506f0e02fa696b5572dd8",
+      "analyzedSha256": "c2f963c0ec549b34781c7c4637bafdf41ee1b375580506f0e02fa696b5572dd8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/observableInternal/api.js",
+      "sha256": "aeb9db420bde4d33dbb91c0fb2e080e4b278fa767deefd22dbaaaacef565a25f",
+      "analyzedSha256": "aeb9db420bde4d33dbb91c0fb2e080e4b278fa767deefd22dbaaaacef565a25f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/observableInternal/autorun.js",
+      "sha256": "83a40900435f0353359ec8057819cf1f966ff7cff2b58bf60bfccb36644db9e5",
+      "analyzedSha256": "83a40900435f0353359ec8057819cf1f966ff7cff2b58bf60bfccb36644db9e5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/observableInternal/base.js",
+      "sha256": "0bc059c68b19444fb6596844d13b2d0ecbe78e748ba946b359ef115609faa5a6",
+      "analyzedSha256": "0bc059c68b19444fb6596844d13b2d0ecbe78e748ba946b359ef115609faa5a6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/observableInternal/debugName.js",
+      "sha256": "66c9bef8a14c628a7659017023bfbda183f081b149e15f20ea6391f933536c83",
+      "analyzedSha256": "66c9bef8a14c628a7659017023bfbda183f081b149e15f20ea6391f933536c83"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/observableInternal/derived.js",
+      "sha256": "8f448da8441f0cc142aca581d39ab501df306780d56bd7c7e66853afca675c80",
+      "analyzedSha256": "8f448da8441f0cc142aca581d39ab501df306780d56bd7c7e66853afca675c80"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/observableInternal/lazyObservableValue.js",
+      "sha256": "6b47b9946c8d764cea791df8f96c0d3ae62da83e9f2c6cf0bd34850016dbb7e5",
+      "analyzedSha256": "6b47b9946c8d764cea791df8f96c0d3ae62da83e9f2c6cf0bd34850016dbb7e5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging.js",
+      "sha256": "fe70d22a6fba5ce38682237fac7ce1e5d0d5bf7234e37516da06b4c07d18cd33",
+      "analyzedSha256": "fe70d22a6fba5ce38682237fac7ce1e5d0d5bf7234e37516da06b4c07d18cd33"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/observableInternal/promise.js",
+      "sha256": "20d93c199215227d1bd7e5af3bf9507df89fc1781b253c3fda3535878feab4cf",
+      "analyzedSha256": "20d93c199215227d1bd7e5af3bf9507df89fc1781b253c3fda3535878feab4cf"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/observableInternal/utils.js",
+      "sha256": "f022043d54299ebd394eb737a0aa701e5b7ab956e3c990168b648f78ed72c62f",
+      "analyzedSha256": "f022043d54299ebd394eb737a0aa701e5b7ab956e3c990168b648f78ed72c62f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/path.js",
+      "sha256": "cd2bdb7d22fd97d32b70ec02aeb5813d85978809f5bae965ef1ebb3be0ccb7b8",
+      "analyzedSha256": "cd2bdb7d22fd97d32b70ec02aeb5813d85978809f5bae965ef1ebb3be0ccb7b8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/platform.js",
+      "sha256": "b205d71d52d6aae0e128093161c06613bf40855f0a22dec934161a3259322b73",
+      "analyzedSha256": "b205d71d52d6aae0e128093161c06613bf40855f0a22dec934161a3259322b73"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/process.js",
+      "sha256": "90b9205dc06f5b04fe6dcc4ddab0467b7d776369c6656f6bb9b4f82581455470",
+      "analyzedSha256": "90b9205dc06f5b04fe6dcc4ddab0467b7d776369c6656f6bb9b4f82581455470"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/range.js",
+      "sha256": "ab1b8e68ca6c52c6e23519b11dee48644ecd598e9ff97dce580bcb6f9de6006d",
+      "analyzedSha256": "ab1b8e68ca6c52c6e23519b11dee48644ecd598e9ff97dce580bcb6f9de6006d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/resources.js",
+      "sha256": "9d315b667e62a2e978f68d059afaef5ec413c91752c4f8001a3922cf27c416cd",
+      "analyzedSha256": "9d315b667e62a2e978f68d059afaef5ec413c91752c4f8001a3922cf27c416cd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/scrollable.js",
+      "sha256": "73925fd3a1b3e441f3917237fd9c077f862cc4e3017c3df67feef71a72da6a26",
+      "analyzedSha256": "73925fd3a1b3e441f3917237fd9c077f862cc4e3017c3df67feef71a72da6a26"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/search.js",
+      "sha256": "678043879ec68889a46175e25cfe7d0e81673eb735ac14a569b9ef521e65976f",
+      "analyzedSha256": "678043879ec68889a46175e25cfe7d0e81673eb735ac14a569b9ef521e65976f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/severity.js",
+      "sha256": "a43c6e061162bb887edc7ff0ca6c90a0c628d379aee75ec8d13a589dd58373aa",
+      "analyzedSha256": "a43c6e061162bb887edc7ff0ca6c90a0c628d379aee75ec8d13a589dd58373aa"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/stopwatch.js",
+      "sha256": "3b59261884dfea167307627024c81c8c4f1297af2dbec36cc63f86f008301c61",
+      "analyzedSha256": "3b59261884dfea167307627024c81c8c4f1297af2dbec36cc63f86f008301c61"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/strings.js",
+      "sha256": "e0e6d155988efb80aa4ebef18fc7f52a5826b1e5ef4310ff39fc0d4fc16b36bb",
+      "analyzedSha256": "e0e6d155988efb80aa4ebef18fc7f52a5826b1e5ef4310ff39fc0d4fc16b36bb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/symbols.js",
+      "sha256": "598e0939e1502da76b1703f9c24740c600114ab2107a9b8587530c923f8e31c4",
+      "analyzedSha256": "598e0939e1502da76b1703f9c24740c600114ab2107a9b8587530c923f8e31c4"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/ternarySearchTree.js",
+      "sha256": "1ff45645ff305f460e56024bb847c32719ceff998ac781f80c1f80ecfa58695a",
+      "analyzedSha256": "1ff45645ff305f460e56024bb847c32719ceff998ac781f80c1f80ecfa58695a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/themables.js",
+      "sha256": "453565f836f6e652588c90a3f559d8692d2d57f8dedc8970442d75ed337a47e5",
+      "analyzedSha256": "453565f836f6e652588c90a3f559d8692d2d57f8dedc8970442d75ed337a47e5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/types.js",
+      "sha256": "2d253c96eb1b7e1428d7b6e84fd4826cd06a2af14cace0ddc40b5ed428fca1eb",
+      "analyzedSha256": "2d253c96eb1b7e1428d7b6e84fd4826cd06a2af14cace0ddc40b5ed428fca1eb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/uint.js",
+      "sha256": "bbc5873ea2b540f28b3fd28a2ee88def066dba115b3390194982a39bf9e4f422",
+      "analyzedSha256": "bbc5873ea2b540f28b3fd28a2ee88def066dba115b3390194982a39bf9e4f422"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/uri.js",
+      "sha256": "dc3aebc892d6ba7beb44ab01acfef0cb4d5f662c16cc7f3f95858e7ef3a343da",
+      "analyzedSha256": "dc3aebc892d6ba7beb44ab01acfef0cb4d5f662c16cc7f3f95858e7ef3a343da"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/uuid.js",
+      "sha256": "b21971bda07c6a0a24123bc5fa686390d61e66ea0c81df85132518618a41fab0",
+      "analyzedSha256": "b21971bda07c6a0a24123bc5fa686390d61e66ea0c81df85132518618a41fab0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/worker/simpleWorker.js",
+      "sha256": "a9b31ac6a84134e8940d8b42a0dfaa22e27b36ea563bc62dae72de6785ed8e50",
+      "analyzedSha256": "a9b31ac6a84134e8940d8b42a0dfaa22e27b36ea563bc62dae72de6785ed8e50"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/parts/storage/common/storage.js",
+      "sha256": "6a39e46484cf631e11091d3935787a56eedb3d98108147452cee4dfeb2d84e41",
+      "analyzedSha256": "6a39e46484cf631e11091d3935787a56eedb3d98108147452cee4dfeb2d84e41"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/config/charWidthReader.js",
+      "sha256": "0a0d4599aff0f28d2067b068df0a11346794eb6c19035cae303635f0985223e6",
+      "analyzedSha256": "0a0d4599aff0f28d2067b068df0a11346794eb6c19035cae303635f0985223e6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/config/domFontInfo.js",
+      "sha256": "5e6e93eeea9515a4d345a7749cc71c859f83b2a8db21a8b5e48ea0a1e2b8744f",
+      "analyzedSha256": "5e6e93eeea9515a4d345a7749cc71c859f83b2a8db21a8b5e48ea0a1e2b8744f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/config/editorConfiguration.js",
+      "sha256": "4e2db46b81ee51203f6194bdcb3acf0101588a4bd9d8986d220412d50a075bf8",
+      "analyzedSha256": "4e2db46b81ee51203f6194bdcb3acf0101588a4bd9d8986d220412d50a075bf8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/config/elementSizeObserver.js",
+      "sha256": "80781dda18ac6302f514eeeffec37c4fb1fbed174cad621cd9c78eec9b45ccce",
+      "analyzedSha256": "80781dda18ac6302f514eeeffec37c4fb1fbed174cad621cd9c78eec9b45ccce"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/config/fontMeasurements.js",
+      "sha256": "bd607e3bb930f331e220c4015081fbd3d78a1fcae2e6f0864a9bea6ad928d332",
+      "analyzedSha256": "bd607e3bb930f331e220c4015081fbd3d78a1fcae2e6f0864a9bea6ad928d332"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/config/migrateOptions.js",
+      "sha256": "2542c8e135efe000fe929ae9ab519bef5545f878fff41688aef983383f941984",
+      "analyzedSha256": "2542c8e135efe000fe929ae9ab519bef5545f878fff41688aef983383f941984"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/config/tabFocus.js",
+      "sha256": "0a8325876d4d2231f2ebbb89fe8cdeff6df1fe5a471ebdab6cbada3c527fa6c9",
+      "analyzedSha256": "0a8325876d4d2231f2ebbb89fe8cdeff6df1fe5a471ebdab6cbada3c527fa6c9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/controller/mouseHandler.js",
+      "sha256": "e73ebf41b06009d110261c0546050b3481683f643e414e8e3e49d9eed82421a1",
+      "analyzedSha256": "e73ebf41b06009d110261c0546050b3481683f643e414e8e3e49d9eed82421a1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/controller/mouseTarget.js",
+      "sha256": "d12a0fdf125efcaf9b5f774e22f82feeee848ff36b249fea643eb939dff083e0",
+      "analyzedSha256": "d12a0fdf125efcaf9b5f774e22f82feeee848ff36b249fea643eb939dff083e0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/controller/pointerHandler.js",
+      "sha256": "6497915c0a95903d1d8c3616b10c93bc43d167439c7fd74abc9df5b0bed652a1",
+      "analyzedSha256": "6497915c0a95903d1d8c3616b10c93bc43d167439c7fd74abc9df5b0bed652a1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/controller/textAreaHandler.css",
+      "sha256": "5b8a181bac97be07b6aa5305a6b3f58e1283652d1d7234c7aef334a0ed55bebb",
+      "analyzedSha256": "5b8a181bac97be07b6aa5305a6b3f58e1283652d1d7234c7aef334a0ed55bebb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/controller/textAreaHandler.js",
+      "sha256": "8499bf61094a810b7a82a54e4f9215d529b5eb32ecdcea3b50cba859c8e252e2",
+      "analyzedSha256": "8499bf61094a810b7a82a54e4f9215d529b5eb32ecdcea3b50cba859c8e252e2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/controller/textAreaInput.js",
+      "sha256": "cd2a13a9ff947be44004b128c108b7a42fcbf7dbc7d27563462a7e3392475c7a",
+      "analyzedSha256": "cd2a13a9ff947be44004b128c108b7a42fcbf7dbc7d27563462a7e3392475c7a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/controller/textAreaState.js",
+      "sha256": "03eb8b5732589849e0f92cb74252d56f21da8d55ba723f197653b7548c1b402c",
+      "analyzedSha256": "03eb8b5732589849e0f92cb74252d56f21da8d55ba723f197653b7548c1b402c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/coreCommands.js",
+      "sha256": "dc7c1e00866e0318e8d9d458ba446c62869ff0ce2034d384dbec7e6c85458922",
+      "analyzedSha256": "dc7c1e00866e0318e8d9d458ba446c62869ff0ce2034d384dbec7e6c85458922"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/dnd.js",
+      "sha256": "022070dda809f405184f387dc4d84bf84c72e1f297dc31c779de65c479049a0d",
+      "analyzedSha256": "022070dda809f405184f387dc4d84bf84c72e1f297dc31c779de65c479049a0d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/editorBrowser.js",
+      "sha256": "3f6fc9bf7362698b4ae37d6d0807d4fa48f36c2d0309e15c0e422e5f5f0fa58e",
+      "analyzedSha256": "3f6fc9bf7362698b4ae37d6d0807d4fa48f36c2d0309e15c0e422e5f5f0fa58e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/editorDom.js",
+      "sha256": "31967003b2eff68a602cdde81f1bb5ecdeac459043f18ce57c8433eb0fe2fb0a",
+      "analyzedSha256": "31967003b2eff68a602cdde81f1bb5ecdeac459043f18ce57c8433eb0fe2fb0a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/editorExtensions.js",
+      "sha256": "af103520c0054ef67d15c4b5aa93dc6651da0f8a58638c324cc05a46b3c37bbd",
+      "analyzedSha256": "af103520c0054ef67d15c4b5aa93dc6651da0f8a58638c324cc05a46b3c37bbd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/services/abstractCodeEditorService.js",
+      "sha256": "4fe9f13f899267c3d2576f23f1d13b76507ef4a905447ad193fc7f7878af0dc0",
+      "analyzedSha256": "4fe9f13f899267c3d2576f23f1d13b76507ef4a905447ad193fc7f7878af0dc0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/services/bulkEditService.js",
+      "sha256": "40deb122d60e762393630a963e94734fa339bb34c6c52fc0139eae0022fda46e",
+      "analyzedSha256": "40deb122d60e762393630a963e94734fa339bb34c6c52fc0139eae0022fda46e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/services/codeEditorService.js",
+      "sha256": "f8fcd7c44b4935e3da4a3136e32baf2f26d6b8d694c7003054e02c7f789f809f",
+      "analyzedSha256": "f8fcd7c44b4935e3da4a3136e32baf2f26d6b8d694c7003054e02c7f789f809f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/services/editorWorkerService.js",
+      "sha256": "22b4c0c846f835c6bf14d0ad24f3516bb6d8a19436bc1062b01011075ca5e4b5",
+      "analyzedSha256": "22b4c0c846f835c6bf14d0ad24f3516bb6d8a19436bc1062b01011075ca5e4b5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/services/hoverService/hover.css",
+      "sha256": "ca8cfa2abb4fb42b85b013a93e996002f65d1cff5b4565849fb7464961405981",
+      "analyzedSha256": "ca8cfa2abb4fb42b85b013a93e996002f65d1cff5b4565849fb7464961405981"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/services/hoverService/hoverService.js",
+      "sha256": "c03fa37505bfefed37d1e8f5a1fc9f4cd05072e29adf2c9eaaa9a2604f60e428",
+      "analyzedSha256": "c03fa37505bfefed37d1e8f5a1fc9f4cd05072e29adf2c9eaaa9a2604f60e428"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/services/hoverService/hoverWidget.js",
+      "sha256": "ce69701e0614a5b6cda0053da04e901cebe29fcb06f8ef061737661261a84306",
+      "analyzedSha256": "ce69701e0614a5b6cda0053da04e901cebe29fcb06f8ef061737661261a84306"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/services/hoverService/updatableHoverWidget.js",
+      "sha256": "c09b5b589c90662e8b34625f0915656d6ee948b5df71e460a68f3b20791ce7ec",
+      "analyzedSha256": "c09b5b589c90662e8b34625f0915656d6ee948b5df71e460a68f3b20791ce7ec"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/services/markerDecorations.js",
+      "sha256": "c683355fc9f1da5c79445b75e3969f0b004a7d37793ba5ca816d09214c5e68ff",
+      "analyzedSha256": "c683355fc9f1da5c79445b75e3969f0b004a7d37793ba5ca816d09214c5e68ff"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/services/openerService.js",
+      "sha256": "7854e476380c86d04e04d00353fb834cf787c8be8a4ea20464bfb6a3c7205a9e",
+      "analyzedSha256": "7854e476380c86d04e04d00353fb834cf787c8be8a4ea20464bfb6a3c7205a9e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/stableEditorScroll.js",
+      "sha256": "ae2e07d0934461e754f0eab19c03e633ea9f7840a838396ee84e29e648dd94b6",
+      "analyzedSha256": "ae2e07d0934461e754f0eab19c03e633ea9f7840a838396ee84e29e648dd94b6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/view.js",
+      "sha256": "5a6a09273334bb8f8c7163ba77056d116b3e05b443f71e1616edc26ce868608d",
+      "analyzedSha256": "5a6a09273334bb8f8c7163ba77056d116b3e05b443f71e1616edc26ce868608d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/view/domLineBreaksComputer.js",
+      "sha256": "8064fff470fe949c88b6d951827dda5d8f46d590b409f5d2745d5898cafeefa9",
+      "analyzedSha256": "8064fff470fe949c88b6d951827dda5d8f46d590b409f5d2745d5898cafeefa9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/view/dynamicViewOverlay.js",
+      "sha256": "b09dff2f844986184201003ecb8a90d327415fb5c86098ce7514ea34b1ec8a78",
+      "analyzedSha256": "b09dff2f844986184201003ecb8a90d327415fb5c86098ce7514ea34b1ec8a78"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/view/renderingContext.js",
+      "sha256": "0c629bc3bf609488ae6d35d625e78a620b3dbb3d99ff64eac1b41acaba00e200",
+      "analyzedSha256": "0c629bc3bf609488ae6d35d625e78a620b3dbb3d99ff64eac1b41acaba00e200"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/view/viewController.js",
+      "sha256": "893a76fad0b33a94e445068c27321546e54e0cb69f296f75c09d1acca72ae0c3",
+      "analyzedSha256": "893a76fad0b33a94e445068c27321546e54e0cb69f296f75c09d1acca72ae0c3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/view/viewLayer.js",
+      "sha256": "a3f32838ea70ae8413e4d8a459310d03c0efcfaf75302b7f7bbf3512e94757df",
+      "analyzedSha256": "a3f32838ea70ae8413e4d8a459310d03c0efcfaf75302b7f7bbf3512e94757df"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/view/viewOverlays.js",
+      "sha256": "91a9ee1eef77fa0c0668affb24d50be0f45ac8f0c41fd6382c39dfbbfb653e91",
+      "analyzedSha256": "91a9ee1eef77fa0c0668affb24d50be0f45ac8f0c41fd6382c39dfbbfb653e91"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/view/viewPart.js",
+      "sha256": "9671233e2c43a0d315c014d8b1a618222dbf5045ab1e157f08c90f26979ebacd",
+      "analyzedSha256": "9671233e2c43a0d315c014d8b1a618222dbf5045ab1e157f08c90f26979ebacd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/view/viewUserInputEvents.js",
+      "sha256": "d2acfe50e54a71daeb42f2c56e31d465bc127b56b92dcb32c67669ddfa4197e1",
+      "analyzedSha256": "d2acfe50e54a71daeb42f2c56e31d465bc127b56b92dcb32c67669ddfa4197e1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/blockDecorations/blockDecorations.css",
+      "sha256": "1517cd7e4aa0417d339a55de6a8568cff1d4340459306101ab4d6bb3c2948be3",
+      "analyzedSha256": "1517cd7e4aa0417d339a55de6a8568cff1d4340459306101ab4d6bb3c2948be3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/blockDecorations/blockDecorations.js",
+      "sha256": "ed84bd621cf0d2381ded12c78318ab43aacb76825a36d8b2e8c7aa27cfc12e0e",
+      "analyzedSha256": "ed84bd621cf0d2381ded12c78318ab43aacb76825a36d8b2e8c7aa27cfc12e0e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/contentWidgets/contentWidgets.js",
+      "sha256": "f7536d12687e2ab6617f4724b29a3f37cc73a307d635821f644b830cd189bd23",
+      "analyzedSha256": "f7536d12687e2ab6617f4724b29a3f37cc73a307d635821f644b830cd189bd23"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/currentLineHighlight/currentLineHighlight.css",
+      "sha256": "05fc7e6aa0110f6c255eb3b4d91be0fad0bb57608f2af14b06b82127b2dea9cd",
+      "analyzedSha256": "05fc7e6aa0110f6c255eb3b4d91be0fad0bb57608f2af14b06b82127b2dea9cd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/currentLineHighlight/currentLineHighlight.js",
+      "sha256": "c6a4b5e83b52dcdb31cc86f6f04eab04cd4d956f147e2def72ce6ab54b006232",
+      "analyzedSha256": "c6a4b5e83b52dcdb31cc86f6f04eab04cd4d956f147e2def72ce6ab54b006232"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/decorations/decorations.css",
+      "sha256": "910a1e95e672eb72395e5ebaa6bcff0a96898eba9125e94713f94762bdab7863",
+      "analyzedSha256": "910a1e95e672eb72395e5ebaa6bcff0a96898eba9125e94713f94762bdab7863"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/decorations/decorations.js",
+      "sha256": "043db285ac71016acb2207bf6d172f443173892634d896e1c225104e01914c0f",
+      "analyzedSha256": "043db285ac71016acb2207bf6d172f443173892634d896e1c225104e01914c0f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/editorScrollbar/editorScrollbar.js",
+      "sha256": "f50a46b9215076e4408b83130d20d080e1eadab0b3ab9553367cd252650869fe",
+      "analyzedSha256": "f50a46b9215076e4408b83130d20d080e1eadab0b3ab9553367cd252650869fe"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/glyphMargin/glyphMargin.css",
+      "sha256": "42cb2658283487fee6b8a8b0808de696271a123b24f0d78521cfab71ec87d52f",
+      "analyzedSha256": "42cb2658283487fee6b8a8b0808de696271a123b24f0d78521cfab71ec87d52f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/glyphMargin/glyphMargin.js",
+      "sha256": "78086c41f0df7faf07704a9bf21673515734ad0c46b4f4c69c1e49d234f126fe",
+      "analyzedSha256": "78086c41f0df7faf07704a9bf21673515734ad0c46b4f4c69c1e49d234f126fe"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/indentGuides/indentGuides.css",
+      "sha256": "9e8534d3c91316a94bf4a161ae7308b0e9e6bf4294eeead83848825edc29ebc0",
+      "analyzedSha256": "9e8534d3c91316a94bf4a161ae7308b0e9e6bf4294eeead83848825edc29ebc0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/indentGuides/indentGuides.js",
+      "sha256": "c52a412ce93a56b7f9e940e3c546757cdb5e3dfe7351938a6259e7a90e7be4f0",
+      "analyzedSha256": "c52a412ce93a56b7f9e940e3c546757cdb5e3dfe7351938a6259e7a90e7be4f0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lineNumbers/lineNumbers.css",
+      "sha256": "6f9e5f9247002ca7aaad8cc734261ef50379f3dd347947af7b77e4bd74e8b48f",
+      "analyzedSha256": "6f9e5f9247002ca7aaad8cc734261ef50379f3dd347947af7b77e4bd74e8b48f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lineNumbers/lineNumbers.js",
+      "sha256": "37c5888a88508119a2598d6c86475382b567ac804b8904ea2d2eb90349f1dbaf",
+      "analyzedSha256": "37c5888a88508119a2598d6c86475382b567ac804b8904ea2d2eb90349f1dbaf"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lines/domReadingContext.js",
+      "sha256": "6dbc34ec7cd5907a3ea55ea58053a26f515000c3e422ffea3fe066c0397febdc",
+      "analyzedSha256": "6dbc34ec7cd5907a3ea55ea58053a26f515000c3e422ffea3fe066c0397febdc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lines/rangeUtil.js",
+      "sha256": "fb1fcdf58a2ed73f2f04b81d354686e65e1890806255f094e1840435d9bfa9b7",
+      "analyzedSha256": "fb1fcdf58a2ed73f2f04b81d354686e65e1890806255f094e1840435d9bfa9b7"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lines/viewLine.js",
+      "sha256": "c58d2399f928c72be2e8d36f0f5afbe4112d80e64c39d5cfe7779655beb802cc",
+      "analyzedSha256": "c58d2399f928c72be2e8d36f0f5afbe4112d80e64c39d5cfe7779655beb802cc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lines/viewLines.css",
+      "sha256": "3765d3363230eb74b0031c9c235cd3e83f137c3e90f7134f3c0ce18956c6b84f",
+      "analyzedSha256": "3765d3363230eb74b0031c9c235cd3e83f137c3e90f7134f3c0ce18956c6b84f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lines/viewLines.js",
+      "sha256": "2a1d050e0f5d7fa770a2c54db487cf4d34761a6a0d544ccd04f9c34eb10a68d8",
+      "analyzedSha256": "2a1d050e0f5d7fa770a2c54db487cf4d34761a6a0d544ccd04f9c34eb10a68d8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/linesDecorations/linesDecorations.css",
+      "sha256": "b62019a94802b8cf42358168f2d30bf2b8283a84257419403dd6bdf12410d05f",
+      "analyzedSha256": "b62019a94802b8cf42358168f2d30bf2b8283a84257419403dd6bdf12410d05f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/linesDecorations/linesDecorations.js",
+      "sha256": "b94c5efceaf2dde460d45bfddcdf55f021ed3bf6b5e194792eb48f05cf905dee",
+      "analyzedSha256": "b94c5efceaf2dde460d45bfddcdf55f021ed3bf6b5e194792eb48f05cf905dee"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/margin/margin.css",
+      "sha256": "f314bdf68112babf43fd67e6ae51b40df3abcdb47c6cdbef478ed82e673798f7",
+      "analyzedSha256": "f314bdf68112babf43fd67e6ae51b40df3abcdb47c6cdbef478ed82e673798f7"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/margin/margin.js",
+      "sha256": "fe9b0aaed49e04fe28638bb6fd2873ca716251268841d7f03f37ac97b2a6499b",
+      "analyzedSha256": "fe9b0aaed49e04fe28638bb6fd2873ca716251268841d7f03f37ac97b2a6499b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/marginDecorations/marginDecorations.css",
+      "sha256": "df329935ff57eea3d2dba1d3a923e29d72175a3ae03e6fb4385c709bf514221c",
+      "analyzedSha256": "df329935ff57eea3d2dba1d3a923e29d72175a3ae03e6fb4385c709bf514221c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/marginDecorations/marginDecorations.js",
+      "sha256": "872267c3ed5c3f5441384c7f9efae12459eb3f810630aebab5d3d0ee577ebdb5",
+      "analyzedSha256": "872267c3ed5c3f5441384c7f9efae12459eb3f810630aebab5d3d0ee577ebdb5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimap.css",
+      "sha256": "fed1d58210b66ffd1c31c5e7797cca41aa54bf0fe47ad7a30f8d5fca148895f3",
+      "analyzedSha256": "fed1d58210b66ffd1c31c5e7797cca41aa54bf0fe47ad7a30f8d5fca148895f3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimap.js",
+      "sha256": "93ba099fb4ce2ab720b1a650f967d82058306c425a0c849344c0e6a07adaa409",
+      "analyzedSha256": "93ba099fb4ce2ab720b1a650f967d82058306c425a0c849344c0e6a07adaa409"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapCharRenderer.js",
+      "sha256": "4421616e591d1b824a3bf60f79d59dc138d2f1b5cdf8156eeaac0e8292faf5c6",
+      "analyzedSha256": "4421616e591d1b824a3bf60f79d59dc138d2f1b5cdf8156eeaac0e8292faf5c6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapCharRendererFactory.js",
+      "sha256": "f22e455db44e73244010bcaa57934384c4b59f67bd02fb29dcde8414d3106f8c",
+      "analyzedSha256": "f22e455db44e73244010bcaa57934384c4b59f67bd02fb29dcde8414d3106f8c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapCharSheet.js",
+      "sha256": "ef4fb591f5e441f7d453c46ddd63ec97602058e5ac942c0f03efa6ec22468f05",
+      "analyzedSha256": "ef4fb591f5e441f7d453c46ddd63ec97602058e5ac942c0f03efa6ec22468f05"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapPreBaked.js",
+      "sha256": "7684b462fafc1cbfffab3385fcc56f29fbe29d812cfd805666833170c41c978d",
+      "analyzedSha256": "7684b462fafc1cbfffab3385fcc56f29fbe29d812cfd805666833170c41c978d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overlayWidgets/overlayWidgets.css",
+      "sha256": "f114f69d3668c20319bbf412e2078ff060698f93829dd4b749c5c74ee60a988b",
+      "analyzedSha256": "f114f69d3668c20319bbf412e2078ff060698f93829dd4b749c5c74ee60a988b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overlayWidgets/overlayWidgets.js",
+      "sha256": "379c5b71e9164ce75c2db53fb14daa130f16f133f2797f2202a5cf5f407ddb0e",
+      "analyzedSha256": "379c5b71e9164ce75c2db53fb14daa130f16f133f2797f2202a5cf5f407ddb0e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overviewRuler/decorationsOverviewRuler.js",
+      "sha256": "2016f97694de5cfd224df51a798771a8e593d156e2418e9f27257eb5bcfe97b7",
+      "analyzedSha256": "2016f97694de5cfd224df51a798771a8e593d156e2418e9f27257eb5bcfe97b7"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overviewRuler/overviewRuler.js",
+      "sha256": "bca98ae4691d455f34c903ccb6f306a2161ed8f24ba14abcecd30495c43b7228",
+      "analyzedSha256": "bca98ae4691d455f34c903ccb6f306a2161ed8f24ba14abcecd30495c43b7228"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/rulers/rulers.css",
+      "sha256": "37ce6bd3bb7a449afed71d15d5f59747778704bd9fd331cb678ad3ec284ddc34",
+      "analyzedSha256": "37ce6bd3bb7a449afed71d15d5f59747778704bd9fd331cb678ad3ec284ddc34"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/rulers/rulers.js",
+      "sha256": "c3bea5b52c7dc423a3983ed7d553e69878d8744661dd5876665a833dbf870bca",
+      "analyzedSha256": "c3bea5b52c7dc423a3983ed7d553e69878d8744661dd5876665a833dbf870bca"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/scrollDecoration/scrollDecoration.css",
+      "sha256": "3262d133f93599876978b77b8dbdbabd5dd9602d4f4517618966db8632b27626",
+      "analyzedSha256": "3262d133f93599876978b77b8dbdbabd5dd9602d4f4517618966db8632b27626"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/scrollDecoration/scrollDecoration.js",
+      "sha256": "2279bfad61ed53568bad127aff6395a697e844a0ef6a45028727b53b8e60a1b5",
+      "analyzedSha256": "2279bfad61ed53568bad127aff6395a697e844a0ef6a45028727b53b8e60a1b5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/selections/selections.css",
+      "sha256": "f18c599271f8e475cbcbd7baa1d2133f7925a4f2c1b5f71e7c3dcbacb20be4fe",
+      "analyzedSha256": "f18c599271f8e475cbcbd7baa1d2133f7925a4f2c1b5f71e7c3dcbacb20be4fe"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/selections/selections.js",
+      "sha256": "5b233c848927e8ac7155231ddff3ba8c9d7cefacbf6e6e8e6db573ed847438e9",
+      "analyzedSha256": "5b233c848927e8ac7155231ddff3ba8c9d7cefacbf6e6e8e6db573ed847438e9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewCursors/viewCursor.js",
+      "sha256": "22de169731391bbc96e0a35021f2fb7ea8206100d45c0f2042da19c5a1ff2e12",
+      "analyzedSha256": "22de169731391bbc96e0a35021f2fb7ea8206100d45c0f2042da19c5a1ff2e12"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewCursors/viewCursors.css",
+      "sha256": "61eb3783f991266e63f49401223d7ef1e6c389816b75b20cbd871df50733b994",
+      "analyzedSha256": "61eb3783f991266e63f49401223d7ef1e6c389816b75b20cbd871df50733b994"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewCursors/viewCursors.js",
+      "sha256": "34ed71f48a2ae99778c35348e7cf99072a574e47811c8d86fd51ab2428a85041",
+      "analyzedSha256": "34ed71f48a2ae99778c35348e7cf99072a574e47811c8d86fd51ab2428a85041"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewZones/viewZones.js",
+      "sha256": "a01fe5bef751cc6c9d5adb10c62396bbe1b4e58791282c49f2be42b9404bc5de",
+      "analyzedSha256": "a01fe5bef751cc6c9d5adb10c62396bbe1b4e58791282c49f2be42b9404bc5de"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/whitespace/whitespace.css",
+      "sha256": "d5df5813cf9552bdacab93446e4063b210ee278d6bef678fb7711537ff9339a5",
+      "analyzedSha256": "d5df5813cf9552bdacab93446e4063b210ee278d6bef678fb7711537ff9339a5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/viewParts/whitespace/whitespace.js",
+      "sha256": "e6f211e79ffb00c69b29ddfab75d6fcba8b5604be2f110da1150462f34328376",
+      "analyzedSha256": "e6f211e79ffb00c69b29ddfab75d6fcba8b5604be2f110da1150462f34328376"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditor/codeEditorContributions.js",
+      "sha256": "44a21bc8c034d457e71eb6d3580b443ce51ed184b9cbb6d619066de957ff73d0",
+      "analyzedSha256": "44a21bc8c034d457e71eb6d3580b443ce51ed184b9cbb6d619066de957ff73d0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditor/codeEditorWidget.js",
+      "sha256": "983367ed37b3cb3423f1642c311c8b442eced1e07eff1a8009c42e861fd6e566",
+      "analyzedSha256": "983367ed37b3cb3423f1642c311c8b442eced1e07eff1a8009c42e861fd6e566"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditor/editor.css",
+      "sha256": "30c461e335520d1fe7eb82e4de670828666571fb89a27616324ee3e987953514",
+      "analyzedSha256": "30c461e335520d1fe7eb82e4de670828666571fb89a27616324ee3e987953514"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditor/embeddedCodeEditorWidget.js",
+      "sha256": "29677eee647300a04b56eb11f5198b98431656060008ce46a81618b01bcd7924",
+      "analyzedSha256": "29677eee647300a04b56eb11f5198b98431656060008ce46a81618b01bcd7924"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/widget/markdownRenderer/browser/markdownRenderer.js",
+      "sha256": "d1816660d167c68ff3d50f465172bff991b4a6fd39243dbb5523e346202b1bad",
+      "analyzedSha256": "d1816660d167c68ff3d50f465172bff991b4a6fd39243dbb5523e346202b1bad"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/browser/widget/markdownRenderer/browser/renderedMarkdown.css",
+      "sha256": "45f887cbf0667fef1e5573c96d33e38bcfcd4fc67093793ba8cc6fde20ea5f13",
+      "analyzedSha256": "45f887cbf0667fef1e5573c96d33e38bcfcd4fc67093793ba8cc6fde20ea5f13"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/commands/replaceCommand.js",
+      "sha256": "cdd2001ca0ed2149404d97d3fc0af57cbd23e67b31c27ea745aa922aad1042c6",
+      "analyzedSha256": "cdd2001ca0ed2149404d97d3fc0af57cbd23e67b31c27ea745aa922aad1042c6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/commands/shiftCommand.js",
+      "sha256": "9bd7369e8998fb668901c42689e30a2a7a6b83cbd1ae50244de5ef508483be2f",
+      "analyzedSha256": "9bd7369e8998fb668901c42689e30a2a7a6b83cbd1ae50244de5ef508483be2f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/commands/surroundSelectionCommand.js",
+      "sha256": "194681c001e1704e32ee65cd1f4238b230ac8ef22f75b23f1ee7765c29ee283c",
+      "analyzedSha256": "194681c001e1704e32ee65cd1f4238b230ac8ef22f75b23f1ee7765c29ee283c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/config/diffEditor.js",
+      "sha256": "91683fca3db8d8cdd4f60a204a43518478617583d4b0885d8c143397fc4a68bb",
+      "analyzedSha256": "91683fca3db8d8cdd4f60a204a43518478617583d4b0885d8c143397fc4a68bb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/config/editorConfigurationSchema.js",
+      "sha256": "0d9c2bb664aa12dce55c8de738b8710fad5d7457e689c0300bbe55e95b81778a",
+      "analyzedSha256": "0d9c2bb664aa12dce55c8de738b8710fad5d7457e689c0300bbe55e95b81778a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/config/editorOptions.js",
+      "sha256": "fef07cb48544f3dc3927805a2a733d9f4588578f6bb221e845e67765accf2b4d",
+      "analyzedSha256": "fef07cb48544f3dc3927805a2a733d9f4588578f6bb221e845e67765accf2b4d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/config/editorZoom.js",
+      "sha256": "e54e1030f7bc7010a25f52b1146949eb1c2d18f66b4d1560c504515bc16cd376",
+      "analyzedSha256": "e54e1030f7bc7010a25f52b1146949eb1c2d18f66b4d1560c504515bc16cd376"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/config/fontInfo.js",
+      "sha256": "51ccd9cfbe518822ab6704660cf1ffca335f70f0fa29a0eaba60e1368b6e4950",
+      "analyzedSha256": "51ccd9cfbe518822ab6704660cf1ffca335f70f0fa29a0eaba60e1368b6e4950"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/characterClassifier.js",
+      "sha256": "a445ed4deca73f470b660337deb939bd66e460e570ed87059cf70efea91a0ff7",
+      "analyzedSha256": "a445ed4deca73f470b660337deb939bd66e460e570ed87059cf70efea91a0ff7"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/cursorColumns.js",
+      "sha256": "5dedbf43fbbfe0b5eb4ebf3b6d60f5f0962d91bcfa7b274c0f1bd538fe88917f",
+      "analyzedSha256": "5dedbf43fbbfe0b5eb4ebf3b6d60f5f0962d91bcfa7b274c0f1bd538fe88917f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/editOperation.js",
+      "sha256": "957d7dc897f05fc9933cd1424486a537fca355d2aca77598fa3cb69547cd0f7e",
+      "analyzedSha256": "957d7dc897f05fc9933cd1424486a537fca355d2aca77598fa3cb69547cd0f7e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/editorColorRegistry.js",
+      "sha256": "e799295451ee01280b8b2ab496d24c7f8bedf6918742793c96b43df6a5930865",
+      "analyzedSha256": "e799295451ee01280b8b2ab496d24c7f8bedf6918742793c96b43df6a5930865"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/eolCounter.js",
+      "sha256": "78b01e01e007e048d1e6539b2b8010c11c7a938f057952bd4b9dbb85628c400b",
+      "analyzedSha256": "78b01e01e007e048d1e6539b2b8010c11c7a938f057952bd4b9dbb85628c400b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/indentation.js",
+      "sha256": "7f552dc2b0d987d0832d7398717bfa94bc3ed84916640f0a5c105565653f6fa0",
+      "analyzedSha256": "7f552dc2b0d987d0832d7398717bfa94bc3ed84916640f0a5c105565653f6fa0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/lineRange.js",
+      "sha256": "3affdbfcde98b854a8d3ec4d245502c5b5430fe5c65a12b89b6603ff5a5f4fc2",
+      "analyzedSha256": "3affdbfcde98b854a8d3ec4d245502c5b5430fe5c65a12b89b6603ff5a5f4fc2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/offsetRange.js",
+      "sha256": "b368fa6ee646989d7afb76c6e3ef3e10fff718908df2882e06e9126e4f7e4409",
+      "analyzedSha256": "b368fa6ee646989d7afb76c6e3ef3e10fff718908df2882e06e9126e4f7e4409"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/position.js",
+      "sha256": "7d2dfdfbf6343ce61b18ac634922e797de1636e0a9d993cd6917f5a919eeac52",
+      "analyzedSha256": "7d2dfdfbf6343ce61b18ac634922e797de1636e0a9d993cd6917f5a919eeac52"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/positionToOffset.js",
+      "sha256": "67c17b98dfb8dbb0e94fc7bf35f5c732e408f34183e91bc003c688f38075a5ca",
+      "analyzedSha256": "67c17b98dfb8dbb0e94fc7bf35f5c732e408f34183e91bc003c688f38075a5ca"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/range.js",
+      "sha256": "8c67ed2298cdc2fa03ffdd8f18c15f22c732166c3ac3296511eb297cecdc4d6f",
+      "analyzedSha256": "8c67ed2298cdc2fa03ffdd8f18c15f22c732166c3ac3296511eb297cecdc4d6f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/rgba.js",
+      "sha256": "1b15608db383fab64b260db1a2e34a34a32930fac7d4d51b1f58ba5d5c2ac3e2",
+      "analyzedSha256": "1b15608db383fab64b260db1a2e34a34a32930fac7d4d51b1f58ba5d5c2ac3e2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/selection.js",
+      "sha256": "fb7c9fd20447d0b9fbda1f1030bed1dc10c4d268973018a419926f66361dcc3b",
+      "analyzedSha256": "fb7c9fd20447d0b9fbda1f1030bed1dc10c4d268973018a419926f66361dcc3b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/stringBuilder.js",
+      "sha256": "91205b13c1b91d7ccbaec26ff00b7a0790a93cb6d9c019dbe80cf0b947d47f10",
+      "analyzedSha256": "91205b13c1b91d7ccbaec26ff00b7a0790a93cb6d9c019dbe80cf0b947d47f10"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/textChange.js",
+      "sha256": "8e6cc59fb2b48e20d0fc7d61edb168d51387be46eae2ccd026ef3aa29ddb514c",
+      "analyzedSha256": "8e6cc59fb2b48e20d0fc7d61edb168d51387be46eae2ccd026ef3aa29ddb514c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/textEdit.js",
+      "sha256": "bca1d2b70aa62675e0cc4538d2a9eb4c3e6e71eb351a2b275f362cc2a253a7ba",
+      "analyzedSha256": "bca1d2b70aa62675e0cc4538d2a9eb4c3e6e71eb351a2b275f362cc2a253a7ba"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/textLength.js",
+      "sha256": "4be584b7f2717d8eb4e38d88fc5845b5143a84dc730af68b9fff173d75dcbeea",
+      "analyzedSha256": "4be584b7f2717d8eb4e38d88fc5845b5143a84dc730af68b9fff173d75dcbeea"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/textModelDefaults.js",
+      "sha256": "88c059bd3233e0066887b62fd6b1294f83e567ef8f89f3a54c3177fd409749d2",
+      "analyzedSha256": "88c059bd3233e0066887b62fd6b1294f83e567ef8f89f3a54c3177fd409749d2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/wordCharacterClassifier.js",
+      "sha256": "793acecaf9cf9664a0d95908da2715f1db2dc7fd3d8e77fbfb6fe958f2bbd73e",
+      "analyzedSha256": "793acecaf9cf9664a0d95908da2715f1db2dc7fd3d8e77fbfb6fe958f2bbd73e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/core/wordHelper.js",
+      "sha256": "889d3eb96105f7d9cc4092aed2c6320301f9bc1cf041fc1903190318da5e0736",
+      "analyzedSha256": "889d3eb96105f7d9cc4092aed2c6320301f9bc1cf041fc1903190318da5e0736"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursor.js",
+      "sha256": "698bc74f4a4dcd79c36ae88185b3d6c2999a2c6377adcfe377ff4b4f2df82a82",
+      "analyzedSha256": "698bc74f4a4dcd79c36ae88185b3d6c2999a2c6377adcfe377ff4b4f2df82a82"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorAtomicMoveOperations.js",
+      "sha256": "f1ab831d286757faf297d210b0d5d4ef450974269926f397622977463f172734",
+      "analyzedSha256": "f1ab831d286757faf297d210b0d5d4ef450974269926f397622977463f172734"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorCollection.js",
+      "sha256": "3232a1decb4d574839b511dcffcbdf046cf416ff0a65691a2c47c09e81e18f3b",
+      "analyzedSha256": "3232a1decb4d574839b511dcffcbdf046cf416ff0a65691a2c47c09e81e18f3b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorColumnSelection.js",
+      "sha256": "3e0dafdf028fe8263eeadfb5cbc110a2e2604dbca67868dc695f6ffd14e40b1c",
+      "analyzedSha256": "3e0dafdf028fe8263eeadfb5cbc110a2e2604dbca67868dc695f6ffd14e40b1c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorContext.js",
+      "sha256": "6a2b4c18ca4d0726e7f16f7572524551d44d19455a2339379bfa16cd5627f00e",
+      "analyzedSha256": "6a2b4c18ca4d0726e7f16f7572524551d44d19455a2339379bfa16cd5627f00e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorDeleteOperations.js",
+      "sha256": "9ef935e2cfbd1483bc9519bdce7b77c281cc56da65ba8b57b69493818e2c3b59",
+      "analyzedSha256": "9ef935e2cfbd1483bc9519bdce7b77c281cc56da65ba8b57b69493818e2c3b59"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorMoveCommands.js",
+      "sha256": "d443f6abb68c4253df79dd23262c8fb66929a9d2fe5938659231b06ca377431d",
+      "analyzedSha256": "d443f6abb68c4253df79dd23262c8fb66929a9d2fe5938659231b06ca377431d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorMoveOperations.js",
+      "sha256": "315caa3bd706c97e8b1875b44a0446bf5c7136eb4b6f50ee3833d07249b3a624",
+      "analyzedSha256": "315caa3bd706c97e8b1875b44a0446bf5c7136eb4b6f50ee3833d07249b3a624"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorTypeEditOperations.js",
+      "sha256": "7f3f146faf670767ef8192cd47b6d9eec90d33b7128c3f98111d45b40f92b0ba",
+      "analyzedSha256": "7f3f146faf670767ef8192cd47b6d9eec90d33b7128c3f98111d45b40f92b0ba"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorTypeOperations.js",
+      "sha256": "de9632b91533e2b8112849ac5622a52ce642441ed8f912832f9626f7e56dea47",
+      "analyzedSha256": "de9632b91533e2b8112849ac5622a52ce642441ed8f912832f9626f7e56dea47"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorWordOperations.js",
+      "sha256": "33bbee4cefe70397762eec8c7d7e15d772a5a45203e1b9ce5f3b0c57f1582e77",
+      "analyzedSha256": "33bbee4cefe70397762eec8c7d7e15d772a5a45203e1b9ce5f3b0c57f1582e77"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursor/oneCursor.js",
+      "sha256": "86acea4a6ca79d6005faa5a855f2b205de7a07ee72929e95c63090f196b208b9",
+      "analyzedSha256": "86acea4a6ca79d6005faa5a855f2b205de7a07ee72929e95c63090f196b208b9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/cursorCommon.js",
+      "sha256": "98f5f9905d841199bfdb4ed5a97fb0d1d4b38844ed663acbc48e3ad3e75c5ca8",
+      "analyzedSha256": "98f5f9905d841199bfdb4ed5a97fb0d1d4b38844ed663acbc48e3ad3e75c5ca8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/algorithms/diffAlgorithm.js",
+      "sha256": "dc5866709d04fd9e0f8bd9559123ab9c55b4ab980554acef8aaf5e9db11285d0",
+      "analyzedSha256": "dc5866709d04fd9e0f8bd9559123ab9c55b4ab980554acef8aaf5e9db11285d0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/algorithms/dynamicProgrammingDiffing.js",
+      "sha256": "0e0422d2368236349f6993670f88f2a712849a13feaab0c7d4dceed5cadb4b8e",
+      "analyzedSha256": "0e0422d2368236349f6993670f88f2a712849a13feaab0c7d4dceed5cadb4b8e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/algorithms/myersDiffAlgorithm.js",
+      "sha256": "7afb055d8d842b0b8f1c9659c6806661c4a041db086471359ec601abe063b986",
+      "analyzedSha256": "7afb055d8d842b0b8f1c9659c6806661c4a041db086471359ec601abe063b986"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/computeMovedLines.js",
+      "sha256": "59fa0173d9534db1fceebaa55f76f8f23ab4e1d21f6e23c035601a016d7ec75b",
+      "analyzedSha256": "59fa0173d9534db1fceebaa55f76f8f23ab4e1d21f6e23c035601a016d7ec75b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/defaultLinesDiffComputer.js",
+      "sha256": "87a24d9df1e66226ca9075ede5ddaeb5074b8643eb461bd029efceff1d3b278f",
+      "analyzedSha256": "87a24d9df1e66226ca9075ede5ddaeb5074b8643eb461bd029efceff1d3b278f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/heuristicSequenceOptimizations.js",
+      "sha256": "9058bb77ae65c6510db1173c6c38263f40f5fa55e0f9179a10625f1023c6926e",
+      "analyzedSha256": "9058bb77ae65c6510db1173c6c38263f40f5fa55e0f9179a10625f1023c6926e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/lineSequence.js",
+      "sha256": "bd3edd84f33a42e76bec0c877dad82f529613373e3edc5ba202127c7a08a2b5f",
+      "analyzedSha256": "bd3edd84f33a42e76bec0c877dad82f529613373e3edc5ba202127c7a08a2b5f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/linesSliceCharSequence.js",
+      "sha256": "00bfeec828f7ad826bcae33619d3a78de3ccca04da8051b198c472a916e86d88",
+      "analyzedSha256": "00bfeec828f7ad826bcae33619d3a78de3ccca04da8051b198c472a916e86d88"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/utils.js",
+      "sha256": "09b03078db16982fcc4f2426b3d43c3d50435bb8c625398baea7b8a46de6d233",
+      "analyzedSha256": "09b03078db16982fcc4f2426b3d43c3d50435bb8c625398baea7b8a46de6d233"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/legacyLinesDiffComputer.js",
+      "sha256": "15281c406970873052e242b6718c26fe3c5baa63904c04468ef611c0348a9f3a",
+      "analyzedSha256": "15281c406970873052e242b6718c26fe3c5baa63904c04468ef611c0348a9f3a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/linesDiffComputer.js",
+      "sha256": "0d35fb90946c5b8a3e57f958d7e74f0e0bb14ebc0d3c96d8e356b94fb97a6c0b",
+      "analyzedSha256": "0d35fb90946c5b8a3e57f958d7e74f0e0bb14ebc0d3c96d8e356b94fb97a6c0b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/linesDiffComputers.js",
+      "sha256": "e56a8b3f7cb18e71bd4a26671bc56566fe1cc81ff8eaafac0ce0f71c9a395a45",
+      "analyzedSha256": "e56a8b3f7cb18e71bd4a26671bc56566fe1cc81ff8eaafac0ce0f71c9a395a45"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/diff/rangeMapping.js",
+      "sha256": "9709e963f0b54e6f1b90a80d5eacf05f47f390a91ff07e68d2214d6e324b22d9",
+      "analyzedSha256": "9709e963f0b54e6f1b90a80d5eacf05f47f390a91ff07e68d2214d6e324b22d9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/editorAction.js",
+      "sha256": "23de8f71371a4232ff4729ec53b7099a6776286d043a1f51553f2f2d3f8019ce",
+      "analyzedSha256": "23de8f71371a4232ff4729ec53b7099a6776286d043a1f51553f2f2d3f8019ce"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/editorCommon.js",
+      "sha256": "f8c1cc4895a81ab1c5bbc4d91b6d4d7bbb4847525c1174838c3ff34f90928c90",
+      "analyzedSha256": "f8c1cc4895a81ab1c5bbc4d91b6d4d7bbb4847525c1174838c3ff34f90928c90"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/editorContextKeys.js",
+      "sha256": "65a2d9a00ad080becdb3b548bd124266165d6e5d4918c5eeb2cfd98a2b40545f",
+      "analyzedSha256": "65a2d9a00ad080becdb3b548bd124266165d6e5d4918c5eeb2cfd98a2b40545f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/editorFeatures.js",
+      "sha256": "0661fa1e14d40eec12f309c2ab5cf6309a2c604e31470c9ca24f600f3030b951",
+      "analyzedSha256": "0661fa1e14d40eec12f309c2ab5cf6309a2c604e31470c9ca24f600f3030b951"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/editorTheme.js",
+      "sha256": "66354b2681ccf50307b0e35e435fbdfc063e7700cd786bb1fdbcddcdad50381d",
+      "analyzedSha256": "66354b2681ccf50307b0e35e435fbdfc063e7700cd786bb1fdbcddcdad50381d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/encodedTokenAttributes.js",
+      "sha256": "b2ca4ace034f34616026fab0c41df33925fdc034d1f96f72bd4117fdc8f10286",
+      "analyzedSha256": "b2ca4ace034f34616026fab0c41df33925fdc034d1f96f72bd4117fdc8f10286"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languageFeatureRegistry.js",
+      "sha256": "75ca20bb2d665b618555449993edf5cfcf4837fd2feb92b5f642653358ebd98f",
+      "analyzedSha256": "75ca20bb2d665b618555449993edf5cfcf4837fd2feb92b5f642653358ebd98f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages.js",
+      "sha256": "43f19c5a1f441137464d5c02afaa5d53daffd6f9bb435a601e7b770dd66b65a5",
+      "analyzedSha256": "43f19c5a1f441137464d5c02afaa5d53daffd6f9bb435a601e7b770dd66b65a5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/autoIndent.js",
+      "sha256": "7566692b6f2d4b17b0b389d0f56dee476614a1a8ae0881811753ca91c3c8ea5b",
+      "analyzedSha256": "7566692b6f2d4b17b0b389d0f56dee476614a1a8ae0881811753ca91c3c8ea5b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/defaultDocumentColorsComputer.js",
+      "sha256": "36941a4beacb8ba406ea13603e1dbcc5e34ecde67853a5aed374611f4cd415a4",
+      "analyzedSha256": "36941a4beacb8ba406ea13603e1dbcc5e34ecde67853a5aed374611f4cd415a4"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/enterAction.js",
+      "sha256": "86b639d1448f61dec7aec4c212b7e7a48d3c850b41e566927785201b72523647",
+      "analyzedSha256": "86b639d1448f61dec7aec4c212b7e7a48d3c850b41e566927785201b72523647"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/language.js",
+      "sha256": "0fbda8a21f184e867d70f6d2170d390ed7d74bc13b81252092614cd40080bba3",
+      "analyzedSha256": "0fbda8a21f184e867d70f6d2170d390ed7d74bc13b81252092614cd40080bba3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/languageConfiguration.js",
+      "sha256": "f067747256d1bd56c69e1e7f17b465e4cb4ccb256652720c0384ba6f5c4efb09",
+      "analyzedSha256": "f067747256d1bd56c69e1e7f17b465e4cb4ccb256652720c0384ba6f5c4efb09"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/languageConfigurationRegistry.js",
+      "sha256": "df02266be7cc570b1c1121d75ff071ff86d471c5e4a488039202367f4367b8ab",
+      "analyzedSha256": "df02266be7cc570b1c1121d75ff071ff86d471c5e4a488039202367f4367b8ab"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/linkComputer.js",
+      "sha256": "0c6f72acbba5a88599b407d5d3b7d5a87a95843697c8ca3c5d2c9ef48cea472b",
+      "analyzedSha256": "0c6f72acbba5a88599b407d5d3b7d5a87a95843697c8ca3c5d2c9ef48cea472b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/modesRegistry.js",
+      "sha256": "7ee7c59084ced8b5d80c7c5f9a252ea994e2a8cf01eca48bbdf4bc4be48ba725",
+      "analyzedSha256": "7ee7c59084ced8b5d80c7c5f9a252ea994e2a8cf01eca48bbdf4bc4be48ba725"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/nullTokenize.js",
+      "sha256": "f2f5cd3ab3800bfffe3dc5e70a7bfac4e40e6b8a2bf7216930a2ba17d065a862",
+      "analyzedSha256": "f2f5cd3ab3800bfffe3dc5e70a7bfac4e40e6b8a2bf7216930a2ba17d065a862"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/supports.js",
+      "sha256": "7f00cdc942e7ddd20d297cba338f8ca71952c351903eac0a94ac8fde79efdedf",
+      "analyzedSha256": "7f00cdc942e7ddd20d297cba338f8ca71952c351903eac0a94ac8fde79efdedf"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/supports/characterPair.js",
+      "sha256": "b74400bc8497ebad16c76b2983b45b103f708ef4b5e91b3737e74f206d706362",
+      "analyzedSha256": "b74400bc8497ebad16c76b2983b45b103f708ef4b5e91b3737e74f206d706362"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/supports/electricCharacter.js",
+      "sha256": "cb82953ec91281b35269a13dea4fa128ffece5e44f61f3bc47944ab311255950",
+      "analyzedSha256": "cb82953ec91281b35269a13dea4fa128ffece5e44f61f3bc47944ab311255950"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/supports/indentationLineProcessor.js",
+      "sha256": "dbe7956792198ba7b60d27f189f62c8cb0144a4985b0bc18e5dfbb1fe23125a9",
+      "analyzedSha256": "dbe7956792198ba7b60d27f189f62c8cb0144a4985b0bc18e5dfbb1fe23125a9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/supports/indentRules.js",
+      "sha256": "95230e6379f1cde9d64b59d5d1495e531a01037be48ededa1e05c7a3ecf9d297",
+      "analyzedSha256": "95230e6379f1cde9d64b59d5d1495e531a01037be48ededa1e05c7a3ecf9d297"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/supports/inplaceReplaceSupport.js",
+      "sha256": "dd0fd74bd24fc17f2bf2c468a02f81ccc1d82e5167f206b28dd81eda531efd05",
+      "analyzedSha256": "dd0fd74bd24fc17f2bf2c468a02f81ccc1d82e5167f206b28dd81eda531efd05"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/supports/languageBracketsConfiguration.js",
+      "sha256": "cf88759466d5346cd37be566f5c1807acf892468909f0f6c5b6cfeffd415bc9c",
+      "analyzedSha256": "cf88759466d5346cd37be566f5c1807acf892468909f0f6c5b6cfeffd415bc9c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/supports/onEnter.js",
+      "sha256": "7cceefa40c15cca5e15dc65df1f904ff54b02470dbbeb21d44b4d91531b00b80",
+      "analyzedSha256": "7cceefa40c15cca5e15dc65df1f904ff54b02470dbbeb21d44b4d91531b00b80"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/supports/richEditBrackets.js",
+      "sha256": "3242f259dfd8b675e60014f7dbbde213badc35dffdf24ea706fe86f4b35dec8c",
+      "analyzedSha256": "3242f259dfd8b675e60014f7dbbde213badc35dffdf24ea706fe86f4b35dec8c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/supports/tokenization.js",
+      "sha256": "74773499ca205cabe47d9e0d80f0ac24a74212adfed4a46b3e1cfedf49b20a9c",
+      "analyzedSha256": "74773499ca205cabe47d9e0d80f0ac24a74212adfed4a46b3e1cfedf49b20a9c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languages/textToHtmlTokenizer.js",
+      "sha256": "fa3daa2bd60f65475a3085dff3c3188fd3fce2c4aecefe126f9590fa5cee8407",
+      "analyzedSha256": "fa3daa2bd60f65475a3085dff3c3188fd3fce2c4aecefe126f9590fa5cee8407"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/languageSelector.js",
+      "sha256": "df51db018297e16b0ddd2de868c0fb4ee1bbd653ee6454a2db504c6965424cbc",
+      "analyzedSha256": "df51db018297e16b0ddd2de868c0fb4ee1bbd653ee6454a2db504c6965424cbc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model.js",
+      "sha256": "55befc841b1181ef2a90c2b817373f102bd72bd808a7568faf70b1d9f626311c",
+      "analyzedSha256": "55befc841b1181ef2a90c2b817373f102bd72bd808a7568faf70b1d9f626311c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsImpl.js",
+      "sha256": "f2a8a0328e1b75bb95b3273e2db58ca7f0800313421403d374c9a187d0ebb477",
+      "analyzedSha256": "f2a8a0328e1b75bb95b3273e2db58ca7f0800313421403d374c9a187d0ebb477"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/ast.js",
+      "sha256": "26aacec93acf6e49ff05334f85ad7059f907803dbe605b11787564550db77d85",
+      "analyzedSha256": "26aacec93acf6e49ff05334f85ad7059f907803dbe605b11787564550db77d85"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/beforeEditPositionMapper.js",
+      "sha256": "56de23b04290b63b8ce9ceabf9555703022730344e967276e056cd5be38a4b7d",
+      "analyzedSha256": "56de23b04290b63b8ce9ceabf9555703022730344e967276e056cd5be38a4b7d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/bracketPairsTree.js",
+      "sha256": "7b4ea9ea3f0d757a282276ec8207ec7c4d573d45313ba24213bddffe89c2a4d3",
+      "analyzedSha256": "7b4ea9ea3f0d757a282276ec8207ec7c4d573d45313ba24213bddffe89c2a4d3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/brackets.js",
+      "sha256": "6d3f8cf48b60ab78c57a851c8974048a35b3743e31a092888e437af4d18561d5",
+      "analyzedSha256": "6d3f8cf48b60ab78c57a851c8974048a35b3743e31a092888e437af4d18561d5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/combineTextEditInfos.js",
+      "sha256": "95c8d3bfd6ed2141003e9d5659abb87e098f6ba19985c65c63e3403247e3bc41",
+      "analyzedSha256": "95c8d3bfd6ed2141003e9d5659abb87e098f6ba19985c65c63e3403247e3bc41"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/concat23Trees.js",
+      "sha256": "d34b63536a9d4c07d22f1af86d2812cc3d789a006259e05a641de739c5daba7c",
+      "analyzedSha256": "d34b63536a9d4c07d22f1af86d2812cc3d789a006259e05a641de739c5daba7c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/length.js",
+      "sha256": "c4257ff9a4ffd316ccb229fbec60b4764604b9b732059d4599bd519ff1c04551",
+      "analyzedSha256": "c4257ff9a4ffd316ccb229fbec60b4764604b9b732059d4599bd519ff1c04551"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/nodeReader.js",
+      "sha256": "3bde279a2d97616a76d2d4c87a76e9de744211fca4cf4ebd07574d4a1d6bd317",
+      "analyzedSha256": "3bde279a2d97616a76d2d4c87a76e9de744211fca4cf4ebd07574d4a1d6bd317"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/parser.js",
+      "sha256": "4201d44209ed103c9de55b531059fa000610cc27b7045e4c2563cd134895fb34",
+      "analyzedSha256": "4201d44209ed103c9de55b531059fa000610cc27b7045e4c2563cd134895fb34"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/smallImmutableSet.js",
+      "sha256": "ea3112b63044935e4e6db78d99d7fb6ed858ed7ba9d397bc2c76828da850ab94",
+      "analyzedSha256": "ea3112b63044935e4e6db78d99d7fb6ed858ed7ba9d397bc2c76828da850ab94"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/tokenizer.js",
+      "sha256": "fe327f16de06853a7e4124a9c8ba7e1d0507bd22ffb87556f22435db1833e395",
+      "analyzedSha256": "fe327f16de06853a7e4124a9c8ba7e1d0507bd22ffb87556f22435db1833e395"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/colorizedBracketPairsDecorationProvider.js",
+      "sha256": "917e8bd5676dca26f4397c8553f5289960e76afe04abe94f37823c80f0c014df",
+      "analyzedSha256": "917e8bd5676dca26f4397c8553f5289960e76afe04abe94f37823c80f0c014df"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/editStack.js",
+      "sha256": "ea4fd7d05ac10d495e5c51d36be3c89bc9966f1eb6f7ea6078a56e1fb9acab16",
+      "analyzedSha256": "ea4fd7d05ac10d495e5c51d36be3c89bc9966f1eb6f7ea6078a56e1fb9acab16"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/fixedArray.js",
+      "sha256": "dcd3d0d101507ff21369483dc2af6e5c0d6f7434960fd390ab3bea40d5a5bb0d",
+      "analyzedSha256": "dcd3d0d101507ff21369483dc2af6e5c0d6f7434960fd390ab3bea40d5a5bb0d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/guidesTextModelPart.js",
+      "sha256": "9843665547cb2e0e03231caceed181a0d080bdfbebd140cf88e4e9d36b7d4d80",
+      "analyzedSha256": "9843665547cb2e0e03231caceed181a0d080bdfbebd140cf88e4e9d36b7d4d80"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/indentationGuesser.js",
+      "sha256": "15dad1936e771abe5a8b682ec555ffefbb76204d2dac5fb67708d631aaa06c6d",
+      "analyzedSha256": "15dad1936e771abe5a8b682ec555ffefbb76204d2dac5fb67708d631aaa06c6d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/intervalTree.js",
+      "sha256": "e05ae027cbf9c0b2a9268b51a47f8e3ef96a0e34d52bac5aee5631752be9ef06",
+      "analyzedSha256": "e05ae027cbf9c0b2a9268b51a47f8e3ef96a0e34d52bac5aee5631752be9ef06"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/mirrorTextModel.js",
+      "sha256": "6de80d45d82a882f2c94ede9387be6b02bfbeef4a49835734f5426d61b3a4ed5",
+      "analyzedSha256": "6de80d45d82a882f2c94ede9387be6b02bfbeef4a49835734f5426d61b3a4ed5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/pieceTreeBase.js",
+      "sha256": "b3596c1e8a187471a321f62e600bb0590b88d1d01f26501b954c5400c9ee2e53",
+      "analyzedSha256": "b3596c1e8a187471a321f62e600bb0590b88d1d01f26501b954c5400c9ee2e53"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBuffer.js",
+      "sha256": "19b2647c8f2f3731aa09745f1597a89d55492789c3e1796e9aeafa8036927e0d",
+      "analyzedSha256": "19b2647c8f2f3731aa09745f1597a89d55492789c3e1796e9aeafa8036927e0d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBufferBuilder.js",
+      "sha256": "3be6193c047edb44823a81dc895fcb0de314a2edd84a408ae75321398edbe5e5",
+      "analyzedSha256": "3be6193c047edb44823a81dc895fcb0de314a2edd84a408ae75321398edbe5e5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/rbTreeBase.js",
+      "sha256": "37778ee5475d505b50e86c113c71e3b54301c9c7880490379af013538a212a3c",
+      "analyzedSha256": "37778ee5475d505b50e86c113c71e3b54301c9c7880490379af013538a212a3c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/prefixSumComputer.js",
+      "sha256": "ccf4c6c886d72144f4b559a298a069cd12974d9904b7d1424436918d645f72d4",
+      "analyzedSha256": "ccf4c6c886d72144f4b559a298a069cd12974d9904b7d1424436918d645f72d4"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/textModel.js",
+      "sha256": "4530439343b41d3b8b7c80c74991e601bd29e9fe43afdf5403ebe8ff12422cef",
+      "analyzedSha256": "4530439343b41d3b8b7c80c74991e601bd29e9fe43afdf5403ebe8ff12422cef"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/textModelPart.js",
+      "sha256": "af5402e91958d94048ba4b194a7fd01fd2192cfd1b1ccfecdab13d8a18930027",
+      "analyzedSha256": "af5402e91958d94048ba4b194a7fd01fd2192cfd1b1ccfecdab13d8a18930027"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/textModelSearch.js",
+      "sha256": "68f9656ef779c122c36e05011fa2bc9cb0d4ee2b44860368d28720d4aaa26f9f",
+      "analyzedSha256": "68f9656ef779c122c36e05011fa2bc9cb0d4ee2b44860368d28720d4aaa26f9f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/textModelTokens.js",
+      "sha256": "5ab48cfdc7ce03d20febd63081016e8fd10368296e89766cb0d340db51dc19bb",
+      "analyzedSha256": "5ab48cfdc7ce03d20febd63081016e8fd10368296e89766cb0d340db51dc19bb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/tokenizationTextModelPart.js",
+      "sha256": "9bbdd3d1c96a8771bf1e19d793545307eb6ffebdb53885379d7775e92b005be2",
+      "analyzedSha256": "9bbdd3d1c96a8771bf1e19d793545307eb6ffebdb53885379d7775e92b005be2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/tokens.js",
+      "sha256": "2087f3e841d5d055d2385f9ee4e7ea04db9f915524a3347b8b982020a4fd6152",
+      "analyzedSha256": "2087f3e841d5d055d2385f9ee4e7ea04db9f915524a3347b8b982020a4fd6152"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/treeSitterTokens.js",
+      "sha256": "13d9c1bbe8d12bbcd414a3146993b84ddd2f9d0c1ed938775f9a85afbf783f0a",
+      "analyzedSha256": "13d9c1bbe8d12bbcd414a3146993b84ddd2f9d0c1ed938775f9a85afbf783f0a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/model/utils.js",
+      "sha256": "3e633664b1e12eca4ead3aa7736ec4209e0cf65762c4678ea02574eb6cb742f8",
+      "analyzedSha256": "3e633664b1e12eca4ead3aa7736ec4209e0cf65762c4678ea02574eb6cb742f8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/modelLineProjectionData.js",
+      "sha256": "2747d47103c80778d188c4a298ba633ca1895ffb0ee3c1b821afb479e17b824c",
+      "analyzedSha256": "2747d47103c80778d188c4a298ba633ca1895ffb0ee3c1b821afb479e17b824c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/editorBaseApi.js",
+      "sha256": "8c0c7845a608fc36a1d4b99e5e4e22deba0d6b72b7c8250e6469b506d1b60dfd",
+      "analyzedSha256": "8c0c7845a608fc36a1d4b99e5e4e22deba0d6b72b7c8250e6469b506d1b60dfd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/editorSimpleWorker.js",
+      "sha256": "37e79e176bcc7816278da15b0470dd794aa37ac4ca114b85775536392d2d9d8b",
+      "analyzedSha256": "37e79e176bcc7816278da15b0470dd794aa37ac4ca114b85775536392d2d9d8b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/editorWorker.js",
+      "sha256": "6f424f7b732f54155fd94fd1b19d902a504080ea8b6fc9c78526f7d6a26313e7",
+      "analyzedSha256": "6f424f7b732f54155fd94fd1b19d902a504080ea8b6fc9c78526f7d6a26313e7"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/editorWorkerHost.js",
+      "sha256": "dbea8d171a281890a5b90f665235b4606fccbe60aad3315c4e469cbbb9d1de80",
+      "analyzedSha256": "dbea8d171a281890a5b90f665235b4606fccbe60aad3315c4e469cbbb9d1de80"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/findSectionHeaders.js",
+      "sha256": "739353475e20a4c9ce90cd8dce6c17aa148814c1862ccdf80bda68243f402900",
+      "analyzedSha256": "739353475e20a4c9ce90cd8dce6c17aa148814c1862ccdf80bda68243f402900"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/languageFeatureDebounce.js",
+      "sha256": "27b705da471748113e3de9d71a7dbafd2da692ce264394df1fdbaaafc86ad1e1",
+      "analyzedSha256": "27b705da471748113e3de9d71a7dbafd2da692ce264394df1fdbaaafc86ad1e1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/languageFeatures.js",
+      "sha256": "13eeb726ef8fc808848802b61f9a1dc648671f672e310e3f1c3bb23abef0fe26",
+      "analyzedSha256": "13eeb726ef8fc808848802b61f9a1dc648671f672e310e3f1c3bb23abef0fe26"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/languageFeaturesService.js",
+      "sha256": "1c15f46b14a298b906ff25386f30821ee88ad82de04ef47f256b1b43eedc3dd0",
+      "analyzedSha256": "1c15f46b14a298b906ff25386f30821ee88ad82de04ef47f256b1b43eedc3dd0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/languagesAssociations.js",
+      "sha256": "4569167c72dadf71403fa8f1205cbf8fc9a8197536293e5cd4e0b342bc51e717",
+      "analyzedSha256": "4569167c72dadf71403fa8f1205cbf8fc9a8197536293e5cd4e0b342bc51e717"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/languageService.js",
+      "sha256": "ffa79e5b23d87cae035ca5e57ca435f3b125a0d63655e92cf2eaab88e221d7ed",
+      "analyzedSha256": "ffa79e5b23d87cae035ca5e57ca435f3b125a0d63655e92cf2eaab88e221d7ed"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/languagesRegistry.js",
+      "sha256": "77c86742924becc95d0227debb19e20dd9531ee2583709dcbce42ccd71d54f42",
+      "analyzedSha256": "77c86742924becc95d0227debb19e20dd9531ee2583709dcbce42ccd71d54f42"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/markerDecorations.js",
+      "sha256": "fe711e6c0c8bbc7e69d54b4b8f46676cf59bf909c940f60442a5853f210b2310",
+      "analyzedSha256": "fe711e6c0c8bbc7e69d54b4b8f46676cf59bf909c940f60442a5853f210b2310"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/markerDecorationsService.js",
+      "sha256": "0c263c53a13a24139bcbd4a88dfb3647e1097272fe3d5b483974e61227f05fa5",
+      "analyzedSha256": "0c263c53a13a24139bcbd4a88dfb3647e1097272fe3d5b483974e61227f05fa5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/model.js",
+      "sha256": "9cee3ae863eb1ce3dad39810f12ef9b16c5098b615996fb7cce57fb8837bad47",
+      "analyzedSha256": "9cee3ae863eb1ce3dad39810f12ef9b16c5098b615996fb7cce57fb8837bad47"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/modelService.js",
+      "sha256": "830cc2389b2ff85549ba3f9c493bac85595a821c82ee562d82154230082ef0b3",
+      "analyzedSha256": "830cc2389b2ff85549ba3f9c493bac85595a821c82ee562d82154230082ef0b3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/resolverService.js",
+      "sha256": "99cb07fc0698b890726c9db5615585f4d304af338febebfbee0b1b8e0f9720a3",
+      "analyzedSha256": "99cb07fc0698b890726c9db5615585f4d304af338febebfbee0b1b8e0f9720a3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/semanticTokensProviderStyling.js",
+      "sha256": "44aa213b2ee5278e81863410fc206c9cfba526376e48d0352cebff9ecd88d15e",
+      "analyzedSha256": "44aa213b2ee5278e81863410fc206c9cfba526376e48d0352cebff9ecd88d15e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/semanticTokensStyling.js",
+      "sha256": "944e3033bc37c670743f4ae4604518e9155eec9020419a1552b677a507200ee9",
+      "analyzedSha256": "944e3033bc37c670743f4ae4604518e9155eec9020419a1552b677a507200ee9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/semanticTokensStylingService.js",
+      "sha256": "ac555d7c2598e52bbd4c7ce8ce4a0e872d8a9991172549a22e22f3c0b8fa0206",
+      "analyzedSha256": "ac555d7c2598e52bbd4c7ce8ce4a0e872d8a9991172549a22e22f3c0b8fa0206"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/textModelSync/textModelSync.impl.js",
+      "sha256": "6ad488a563d8d5eb9bae4a9beb31300e5da39bbce6b4a411f5b3e5efed713a41",
+      "analyzedSha256": "6ad488a563d8d5eb9bae4a9beb31300e5da39bbce6b4a411f5b3e5efed713a41"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/textResourceConfiguration.js",
+      "sha256": "5ce172999503cdba9c6e1869ef4d2943ede0ea06ae5eb8f5f2ea885a5dd66233",
+      "analyzedSha256": "5ce172999503cdba9c6e1869ef4d2943ede0ea06ae5eb8f5f2ea885a5dd66233"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/treeSitterParserService.js",
+      "sha256": "e1a378d153ec108b3f0e2161e73d13fb1cee9f5ea074509fe2a99781554dec44",
+      "analyzedSha256": "e1a378d153ec108b3f0e2161e73d13fb1cee9f5ea074509fe2a99781554dec44"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/unicodeTextModelHighlighter.js",
+      "sha256": "5607d92939af7966e5e64baaf73fa73346cfbc8b989cf43e97b7cfb0cdaf73ef",
+      "analyzedSha256": "5607d92939af7966e5e64baaf73fa73346cfbc8b989cf43e97b7cfb0cdaf73ef"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneEnums.js",
+      "sha256": "dd5ed6b2c36cd384eee28ea84a5428fefc0fb177c7ea286a97d450a8e14b0653",
+      "analyzedSha256": "dd5ed6b2c36cd384eee28ea84a5428fefc0fb177c7ea286a97d450a8e14b0653"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/standaloneStrings.js",
+      "sha256": "a6ded4a85c2dba439808b3c7b24dbea4698ede73822c19124aab00249a22f807",
+      "analyzedSha256": "a6ded4a85c2dba439808b3c7b24dbea4698ede73822c19124aab00249a22f807"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/textModelBracketPairs.js",
+      "sha256": "f40bd697785fb81a3bae2ca5445def2fd3db297678d404794692757bb58c366c",
+      "analyzedSha256": "f40bd697785fb81a3bae2ca5445def2fd3db297678d404794692757bb58c366c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/textModelEvents.js",
+      "sha256": "b464441da8a757bf27dfa3defb734ce8e8f29829342b4e18d56afccef79b539d",
+      "analyzedSha256": "b464441da8a757bf27dfa3defb734ce8e8f29829342b4e18d56afccef79b539d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/textModelGuides.js",
+      "sha256": "f4b5b75f3249f08c9eb9f689895b16759e4e219ee9b8f7cb3a73d9e500cbbfb1",
+      "analyzedSha256": "f4b5b75f3249f08c9eb9f689895b16759e4e219ee9b8f7cb3a73d9e500cbbfb1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/tokenizationRegistry.js",
+      "sha256": "c6a1dfecb6f05f1962fb7eaa513bf8d7ac9dd5c444c3e824cacd231b615fc56e",
+      "analyzedSha256": "c6a1dfecb6f05f1962fb7eaa513bf8d7ac9dd5c444c3e824cacd231b615fc56e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousMultilineTokens.js",
+      "sha256": "523b2d734f91040c765f5304df3b1b8567a8ab4085f863d0bc2ac82882dccb1e",
+      "analyzedSha256": "523b2d734f91040c765f5304df3b1b8567a8ab4085f863d0bc2ac82882dccb1e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousMultilineTokensBuilder.js",
+      "sha256": "f9c47921fcb5cf053713f3e9ef96c0c4bc0c9f4fa3b6937586a8cb7fec9d52b7",
+      "analyzedSha256": "f9c47921fcb5cf053713f3e9ef96c0c4bc0c9f4fa3b6937586a8cb7fec9d52b7"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousTokensEditing.js",
+      "sha256": "36c5a881cab76bd74d49f2c2fa9e56f3f17f41054a6b75dabe5ce5517a2634e8",
+      "analyzedSha256": "36c5a881cab76bd74d49f2c2fa9e56f3f17f41054a6b75dabe5ce5517a2634e8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousTokensStore.js",
+      "sha256": "243b4aeaa1559496dbe735baafc19fd55fbe2c46ecf5783c8644a8dc0db8a7f6",
+      "analyzedSha256": "243b4aeaa1559496dbe735baafc19fd55fbe2c46ecf5783c8644a8dc0db8a7f6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/tokens/lineTokens.js",
+      "sha256": "2634bad2d0003afef743fff29531410715652ac39fbacce46bdcee1515f3f5a0",
+      "analyzedSha256": "2634bad2d0003afef743fff29531410715652ac39fbacce46bdcee1515f3f5a0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/tokens/sparseMultilineTokens.js",
+      "sha256": "9ce584883c62dac327bc2ad3f884c3b6465aebd013c74a506bfba2c572973b50",
+      "analyzedSha256": "9ce584883c62dac327bc2ad3f884c3b6465aebd013c74a506bfba2c572973b50"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/tokens/sparseTokensStore.js",
+      "sha256": "34bb971b62b4df008d72b3a4c133ccd04b4431088bc48a0a83b5d32ca0d76c88",
+      "analyzedSha256": "34bb971b62b4df008d72b3a4c133ccd04b4431088bc48a0a83b5d32ca0d76c88"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewEventHandler.js",
+      "sha256": "6036cc52725499a11d45ad58a07ee6eb6115199190c6f0c94fc4437bd51723ca",
+      "analyzedSha256": "6036cc52725499a11d45ad58a07ee6eb6115199190c6f0c94fc4437bd51723ca"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewEvents.js",
+      "sha256": "bfe794a0fc6a90f7e2c234cbf12947f4cc734b1101d2d9ca219aa598a2f195c2",
+      "analyzedSha256": "bfe794a0fc6a90f7e2c234cbf12947f4cc734b1101d2d9ca219aa598a2f195c2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewLayout/lineDecorations.js",
+      "sha256": "1f15fe89aaa79b51bf889bcd49e74da00380dc388a687dfb5438df1f8c5982d0",
+      "analyzedSha256": "1f15fe89aaa79b51bf889bcd49e74da00380dc388a687dfb5438df1f8c5982d0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewLayout/linePart.js",
+      "sha256": "650ab3ad047ab2765cb0550d3da45f3c996158b9fbfb2555ff9ce4f52c98fc69",
+      "analyzedSha256": "650ab3ad047ab2765cb0550d3da45f3c996158b9fbfb2555ff9ce4f52c98fc69"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewLayout/linesLayout.js",
+      "sha256": "0fe4e8bffb3d008a8225d7da3800f887d6325f56fdaaf63988725945e97428ad",
+      "analyzedSha256": "0fe4e8bffb3d008a8225d7da3800f887d6325f56fdaaf63988725945e97428ad"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewLayout/viewLayout.js",
+      "sha256": "f9df437493b58144376cc4d38eddc4ca078279d9519ac6053c437edc66c5b9cf",
+      "analyzedSha256": "f9df437493b58144376cc4d38eddc4ca078279d9519ac6053c437edc66c5b9cf"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewLayout/viewLineRenderer.js",
+      "sha256": "333a04186ed117ddc94c3db3d45eaca90b46d4130cac440c2c128f340d786e11",
+      "analyzedSha256": "333a04186ed117ddc94c3db3d45eaca90b46d4130cac440c2c128f340d786e11"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewLayout/viewLinesViewportData.js",
+      "sha256": "f4e9b4245a7355957ae4ec92d3909510a5f9384f4c50a000241dcfdbd530a7bc",
+      "analyzedSha256": "f4e9b4245a7355957ae4ec92d3909510a5f9384f4c50a000241dcfdbd530a7bc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModel.js",
+      "sha256": "c8240a65c46422122897fa7f0f6b6dfe5f16dab6a82743262479cc43464137cc",
+      "analyzedSha256": "c8240a65c46422122897fa7f0f6b6dfe5f16dab6a82743262479cc43464137cc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModel/glyphLanesModel.js",
+      "sha256": "f7fbe28c6c54ea8f912c13ca3d84a2410fe17ed585769766c5b1ec7bb97ee646",
+      "analyzedSha256": "f7fbe28c6c54ea8f912c13ca3d84a2410fe17ed585769766c5b1ec7bb97ee646"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModel/minimapTokensColorTracker.js",
+      "sha256": "f096ae4a10ad231070c8071f86b1d4f956f470825894222177833f14455be9bb",
+      "analyzedSha256": "f096ae4a10ad231070c8071f86b1d4f956f470825894222177833f14455be9bb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModel/modelLineProjection.js",
+      "sha256": "0458c8ad713a2bc534353b95ae47e24d2ed3f372307ec471085e42221b08f225",
+      "analyzedSha256": "0458c8ad713a2bc534353b95ae47e24d2ed3f372307ec471085e42221b08f225"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModel/monospaceLineBreaksComputer.js",
+      "sha256": "f29e97145978518e2877ff4d473fedd56ddd8405b48773c03a80ef1ea79cc009",
+      "analyzedSha256": "f29e97145978518e2877ff4d473fedd56ddd8405b48773c03a80ef1ea79cc009"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModel/overviewZoneManager.js",
+      "sha256": "69a77b1f56a3cc06a28e06d475a60bbb89358fc41f714154291974ccf0d2fed5",
+      "analyzedSha256": "69a77b1f56a3cc06a28e06d475a60bbb89358fc41f714154291974ccf0d2fed5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewContext.js",
+      "sha256": "33c5c166b039e947dcb72c1171908f210bfd8ae0dc7d1e64b9c959fb00fe84b0",
+      "analyzedSha256": "33c5c166b039e947dcb72c1171908f210bfd8ae0dc7d1e64b9c959fb00fe84b0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelDecorations.js",
+      "sha256": "83d5b471fbc1cc278ca991559977308ab1f6efa06e0b3a428b4e24a2f0dc35e6",
+      "analyzedSha256": "83d5b471fbc1cc278ca991559977308ab1f6efa06e0b3a428b4e24a2f0dc35e6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelImpl.js",
+      "sha256": "a5a2388e285a644f737a85da51e63fa9be2a9c4b0451acf0ff34b50e46af78ab",
+      "analyzedSha256": "a5a2388e285a644f737a85da51e63fa9be2a9c4b0451acf0ff34b50e46af78ab"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelLines.js",
+      "sha256": "396461bc187c8daeb1739092f4cd6b6190f9c949897ea3b1f91e0168ed24064c",
+      "analyzedSha256": "396461bc187c8daeb1739092f4cd6b6190f9c949897ea3b1f91e0168ed24064c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/viewModelEventDispatcher.js",
+      "sha256": "dd6cc9e814e075ed38604dfa7fb07040cacd5f44ebdef8268a5b97b604443ca3",
+      "analyzedSha256": "dd6cc9e814e075ed38604dfa7fb07040cacd5f44ebdef8268a5b97b604443ca3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/bracketMatching/browser/bracketMatching.css",
+      "sha256": "469e4f9ea1cf1ae27d4aa9a9bdd6270038a01cf799a3798ea0d9540d094853dc",
+      "analyzedSha256": "469e4f9ea1cf1ae27d4aa9a9bdd6270038a01cf799a3798ea0d9540d094853dc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/bracketMatching/browser/bracketMatching.js",
+      "sha256": "361b680fd0de31ef8138a330d0d1a221c81d0e35a7cdb3b6ac21bdd6201a8ed4",
+      "analyzedSha256": "361b680fd0de31ef8138a330d0d1a221c81d0e35a7cdb3b6ac21bdd6201a8ed4"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/clipboard/browser/clipboard.js",
+      "sha256": "9c12f7acfb97737759894fac61df61ebdf0fb1e703d3756b010ef4a98bf1e23c",
+      "analyzedSha256": "9c12f7acfb97737759894fac61df61ebdf0fb1e703d3756b010ef4a98bf1e23c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/comment/browser/blockCommentCommand.js",
+      "sha256": "14bb3630a45c8173700accd35f4a04624728c159f7b041b2fa66de233dcf646a",
+      "analyzedSha256": "14bb3630a45c8173700accd35f4a04624728c159f7b041b2fa66de233dcf646a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/comment/browser/comment.js",
+      "sha256": "1d18ed5c1a58c4e4616081b2ba98124abf3d2c456271d5c9dd21873d923b0afe",
+      "analyzedSha256": "1d18ed5c1a58c4e4616081b2ba98124abf3d2c456271d5c9dd21873d923b0afe"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/comment/browser/lineCommentCommand.js",
+      "sha256": "28c1c630f6f447ac6b7370893cbf4207155296d3b8e3297126b8c8f6d8d81b04",
+      "analyzedSha256": "28c1c630f6f447ac6b7370893cbf4207155296d3b8e3297126b8c8f6d8d81b04"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu.js",
+      "sha256": "0f3e1b40dec545ed8f76705b7d2b8789282fd0fb20d8db510b82676474c19a41",
+      "analyzedSha256": "0f3e1b40dec545ed8f76705b7d2b8789282fd0fb20d8db510b82676474c19a41"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/documentSymbols/browser/outlineModel.js",
+      "sha256": "0bfaecbafb61c85b4f937b3b38b55246cad7d198a2f95d5f59c441bd16f71902",
+      "analyzedSha256": "0bfaecbafb61c85b4f937b3b38b55246cad7d198a2f95d5f59c441bd16f71902"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/dropOrPasteInto/browser/copyPasteController.js",
+      "sha256": "988ab87cfcf22ef7f60ac172d3e16496f0d82c9b3ec8e03f100b416431a2cf9b",
+      "analyzedSha256": "988ab87cfcf22ef7f60ac172d3e16496f0d82c9b3ec8e03f100b416431a2cf9b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/dropOrPasteInto/browser/defaultProviders.js",
+      "sha256": "cc6908badd74a96489a37ecbcd86283396309ef3edc26494845be21c7c4bdf9a",
+      "analyzedSha256": "cc6908badd74a96489a37ecbcd86283396309ef3edc26494845be21c7c4bdf9a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/dropOrPasteInto/browser/edit.js",
+      "sha256": "2b86c087ce09f173847df41f7f5b27d6874aa513040d58fe263b05ad1fa706aa",
+      "analyzedSha256": "2b86c087ce09f173847df41f7f5b27d6874aa513040d58fe263b05ad1fa706aa"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/dropOrPasteInto/browser/postEditWidget.css",
+      "sha256": "abfc8030204eda2f5c271b127ca1945625412bdca23b1f670111c518dbdf20f0",
+      "analyzedSha256": "abfc8030204eda2f5c271b127ca1945625412bdca23b1f670111c518dbdf20f0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/dropOrPasteInto/browser/postEditWidget.js",
+      "sha256": "04c6c7eb38dd3ae780aac165442f545835f37d2dfd3f0d8c534c0601c5acfe34",
+      "analyzedSha256": "04c6c7eb38dd3ae780aac165442f545835f37d2dfd3f0d8c534c0601c5acfe34"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/editorState/browser/editorState.js",
+      "sha256": "d2ecb385bb7dbd468d9bfbfa4aceff99de97c8a5ef0c87b818361a2f2f099680",
+      "analyzedSha256": "d2ecb385bb7dbd468d9bfbfa4aceff99de97c8a5ef0c87b818361a2f2f099680"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/editorState/browser/keybindingCancellation.js",
+      "sha256": "3cb8da0d16aa546b2f9dc0fadce110d75e09dba7360d5e8bbba07d4680327d3b",
+      "analyzedSha256": "3cb8da0d16aa546b2f9dc0fadce110d75e09dba7360d5e8bbba07d4680327d3b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/findController.js",
+      "sha256": "38f5c3182afb5fbc93d17cf4171ddce7d153d27205db22853ceb0904cfd425e5",
+      "analyzedSha256": "38f5c3182afb5fbc93d17cf4171ddce7d153d27205db22853ceb0904cfd425e5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/findDecorations.js",
+      "sha256": "6c9f41899f12c7f25ce3ae3e2b870f91e17e1175f4f41fd794b5e7ddade1dccf",
+      "analyzedSha256": "6c9f41899f12c7f25ce3ae3e2b870f91e17e1175f4f41fd794b5e7ddade1dccf"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/findModel.js",
+      "sha256": "fe367562bd87d4938d755bab33582ce2dbce439efd65000e1ba9f86cdf50b696",
+      "analyzedSha256": "fe367562bd87d4938d755bab33582ce2dbce439efd65000e1ba9f86cdf50b696"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/findOptionsWidget.css",
+      "sha256": "7a1184644d1bb9df3a1729ecb3075d330cea5d953146074af2bce98521c7fd3f",
+      "analyzedSha256": "7a1184644d1bb9df3a1729ecb3075d330cea5d953146074af2bce98521c7fd3f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/findOptionsWidget.js",
+      "sha256": "8a72e2f4b7c860d93f56faeb34793f955b60ef17e3953d125a5c110984626361",
+      "analyzedSha256": "8a72e2f4b7c860d93f56faeb34793f955b60ef17e3953d125a5c110984626361"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/findState.js",
+      "sha256": "f16e0ec86b817cbcbd236f8928eceb220f3bf630c9bbabb27a100d658e4cc7ae",
+      "analyzedSha256": "f16e0ec86b817cbcbd236f8928eceb220f3bf630c9bbabb27a100d658e4cc7ae"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/findWidget.css",
+      "sha256": "ff5d12e1384b8ec1a5e1eb85fca1830ea53b6328c699866b9f3afa19caf0a22d",
+      "analyzedSha256": "ff5d12e1384b8ec1a5e1eb85fca1830ea53b6328c699866b9f3afa19caf0a22d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/findWidget.js",
+      "sha256": "e883ce5ed6ee11595ca1ef714371df6ed494a3590ee46625670e40d256f39896",
+      "analyzedSha256": "e883ce5ed6ee11595ca1ef714371df6ed494a3590ee46625670e40d256f39896"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/replaceAllCommand.js",
+      "sha256": "3cc31f552accd862e0bc05a0135b3f9df9719c50212c3da7178c7cafe2afbd7b",
+      "analyzedSha256": "3cc31f552accd862e0bc05a0135b3f9df9719c50212c3da7178c7cafe2afbd7b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/replacePattern.js",
+      "sha256": "60a09b45a258e48c6cb314a3d7cabd7441e851010ab9fb29373df9f8987e8d77",
+      "analyzedSha256": "60a09b45a258e48c6cb314a3d7cabd7441e851010ab9fb29373df9f8987e8d77"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/folding/browser/folding.css",
+      "sha256": "9dcca13acbe5ecdfafbcf826ed987b2885540b84c91cfb92614303a1504f0284",
+      "analyzedSha256": "9dcca13acbe5ecdfafbcf826ed987b2885540b84c91cfb92614303a1504f0284"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/folding/browser/folding.js",
+      "sha256": "5f4f7be5e77600bd46cde33d08e23d6b0169e8c8a53b7ce9b0bb2eb60dbb951c",
+      "analyzedSha256": "5f4f7be5e77600bd46cde33d08e23d6b0169e8c8a53b7ce9b0bb2eb60dbb951c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/folding/browser/foldingDecorations.js",
+      "sha256": "35ce9b7a382c88d41a8105dfe2462beb76c5923ff50012605c5d20594a95e9c8",
+      "analyzedSha256": "35ce9b7a382c88d41a8105dfe2462beb76c5923ff50012605c5d20594a95e9c8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/folding/browser/foldingModel.js",
+      "sha256": "5b02087c2785f09b3c3d4690f03d8925c9dfb9461a8eac176ab967c3e2c9b555",
+      "analyzedSha256": "5b02087c2785f09b3c3d4690f03d8925c9dfb9461a8eac176ab967c3e2c9b555"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/folding/browser/foldingRanges.js",
+      "sha256": "9d59b8356af764cd7a5956d1d1ebaaaae15e179fd6f1946851044ae3c8d183d3",
+      "analyzedSha256": "9d59b8356af764cd7a5956d1d1ebaaaae15e179fd6f1946851044ae3c8d183d3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/folding/browser/hiddenRangeModel.js",
+      "sha256": "906bcb68b7c41a55cba2c65ac2b86c45d6a075439506025014b01b4fff7248ce",
+      "analyzedSha256": "906bcb68b7c41a55cba2c65ac2b86c45d6a075439506025014b01b4fff7248ce"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/folding/browser/indentRangeProvider.js",
+      "sha256": "d7f13f6f92a55db100c48bb612004347fb2b9fd7a6728ee53090ff367f2f82bd",
+      "analyzedSha256": "d7f13f6f92a55db100c48bb612004347fb2b9fd7a6728ee53090ff367f2f82bd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/folding/browser/syntaxRangeProvider.js",
+      "sha256": "9e7fd9ab5887ee9a9c041151a0f3996a540ca15708d7efd6b6689a6db4b42473",
+      "analyzedSha256": "9e7fd9ab5887ee9a9c041151a0f3996a540ca15708d7efd6b6689a6db4b42473"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/format/browser/format.js",
+      "sha256": "a6b8b5ad0aa82d526110b0339cd64377412b89de4bbd9790edb1875bdd1e7ee3",
+      "analyzedSha256": "a6b8b5ad0aa82d526110b0339cd64377412b89de4bbd9790edb1875bdd1e7ee3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/format/browser/formattingEdit.js",
+      "sha256": "83e0a58d48488c2c70e35e5f06d5e6ff4d10feb71fccc4ea3b833d300859f309",
+      "analyzedSha256": "83e0a58d48488c2c70e35e5f06d5e6ff4d10feb71fccc4ea3b833d300859f309"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/browser/goToCommands.js",
+      "sha256": "f59753eda2bd1f97f7be12591c44f6a6b37297a10fc746d29d2789ad430eb522",
+      "analyzedSha256": "f59753eda2bd1f97f7be12591c44f6a6b37297a10fc746d29d2789ad430eb522"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/browser/goToSymbol.js",
+      "sha256": "241cb7a41d094efc11e76307a6247b9a74e2ac1395a808242e628c4589153b9a",
+      "analyzedSha256": "241cb7a41d094efc11e76307a6247b9a74e2ac1395a808242e628c4589153b9a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/browser/link/clickLinkGesture.js",
+      "sha256": "5ac469923c55a566cb640cff5204e74aa1bf96f00a2dde2ef1ac544c30a3d6bb",
+      "analyzedSha256": "5ac469923c55a566cb640cff5204e74aa1bf96f00a2dde2ef1ac544c30a3d6bb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/browser/peek/referencesController.js",
+      "sha256": "4386876250d2a3d80cc605054aafabbcd865d352cc0b24f24a11a93dd02da14f",
+      "analyzedSha256": "4386876250d2a3d80cc605054aafabbcd865d352cc0b24f24a11a93dd02da14f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/browser/peek/referencesTree.js",
+      "sha256": "45ea3c4ae2bebfd34601c16663c9f8d3513e5330bd7f6f2cdde2ff93d25e4d3f",
+      "analyzedSha256": "45ea3c4ae2bebfd34601c16663c9f8d3513e5330bd7f6f2cdde2ff93d25e4d3f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/browser/peek/referencesWidget.css",
+      "sha256": "6445eeab80105390a4bcd169d0c9c7a9e8d16992f967b4b876b194641fa5771d",
+      "analyzedSha256": "6445eeab80105390a4bcd169d0c9c7a9e8d16992f967b4b876b194641fa5771d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/browser/peek/referencesWidget.js",
+      "sha256": "bd121802f6412f46c5a07bf88dbecb723766689ec1c8aff61b41a54f56c697f2",
+      "analyzedSha256": "bd121802f6412f46c5a07bf88dbecb723766689ec1c8aff61b41a54f56c697f2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/browser/referencesModel.js",
+      "sha256": "c5772a8eb4d8457738716ff78bc57109b4b8892aad88421825d1728eb70f2bd3",
+      "analyzedSha256": "c5772a8eb4d8457738716ff78bc57109b4b8892aad88421825d1728eb70f2bd3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/browser/symbolNavigation.js",
+      "sha256": "41dea512c38d4d78f4dfa7a83259aec4bb1552c6d4521129525783eaaa263660",
+      "analyzedSha256": "41dea512c38d4d78f4dfa7a83259aec4bb1552c6d4521129525783eaaa263660"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/inlayHints/browser/inlayHintsLocations.js",
+      "sha256": "2c0d74df67c8d8d540b31a80685287b7aab8c16284c474e6edc243d574d6537b",
+      "analyzedSha256": "2c0d74df67c8d8d540b31a80685287b7aab8c16284c474e6edc243d574d6537b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/inlineProgress/browser/inlineProgress.js",
+      "sha256": "ad9b0fb1e8b4fca839c7f185bf32b25a7dcbbcee6fefbb6b3c5fac7d77e976de",
+      "analyzedSha256": "ad9b0fb1e8b4fca839c7f185bf32b25a7dcbbcee6fefbb6b3c5fac7d77e976de"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/inlineProgress/browser/inlineProgressWidget.css",
+      "sha256": "20aaebebacb82e36949c156c4264f1d21e0367563c5205137db15485c0367212",
+      "analyzedSha256": "20aaebebacb82e36949c156c4264f1d21e0367563c5205137db15485c0367212"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/longLinesHelper/browser/longLinesHelper.js",
+      "sha256": "ab85c0fd355b92a24e5b089de0a1058ae90185bedb2891d1b87f9b83ec68f358",
+      "analyzedSha256": "ab85c0fd355b92a24e5b089de0a1058ae90185bedb2891d1b87f9b83ec68f358"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/message/browser/messageController.css",
+      "sha256": "ac45cf3659e0f5a06f345eab9a1dc322a791d01501e94bcf9b54a60b90713e58",
+      "analyzedSha256": "ac45cf3659e0f5a06f345eab9a1dc322a791d01501e94bcf9b54a60b90713e58"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/message/browser/messageController.js",
+      "sha256": "2ad01fd010af7dc723516ef05c8f907c7efb330927a17ed0957f7946f61724bc",
+      "analyzedSha256": "2ad01fd010af7dc723516ef05c8f907c7efb330927a17ed0957f7946f61724bc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/multicursor/browser/multicursor.js",
+      "sha256": "207a3dff19da8700dcaf39fc78927e57c62b7025b7712a74d830300ad0b6216c",
+      "analyzedSha256": "207a3dff19da8700dcaf39fc78927e57c62b7025b7712a74d830300ad0b6216c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/peekView/browser/media/peekViewWidget.css",
+      "sha256": "523544c6a90fd41e345b29131fd84fd17d19149df670348dc2267af58905f13a",
+      "analyzedSha256": "523544c6a90fd41e345b29131fd84fd17d19149df670348dc2267af58905f13a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/peekView/browser/peekView.js",
+      "sha256": "245d22d35544936d15e8de979eda8e381e7a57e539d9f0b7bbfbb334a8ff4923",
+      "analyzedSha256": "245d22d35544936d15e8de979eda8e381e7a57e539d9f0b7bbfbb334a8ff4923"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/quickAccess/browser/editorNavigationQuickAccess.js",
+      "sha256": "d973db3c1b1d057934963aa879d84c9f2689965d8a487c04624fc8e2027a4303",
+      "analyzedSha256": "d973db3c1b1d057934963aa879d84c9f2689965d8a487c04624fc8e2027a4303"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/quickAccess/browser/gotoLineQuickAccess.js",
+      "sha256": "73c34027ead0232c8855ceea9a5bda5bbcfc0a4d4cb14b29d051290b45303b2b",
+      "analyzedSha256": "73c34027ead0232c8855ceea9a5bda5bbcfc0a4d4cb14b29d051290b45303b2b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/smartSelect/browser/bracketSelections.js",
+      "sha256": "3beb7fda6f7ac9bee6f8d3bfec4cdf7bcba2fc1d3c88274852b0384af37a7873",
+      "analyzedSha256": "3beb7fda6f7ac9bee6f8d3bfec4cdf7bcba2fc1d3c88274852b0384af37a7873"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/smartSelect/browser/smartSelect.js",
+      "sha256": "f41ee68ea075e4d418a3838832f22d4bd29e4d744114ee4a22cac2f62133911e",
+      "analyzedSha256": "f41ee68ea075e4d418a3838832f22d4bd29e4d744114ee4a22cac2f62133911e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/smartSelect/browser/wordSelections.js",
+      "sha256": "6aefc0466a92ccfa359de068bc4c3e444cdbbd2b2ad6836e58eb46ea15e1c621",
+      "analyzedSha256": "6aefc0466a92ccfa359de068bc4c3e444cdbbd2b2ad6836e58eb46ea15e1c621"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/snippet/browser/snippetParser.js",
+      "sha256": "b70cb4a6aef8e71bbacdd83b89b4cb48b187a90f812666b3152cf5d8ec582720",
+      "analyzedSha256": "b70cb4a6aef8e71bbacdd83b89b4cb48b187a90f812666b3152cf5d8ec582720"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScroll.css",
+      "sha256": "363fce64750cf96d0b869c0b4da7ee0a6479f3f27d0d4f2e1e1daad082de52a2",
+      "analyzedSha256": "363fce64750cf96d0b869c0b4da7ee0a6479f3f27d0d4f2e1e1daad082de52a2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScrollActions.js",
+      "sha256": "e79d8545b155fd152748df857e2b7e124286883e4379194221134649fd7bf67a",
+      "analyzedSha256": "e79d8545b155fd152748df857e2b7e124286883e4379194221134649fd7bf67a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScrollContribution.js",
+      "sha256": "3e0c93f73c8319198c201169faebf9260a2815b3d5a28072de69cbe6bbad35b1",
+      "analyzedSha256": "3e0c93f73c8319198c201169faebf9260a2815b3d5a28072de69cbe6bbad35b1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScrollController.js",
+      "sha256": "0b98a1dc88f11568a5b50c87ab48a8bdb444a8af45903429af5453af1cf0f38d",
+      "analyzedSha256": "0b98a1dc88f11568a5b50c87ab48a8bdb444a8af45903429af5453af1cf0f38d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScrollElement.js",
+      "sha256": "7af9ed6d076b2bb7b6e8a1fae76cf305282980ca1641a01237c789c959fcd940",
+      "analyzedSha256": "7af9ed6d076b2bb7b6e8a1fae76cf305282980ca1641a01237c789c959fcd940"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScrollModelProvider.js",
+      "sha256": "87bafabc55d8d79ee52724f51c72e102cfcee8f70d60ea331af6c97bac980b5f",
+      "analyzedSha256": "87bafabc55d8d79ee52724f51c72e102cfcee8f70d60ea331af6c97bac980b5f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScrollProvider.js",
+      "sha256": "0ba308bf974f3fb5a9d6f415dc0f70de8fc4d1531d1b1aed4041b065da2938b2",
+      "analyzedSha256": "0ba308bf974f3fb5a9d6f415dc0f70de8fc4d1531d1b1aed4041b065da2938b2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScrollWidget.js",
+      "sha256": "9f70775b1dacf021aa46d4401386f6c13a11251efcd391cd0e3003df861f9fcf",
+      "analyzedSha256": "9f70775b1dacf021aa46d4401386f6c13a11251efcd391cd0e3003df861f9fcf"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/wordHighlighter/browser/highlightDecorations.css",
+      "sha256": "1310cd4a56a525b8c7f0b3e037589b0f97c4517f07aae585444aaf15b6ddd989",
+      "analyzedSha256": "1310cd4a56a525b8c7f0b3e037589b0f97c4517f07aae585444aaf15b6ddd989"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/wordHighlighter/browser/highlightDecorations.js",
+      "sha256": "28dfe93f182db2f7908595c37cc9faee7c6708a72058f20f9cbba51aac7e5dc8",
+      "analyzedSha256": "28dfe93f182db2f7908595c37cc9faee7c6708a72058f20f9cbba51aac7e5dc8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/zoneWidget/browser/zoneWidget.css",
+      "sha256": "b1f9346f00e9767f3caf6deac9fb75e9274671f4ceaaa91c3a34609b152d55de",
+      "analyzedSha256": "b1f9346f00e9767f3caf6deac9fb75e9274671f4ceaaa91c3a34609b152d55de"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/contrib/zoneWidget/browser/zoneWidget.js",
+      "sha256": "811f50d20d073c060084dbbfa7739ec8614e6e5aecd341726e2b462eb4e99e40",
+      "analyzedSha256": "811f50d20d073c060084dbbfa7739ec8614e6e5aecd341726e2b462eb4e99e40"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/editor.api.js",
+      "sha256": "394873c0b943f9d4dbc739c8be0e08f4fef4914a0d2c40956c9d81f347690dac",
+      "analyzedSha256": "394873c0b943f9d4dbc739c8be0e08f4fef4914a0d2c40956c9d81f347690dac"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/colorizer.js",
+      "sha256": "1ce6b1072265c774d59113aaa227638bc8fe77236045237c25435b4a7c495cb9",
+      "analyzedSha256": "1ce6b1072265c774d59113aaa227638bc8fe77236045237c25435b4a7c495cb9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess.js",
+      "sha256": "153e8d9da66317d32a18f3053749b636f0c3bf0084b6b004503a8fa32588e65c",
+      "analyzedSha256": "153e8d9da66317d32a18f3053749b636f0c3bf0084b6b004503a8fa32588e65c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickInput/standaloneQuickInput.css",
+      "sha256": "f8cd646c57a047a7bc8479bcad32e609c6be1eb7917dfb31da397dfe844432bd",
+      "analyzedSha256": "f8cd646c57a047a7bc8479bcad32e609c6be1eb7917dfb31da397dfe844432bd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickInput/standaloneQuickInputService.js",
+      "sha256": "972e46271948d435c9b8d19b6138bd8d747b62ed9d8a5080ee53a5c573aabe25",
+      "analyzedSha256": "972e46271948d435c9b8d19b6138bd8d747b62ed9d8a5080ee53a5c573aabe25"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/standalone-tokens.css",
+      "sha256": "dbf767e2b58fdb1c46a90fd158777b930fcf82d6157817b487158a17c83b2bb6",
+      "analyzedSha256": "dbf767e2b58fdb1c46a90fd158777b930fcf82d6157817b487158a17c83b2bb6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneCodeEditor.js",
+      "sha256": "6f065e29e3983d05f120b4b1a7bd3bf9e9546d95ae7f06aba72f4b09bc8c9996",
+      "analyzedSha256": "6bfe122071d6adbe7342889c7509f7247919180b72dce45e7920df4a07db23f7"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneCodeEditorService.js",
+      "sha256": "d95ad59ea5e569f2ad742de53ae6b702be51fd5595125cf486c6f536a7f2cc6f",
+      "analyzedSha256": "d95ad59ea5e569f2ad742de53ae6b702be51fd5595125cf486c6f536a7f2cc6f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneEditor.js",
+      "sha256": "9b01c590ba788251527458faeb9fa3d6072fc7133c70cefa3eb823efd40817c4",
+      "analyzedSha256": "52b93de99e6e84fab9535dae1b127c98390e5d813eefe7fd87ff8980cf640a93"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneLanguages.js",
+      "sha256": "ab54d1d236064b4aef3387658c118d038f36e082f89f0474dbe35ba39d781740",
+      "analyzedSha256": "ab54d1d236064b4aef3387658c118d038f36e082f89f0474dbe35ba39d781740"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneLayoutService.js",
+      "sha256": "16886eae18fa1d19f0eca1476bfeaef7dc53550497ff1d24beb2a4b31a0f49eb",
+      "analyzedSha256": "16886eae18fa1d19f0eca1476bfeaef7dc53550497ff1d24beb2a4b31a0f49eb"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneServices.js",
+      "sha256": "b274e012bf8b6db78b9714efd22e94c4eea729eef998f3638dd28ec08180ad47",
+      "analyzedSha256": "b274e012bf8b6db78b9714efd22e94c4eea729eef998f3638dd28ec08180ad47"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneThemeService.js",
+      "sha256": "461ded6989e130f743740785aa2b1fa23c8a762e111473598f8cf3d10f13f5e4",
+      "analyzedSha256": "461ded6989e130f743740785aa2b1fa23c8a762e111473598f8cf3d10f13f5e4"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneTreeSitterService.js",
+      "sha256": "4fa45518b3451710cef8c9aed1a42e20b048b3d8cd5817f77dcef919cbc4c1d0",
+      "analyzedSha256": "4fa45518b3451710cef8c9aed1a42e20b048b3d8cd5817f77dcef919cbc4c1d0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneWebWorker.js",
+      "sha256": "1faa026a86e4fdb27b865a8ae11e072ae5dc1ef5678a5e480146a8908df4a718",
+      "analyzedSha256": "1faa026a86e4fdb27b865a8ae11e072ae5dc1ef5678a5e480146a8908df4a718"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/common/monarch/monarchCommon.js",
+      "sha256": "b03132f70478a8233b03accd995f42db38ad3b193db9aa04600efd5f90c4702d",
+      "analyzedSha256": "b03132f70478a8233b03accd995f42db38ad3b193db9aa04600efd5f90c4702d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/common/monarch/monarchCompile.js",
+      "sha256": "20393c20797aba769244ca9afb7567322f4642b19c34cc6dd5cc9f22aeca32f6",
+      "analyzedSha256": "20393c20797aba769244ca9afb7567322f4642b19c34cc6dd5cc9f22aeca32f6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/common/monarch/monarchLexer.js",
+      "sha256": "386286ab9deb160553a25a0612f2f3bcc67e75f9048798ed1d997d041fb15cc1",
+      "analyzedSha256": "386286ab9deb160553a25a0612f2f3bcc67e75f9048798ed1d997d041fb15cc1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/common/standaloneTheme.js",
+      "sha256": "b51eb73373e660096deae2daf20036e5cbbfe986a91a428e6a231351428b54b2",
+      "analyzedSha256": "b51eb73373e660096deae2daf20036e5cbbfe986a91a428e6a231351428b54b2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/standalone/common/themes.js",
+      "sha256": "2e503121c652976536c2fd7bd96b09f9038723c60a065054fe6d1ff4f69a604c",
+      "analyzedSha256": "2e503121c652976536c2fd7bd96b09f9038723c60a065054fe6d1ff4f69a604c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/language/json/jsonMode.js",
+      "sha256": "ad6dad47d4d186fe8b11f573f168d3129ba1799c8c5ee87ed1607f3d40fc805a",
+      "analyzedSha256": "ad6dad47d4d186fe8b11f573f168d3129ba1799c8c5ee87ed1607f3d40fc805a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/language/json/monaco.contribution.js",
+      "sha256": "6be5f489a96aec11e5aa1c8412236cc694e0caef91ba872a1ccd9bc7dc19a962",
+      "analyzedSha256": "6be5f489a96aec11e5aa1c8412236cc694e0caef91ba872a1ccd9bc7dc19a962"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/nls.js",
+      "sha256": "5516d23cb6f19010684cd463e39e80bff96ec134ffecd1242c8fea7ce0ee260d",
+      "analyzedSha256": "5516d23cb6f19010684cd463e39e80bff96ec134ffecd1242c8fea7ce0ee260d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/nls.messages.js",
+      "sha256": "bd4ba7fa160282ea7bc51a98407ca2b4acda86fd9312dc4da5a74abd89f59b2f",
+      "analyzedSha256": "bd4ba7fa160282ea7bc51a98407ca2b4acda86fd9312dc4da5a74abd89f59b2f"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/accessibility/browser/accessibilityService.js",
+      "sha256": "c17804c261ad9cd789a0dc439cc104e58ae836be717f387b9719613420901970",
+      "analyzedSha256": "c17804c261ad9cd789a0dc439cc104e58ae836be717f387b9719613420901970"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/accessibility/common/accessibility.js",
+      "sha256": "e446203ec2bc2c0f1a30d219de29490c3eefc552ac1d8db530be6286d3789274",
+      "analyzedSha256": "e446203ec2bc2c0f1a30d219de29490c3eefc552ac1d8db530be6286d3789274"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/accessibilitySignal/browser/accessibilitySignalService.js",
+      "sha256": "834639aec2e6d9a0c7050cdb673192ae8b2bb1d27da7692c8648255e33731e45",
+      "analyzedSha256": "834639aec2e6d9a0c7050cdb673192ae8b2bb1d27da7692c8648255e33731e45"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/action/common/action.js",
+      "sha256": "84c42611d5a8668cabca19629aa58ca80a064ae9af541b5c92198a210ae2e02e",
+      "analyzedSha256": "84c42611d5a8668cabca19629aa58ca80a064ae9af541b5c92198a210ae2e02e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/action/common/actionCommonCategories.js",
+      "sha256": "c63535f8bf6f3a6d7f7177296d56efe21a91266b020953bc4db38f6ef10094c3",
+      "analyzedSha256": "c63535f8bf6f3a6d7f7177296d56efe21a91266b020953bc4db38f6ef10094c3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/actions/browser/menuEntryActionViewItem.css",
+      "sha256": "aba728198854533a04bdc1b294e278d8726af6692880dfb232647887009f3aa1",
+      "analyzedSha256": "aba728198854533a04bdc1b294e278d8726af6692880dfb232647887009f3aa1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/actions/browser/menuEntryActionViewItem.js",
+      "sha256": "a28a0cffb900fa53d26b21754ab61e81e6ecc8f55c80c58c85f400ea5d50c056",
+      "analyzedSha256": "a28a0cffb900fa53d26b21754ab61e81e6ecc8f55c80c58c85f400ea5d50c056"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/actions/common/actions.js",
+      "sha256": "39d6c34fcfffd01589f583f2ea75905f7acf15bfa07ffcfab6ba83b1b61ee473",
+      "analyzedSha256": "39d6c34fcfffd01589f583f2ea75905f7acf15bfa07ffcfab6ba83b1b61ee473"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/actions/common/menuService.js",
+      "sha256": "f6d4c83a208562637236338ace7288c6f01280a07e5cac4db2937b9bdfa8eaca",
+      "analyzedSha256": "f6d4c83a208562637236338ace7288c6f01280a07e5cac4db2937b9bdfa8eaca"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/clipboard/browser/clipboardService.js",
+      "sha256": "beb5ba8b08dfb7ca8aafbfffc54fba5fa3a8e2db3919d2d6599a57f9b46c6557",
+      "analyzedSha256": "beb5ba8b08dfb7ca8aafbfffc54fba5fa3a8e2db3919d2d6599a57f9b46c6557"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/clipboard/common/clipboardService.js",
+      "sha256": "6c1c61f1b235158b8bfbab29e0b522206816d715b86c56c29ea8cc58152baf1b",
+      "analyzedSha256": "6c1c61f1b235158b8bfbab29e0b522206816d715b86c56c29ea8cc58152baf1b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/commands/common/commands.js",
+      "sha256": "da2d53efde06930c8373604352f642d3a569bb563ef9a5f84badeee11b8347fd",
+      "analyzedSha256": "da2d53efde06930c8373604352f642d3a569bb563ef9a5f84badeee11b8347fd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/configuration/common/configuration.js",
+      "sha256": "24d95c09690be43e2efbedeac4624b97e4a94102ba8a80d9661f2e9122bcb966",
+      "analyzedSha256": "24d95c09690be43e2efbedeac4624b97e4a94102ba8a80d9661f2e9122bcb966"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/configuration/common/configurationModels.js",
+      "sha256": "2f9249d681ef2baf21421a53e867538744ccf1685a05fc7cbbccd50cac51a431",
+      "analyzedSha256": "2f9249d681ef2baf21421a53e867538744ccf1685a05fc7cbbccd50cac51a431"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/configuration/common/configurationRegistry.js",
+      "sha256": "d9d0d6122b4c2ad40a6ede2e94513d788a1c8246bc6ba7ec3787091eb7bf1fbc",
+      "analyzedSha256": "d9d0d6122b4c2ad40a6ede2e94513d788a1c8246bc6ba7ec3787091eb7bf1fbc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/configuration/common/configurations.js",
+      "sha256": "aa6895a853d5b0295c6b75e9d24394750e3d8f9fe060d2d907967f430ba67ede",
+      "analyzedSha256": "aa6895a853d5b0295c6b75e9d24394750e3d8f9fe060d2d907967f430ba67ede"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/contextkey/browser/contextKeyService.js",
+      "sha256": "0bb5f6b989a240ec083c539a1b7b07baf37adc539ff44a255cc40e7447864c7e",
+      "analyzedSha256": "0bb5f6b989a240ec083c539a1b7b07baf37adc539ff44a255cc40e7447864c7e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/contextkey/common/contextkey.js",
+      "sha256": "f050255d7139571aae090799896c91e4da133b410f37a2464cbce15dc3ee39fa",
+      "analyzedSha256": "f050255d7139571aae090799896c91e4da133b410f37a2464cbce15dc3ee39fa"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/contextkey/common/contextkeys.js",
+      "sha256": "de28373b30b27fb816d626371513f57523948a1a5c78feafb53ae8b7a40078d5",
+      "analyzedSha256": "de28373b30b27fb816d626371513f57523948a1a5c78feafb53ae8b7a40078d5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/contextkey/common/scanner.js",
+      "sha256": "56c8a092cdc3abeaa6f1ff66df468b044a6630ba93cd0497e172dab4f71d89ee",
+      "analyzedSha256": "56c8a092cdc3abeaa6f1ff66df468b044a6630ba93cd0497e172dab4f71d89ee"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextMenuHandler.js",
+      "sha256": "7c89cac9dbf23864b3d97dd3b9d2bd4e898bb4a6a828b393de7e6b809b809efc",
+      "analyzedSha256": "7c89cac9dbf23864b3d97dd3b9d2bd4e898bb4a6a828b393de7e6b809b809efc"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextMenuService.js",
+      "sha256": "0e5f186421029b3d41b9a376cff0e1c2103266e2bad45f02a8ad2c0f2a3e17a6",
+      "analyzedSha256": "0e5f186421029b3d41b9a376cff0e1c2103266e2bad45f02a8ad2c0f2a3e17a6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextView.js",
+      "sha256": "8c494b8e7af0d579918514c871b4e08c62df3e8995a514f6fa135115a3dd7826",
+      "analyzedSha256": "8c494b8e7af0d579918514c871b4e08c62df3e8995a514f6fa135115a3dd7826"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextViewService.js",
+      "sha256": "6ef01d30b32b927e707228bac535db63d7cbd244ace19af68de63be6fd084644",
+      "analyzedSha256": "6ef01d30b32b927e707228bac535db63d7cbd244ace19af68de63be6fd084644"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/dialogs/common/dialogs.js",
+      "sha256": "9dd369edb7dc0ff81096a737d7b79139a69424648b3d575ab6bb776348716dda",
+      "analyzedSha256": "9dd369edb7dc0ff81096a737d7b79139a69424648b3d575ab6bb776348716dda"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/dnd/browser/dnd.js",
+      "sha256": "fca939681260a0f3808f08246d1d792f2907da5c42bab854d7f9f0abe0ed037b",
+      "analyzedSha256": "fca939681260a0f3808f08246d1d792f2907da5c42bab854d7f9f0abe0ed037b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/editor/common/editor.js",
+      "sha256": "243689081f8cc9a2b491edd48797dbd51015898ac65c10d6ffc1149d778a003c",
+      "analyzedSha256": "243689081f8cc9a2b491edd48797dbd51015898ac65c10d6ffc1149d778a003c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/environment/common/environment.js",
+      "sha256": "2d23d0c83bc958b30a1b89d7bc2e1a8b1d20476c1887aee4212fb351b2929cf1",
+      "analyzedSha256": "2d23d0c83bc958b30a1b89d7bc2e1a8b1d20476c1887aee4212fb351b2929cf1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/extensions/common/extensions.js",
+      "sha256": "3c2b2064934e4690bfeec63bf2367373e5fb227fe68b638c0df3afb2f45b73d9",
+      "analyzedSha256": "3c2b2064934e4690bfeec63bf2367373e5fb227fe68b638c0df3afb2f45b73d9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/history/browser/contextScopedHistoryWidget.js",
+      "sha256": "721f43400b0cbb43473336dfd2604abccca03ed70d2041de7d3be3850f7f36e5",
+      "analyzedSha256": "721f43400b0cbb43473336dfd2604abccca03ed70d2041de7d3be3850f7f36e5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/history/browser/historyWidgetKeybindingHint.js",
+      "sha256": "b99e9c151b8dc77b3755b0df68109c027d9b2c0533047fba04b581433fd55e50",
+      "analyzedSha256": "b99e9c151b8dc77b3755b0df68109c027d9b2c0533047fba04b581433fd55e50"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/hover/browser/hover.js",
+      "sha256": "c82480ae721f900944001d0e286c03d37f8ef71b57651c845cad91d3201cf319",
+      "analyzedSha256": "c82480ae721f900944001d0e286c03d37f8ef71b57651c845cad91d3201cf319"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/instantiation/common/descriptors.js",
+      "sha256": "e4c86194e41f71deb0231337a99dcc93c0cfae96fc6498e49c2775b7f9bf2223",
+      "analyzedSha256": "e4c86194e41f71deb0231337a99dcc93c0cfae96fc6498e49c2775b7f9bf2223"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/instantiation/common/extensions.js",
+      "sha256": "4f33fed6f2f30e988e7facc206413607c8149c162d4221d8695c243d66444fa6",
+      "analyzedSha256": "4f33fed6f2f30e988e7facc206413607c8149c162d4221d8695c243d66444fa6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/instantiation/common/graph.js",
+      "sha256": "71755f0b37df51bf0c8fbd72134d577b285483bcbf03dfbb39896ad1120b42de",
+      "analyzedSha256": "71755f0b37df51bf0c8fbd72134d577b285483bcbf03dfbb39896ad1120b42de"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/instantiation/common/instantiation.js",
+      "sha256": "3bcebdca4fa4c8df875ca7381433d5ac6d96a551dd2539f4ea390bf2b62fe382",
+      "analyzedSha256": "3bcebdca4fa4c8df875ca7381433d5ac6d96a551dd2539f4ea390bf2b62fe382"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/instantiation/common/instantiationService.js",
+      "sha256": "fe0e3928efb123fe3e13c77f57bb3e19769f60a378e104e72aa4caea627466a9",
+      "analyzedSha256": "fe0e3928efb123fe3e13c77f57bb3e19769f60a378e104e72aa4caea627466a9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/instantiation/common/serviceCollection.js",
+      "sha256": "d3aa76ec8f68b94c50606e3f3d5ca4955e9b67c0e83fcda177b03bbf329ac854",
+      "analyzedSha256": "d3aa76ec8f68b94c50606e3f3d5ca4955e9b67c0e83fcda177b03bbf329ac854"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/jsonschemas/common/jsonContributionRegistry.js",
+      "sha256": "582a623b19142013b21a48c58fe41242d29f3286aa41c6a4184742a06d2cb93d",
+      "analyzedSha256": "582a623b19142013b21a48c58fe41242d29f3286aa41c6a4184742a06d2cb93d"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/keybinding/common/abstractKeybindingService.js",
+      "sha256": "f08d67680724bbff9564b1e19036e6c1be01074c63f143d7c28915452232b628",
+      "analyzedSha256": "f08d67680724bbff9564b1e19036e6c1be01074c63f143d7c28915452232b628"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/keybinding/common/baseResolvedKeybinding.js",
+      "sha256": "dd0a029f59cccda74b9b92201033c620c6a58aeb3547be4bc5fe9580f2661984",
+      "analyzedSha256": "dd0a029f59cccda74b9b92201033c620c6a58aeb3547be4bc5fe9580f2661984"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/keybinding/common/keybinding.js",
+      "sha256": "dba4da3af7dbaee4de1ae1001ef038b615f87d7dd66705078b0602324489f098",
+      "analyzedSha256": "dba4da3af7dbaee4de1ae1001ef038b615f87d7dd66705078b0602324489f098"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/keybinding/common/keybindingResolver.js",
+      "sha256": "68268af53c9a2f707b8f8dff7d1f059fad86df625854813c353a088780a02e72",
+      "analyzedSha256": "68268af53c9a2f707b8f8dff7d1f059fad86df625854813c353a088780a02e72"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/keybinding/common/keybindingsRegistry.js",
+      "sha256": "4ec0979d816cd0890165c9139964575151d9ee03b272c59824077797010e8b44",
+      "analyzedSha256": "4ec0979d816cd0890165c9139964575151d9ee03b272c59824077797010e8b44"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/keybinding/common/resolvedKeybindingItem.js",
+      "sha256": "7c18afa41f17ea48f2a066ea2f26cd2e047c307af28b2086cd4002ba96cf1e8c",
+      "analyzedSha256": "7c18afa41f17ea48f2a066ea2f26cd2e047c307af28b2086cd4002ba96cf1e8c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/keybinding/common/usLayoutResolvedKeybinding.js",
+      "sha256": "9243c601785cae73147a8c63a00ce658ca18f365c4a2e95ee8e95c2c2ce65351",
+      "analyzedSha256": "9243c601785cae73147a8c63a00ce658ca18f365c4a2e95ee8e95c2c2ce65351"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/label/common/label.js",
+      "sha256": "130dab8b0fe94a6aafa7cbf881c00118e43c53938905ac52de90f365aeee55b2",
+      "analyzedSha256": "130dab8b0fe94a6aafa7cbf881c00118e43c53938905ac52de90f365aeee55b2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/layout/browser/layoutService.js",
+      "sha256": "33d539061f21055dcd7c8cb0da984a85a5ad5e44db876e06e8453afe6cd024e1",
+      "analyzedSha256": "33d539061f21055dcd7c8cb0da984a85a5ad5e44db876e06e8453afe6cd024e1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/list/browser/listService.js",
+      "sha256": "537d3a5ac553fe320dafb0be49c805ee6d6d4e973ba40b623f0470ccf6448531",
+      "analyzedSha256": "537d3a5ac553fe320dafb0be49c805ee6d6d4e973ba40b623f0470ccf6448531"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/log/common/log.js",
+      "sha256": "8aad17c911053ac1d43304b8ae81be79af2cd9160beb01169974a404b4cb6377",
+      "analyzedSha256": "8aad17c911053ac1d43304b8ae81be79af2cd9160beb01169974a404b4cb6377"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/log/common/logService.js",
+      "sha256": "2bc0d85e4c587ffe02aa8c376e6f6854fc50d881d35f03c5289af0717ce54124",
+      "analyzedSha256": "2bc0d85e4c587ffe02aa8c376e6f6854fc50d881d35f03c5289af0717ce54124"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/markers/common/markers.js",
+      "sha256": "1efd17ef83bc5a67a5a8438185bc0fad7014be87aee3c45983d54a7d765a6be3",
+      "analyzedSha256": "1efd17ef83bc5a67a5a8438185bc0fad7014be87aee3c45983d54a7d765a6be3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/markers/common/markerService.js",
+      "sha256": "49915cd47a5f1893f99019d2d55ddc093b2af75a49b8ad0c6c7bdc8a80006bfd",
+      "analyzedSha256": "49915cd47a5f1893f99019d2d55ddc093b2af75a49b8ad0c6c7bdc8a80006bfd"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/notification/common/notification.js",
+      "sha256": "9669a61cc364fd8c3b9c07aeaeeba6e258ee253da1989a2e1d825b35adaffb37",
+      "analyzedSha256": "9669a61cc364fd8c3b9c07aeaeeba6e258ee253da1989a2e1d825b35adaffb37"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/opener/common/opener.js",
+      "sha256": "b0e6f68add5ac12351cc4cd532aec0ccee38dd2dda1ddaa1a263ab2f3ca103c8",
+      "analyzedSha256": "b0e6f68add5ac12351cc4cd532aec0ccee38dd2dda1ddaa1a263ab2f3ca103c8"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/progress/common/progress.js",
+      "sha256": "b34906918c1610f47e59faae4c63896ec91f3cc8c5b98630be5e0746ae3a0ce0",
+      "analyzedSha256": "b34906918c1610f47e59faae4c63896ec91f3cc8c5b98630be5e0746ae3a0ce0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/browser/media/quickInput.css",
+      "sha256": "a09a29ec4b137d4dc69479c7e0789a3670f6f265d5eb5ad860d950a48aa6b121",
+      "analyzedSha256": "a09a29ec4b137d4dc69479c7e0789a3670f6f265d5eb5ad860d950a48aa6b121"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickAccess.js",
+      "sha256": "d379b25171f767f0bda5455f67cf96ed6125983d6488dd699784d31d8729c53a",
+      "analyzedSha256": "d379b25171f767f0bda5455f67cf96ed6125983d6488dd699784d31d8729c53a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInput.js",
+      "sha256": "cd86bc0949c52e93b7038641b3561cae1acbb01c9b5e8a93910d0f764d7191f6",
+      "analyzedSha256": "cd86bc0949c52e93b7038641b3561cae1acbb01c9b5e8a93910d0f764d7191f6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputActions.js",
+      "sha256": "c5bc8d4572713765816552f539c36596e491d0478cd2cd42dfcf34d228775faa",
+      "analyzedSha256": "c5bc8d4572713765816552f539c36596e491d0478cd2cd42dfcf34d228775faa"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputBox.js",
+      "sha256": "3108cbd279701cfed0bf221991d2588a2abea1283e4d0d09da9a56c9fbe70c71",
+      "analyzedSha256": "3108cbd279701cfed0bf221991d2588a2abea1283e4d0d09da9a56c9fbe70c71"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputController.js",
+      "sha256": "f2fa247d09dd84ab6c3c1e4179854ba706a1fa0658294fa07e846b22cfef4468",
+      "analyzedSha256": "f2fa247d09dd84ab6c3c1e4179854ba706a1fa0658294fa07e846b22cfef4468"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputService.js",
+      "sha256": "ccc3c93556db608c0d22390187b7da818eb34bb4949f9acaa03151703f6e0c5c",
+      "analyzedSha256": "ccc3c93556db608c0d22390187b7da818eb34bb4949f9acaa03151703f6e0c5c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputTree.js",
+      "sha256": "27f0d7762d840b067b877f0fd0e29dd4f7e605c501a03346ddb4bde3f1c4240b",
+      "analyzedSha256": "27f0d7762d840b067b877f0fd0e29dd4f7e605c501a03346ddb4bde3f1c4240b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputUtils.js",
+      "sha256": "0d00a0d1c2d2b9c9d89c8e59448fcab7888d00e9712e9cc14fa6e954459216f9",
+      "analyzedSha256": "0d00a0d1c2d2b9c9d89c8e59448fcab7888d00e9712e9cc14fa6e954459216f9"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/common/quickAccess.js",
+      "sha256": "06066cb6b6b1b3e0848bb27502a7db1e44cc3c9ff875b80e279dc9098ebe7c1e",
+      "analyzedSha256": "06066cb6b6b1b3e0848bb27502a7db1e44cc3c9ff875b80e279dc9098ebe7c1e"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/quickinput/common/quickInput.js",
+      "sha256": "bbac4aac0dd47d7a06fdc320891cd513dbd22222610e1aa07fb8f11de8a0efa0",
+      "analyzedSha256": "bbac4aac0dd47d7a06fdc320891cd513dbd22222610e1aa07fb8f11de8a0efa0"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/registry/common/platform.js",
+      "sha256": "3aae22dbb7febfc6f3e70a9a69fd7e0e9db145ea942130ee405494e44f59cfce",
+      "analyzedSha256": "3aae22dbb7febfc6f3e70a9a69fd7e0e9db145ea942130ee405494e44f59cfce"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/storage/common/storage.js",
+      "sha256": "de57ba072eae7102843d6d391f0f18f4f0075406b525278c852179e5ee7862d2",
+      "analyzedSha256": "de57ba072eae7102843d6d391f0f18f4f0075406b525278c852179e5ee7862d2"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/telemetry/common/telemetry.js",
+      "sha256": "bd20336cc394f5837ae021a417cec72a35c7d456eec70add07b86512f67e1ed5",
+      "analyzedSha256": "bd20336cc394f5837ae021a417cec72a35c7d456eec70add07b86512f67e1ed5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/browser/defaultStyles.js",
+      "sha256": "1cca9805e8c710dddda9db356495fc4665220dc35c2849b1f3fcf3f92e9ef7a3",
+      "analyzedSha256": "1cca9805e8c710dddda9db356495fc4665220dc35c2849b1f3fcf3f92e9ef7a3"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/browser/iconsStyleSheet.js",
+      "sha256": "ff75812803678b5dd2c00758a35cbe954a29b645f058cdf4e9311ba4130da2e6",
+      "analyzedSha256": "ff75812803678b5dd2c00758a35cbe954a29b645f058cdf4e9311ba4130da2e6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colorRegistry.js",
+      "sha256": "e7d4dd06cd5744485c2be1a48a4d4583db06ce5aa9240989d93d622793d7f925",
+      "analyzedSha256": "e7d4dd06cd5744485c2be1a48a4d4583db06ce5aa9240989d93d622793d7f925"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colors/baseColors.js",
+      "sha256": "8d879c2779740383d778271e3142d7dbfb59fece56b768dbb449b64a7ea961a6",
+      "analyzedSha256": "8d879c2779740383d778271e3142d7dbfb59fece56b768dbb449b64a7ea961a6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colors/chartsColors.js",
+      "sha256": "ab678e2101a9a2e889b0262a57a822d3c2bb9cb199ac175bab0d35fd1927ccd6",
+      "analyzedSha256": "ab678e2101a9a2e889b0262a57a822d3c2bb9cb199ac175bab0d35fd1927ccd6"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colors/editorColors.js",
+      "sha256": "32cc6ed31f2304369c0b78f907d632f0e166c23c4233ec0fd946ede49648ac8b",
+      "analyzedSha256": "32cc6ed31f2304369c0b78f907d632f0e166c23c4233ec0fd946ede49648ac8b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colors/inputColors.js",
+      "sha256": "17b22e8de34fb905b4af12dbd4a5d7b6fa7b75888b4b988e1cf400f600ee3648",
+      "analyzedSha256": "17b22e8de34fb905b4af12dbd4a5d7b6fa7b75888b4b988e1cf400f600ee3648"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colors/listColors.js",
+      "sha256": "ba72f69f1afbb2cb9c8c1abc9b87a6d31c76d236616913312351de08ed9db895",
+      "analyzedSha256": "ba72f69f1afbb2cb9c8c1abc9b87a6d31c76d236616913312351de08ed9db895"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colors/menuColors.js",
+      "sha256": "87533c091be311709ee73df1e35830b2825810b65d991e90ed0c8626a4dd4621",
+      "analyzedSha256": "87533c091be311709ee73df1e35830b2825810b65d991e90ed0c8626a4dd4621"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colors/minimapColors.js",
+      "sha256": "9a339a31791e7ac74c4580846f00b7f3e73e0110f675e919539d26ed4536e2c5",
+      "analyzedSha256": "9a339a31791e7ac74c4580846f00b7f3e73e0110f675e919539d26ed4536e2c5"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colors/miscColors.js",
+      "sha256": "d68975f4b9aa3d1b48cc638913bc9e5c0f791d276d19f803cb0f998170d87904",
+      "analyzedSha256": "d68975f4b9aa3d1b48cc638913bc9e5c0f791d276d19f803cb0f998170d87904"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colors/quickpickColors.js",
+      "sha256": "a2a9c1dc2bc57cd45b0fec2e2d07574d4146d288235d91c3658efca85ded0b1b",
+      "analyzedSha256": "a2a9c1dc2bc57cd45b0fec2e2d07574d4146d288235d91c3658efca85ded0b1b"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colors/searchColors.js",
+      "sha256": "b589ad30b7a225c20a9377bc8bf27b7b8c0f7693ed530b07d9724fa4db1ee044",
+      "analyzedSha256": "b589ad30b7a225c20a9377bc8bf27b7b8c0f7693ed530b07d9724fa4db1ee044"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/colorUtils.js",
+      "sha256": "fbcb563dbfd8034b96a20419fb02279ae1dc9dca23b0fa6a8e217015006085da",
+      "analyzedSha256": "fbcb563dbfd8034b96a20419fb02279ae1dc9dca23b0fa6a8e217015006085da"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/iconRegistry.js",
+      "sha256": "a32c47eec7bcccd955e65b5adfaf0719d26433c5b12e1dbde50ba62c9d97da9c",
+      "analyzedSha256": "a32c47eec7bcccd955e65b5adfaf0719d26433c5b12e1dbde50ba62c9d97da9c"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/theme.js",
+      "sha256": "77be859d33e7cb2be2064e99fdadfc34ce0ec4a0861a593015229c88001c124a",
+      "analyzedSha256": "77be859d33e7cb2be2064e99fdadfc34ce0ec4a0861a593015229c88001c124a"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/theme/common/themeService.js",
+      "sha256": "1601bc0297598f4c10a5c5749fbd5ecbe6b1602bbe04a834290f170d3ccbdf27",
+      "analyzedSha256": "1601bc0297598f4c10a5c5749fbd5ecbe6b1602bbe04a834290f170d3ccbdf27"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/undoRedo/common/undoRedo.js",
+      "sha256": "bf4979392873bd360083bc5328b79886ca22e27c661e1447ac438676b2c20a10",
+      "analyzedSha256": "bf4979392873bd360083bc5328b79886ca22e27c661e1447ac438676b2c20a10"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/undoRedo/common/undoRedoService.js",
+      "sha256": "3535585ea5c01954f391e96dd624fb7f57b96a42011960b9d070341c75015a65",
+      "analyzedSha256": "3535585ea5c01954f391e96dd624fb7f57b96a42011960b9d070341c75015a65"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/workspace/common/workspace.js",
+      "sha256": "749cb753302c1f134d024a5813bfdb904ef6809c505e66e1a6b6591a799ea0d1",
+      "analyzedSha256": "749cb753302c1f134d024a5813bfdb904ef6809c505e66e1a6b6591a799ea0d1"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/platform/workspace/common/workspaceTrust.js",
+      "sha256": "2b7022151716d5aaed21765c568ced6f269ffa02e508b55af0bbbceeca029944",
+      "analyzedSha256": "2b7022151716d5aaed21765c568ced6f269ffa02e508b55af0bbbceeca029944"
+    },
+    {
+      "file": "src/components/utils/monacoQuickInput.css",
+      "sha256": "9c70f2af91bc06d713b18747047d801bc7cf9c9bcb46af12d0cefe8b62e60e9b",
+      "analyzedSha256": "9c70f2af91bc06d713b18747047d801bc7cf9c9bcb46af12d0cefe8b62e60e9b"
+    },
+    {
+      "file": "src/components/utils/monacoRuntimeImpl.ts",
+      "sha256": "4061653c0717d9aeeb7b4fb90346726d9e98349321e082dcd56b77613b2d60d8",
+      "analyzedSha256": "4061653c0717d9aeeb7b4fb90346726d9e98349321e082dcd56b77613b2d60d8"
+    }
+  ],
+  "dynamicImports": [
+    {
+      "file": "node_modules/monaco-editor/esm/vs/editor/common/services/editorSimpleWorker.js",
+      "expression": "import(`${url}`)"
+    },
+    {
+      "file": "node_modules/monaco-editor/esm/vs/base/common/worker/simpleWorker.js",
+      "expression": "import(`${url}`)"
+    }
+  ],
+  "skippedWorkerImports": [
+    {
+      "file": "src/components/utils/monacoRuntimeImpl.ts",
+      "spec": "monaco-editor/esm/vs/editor/editor.worker?worker"
+    },
+    {
+      "file": "src/components/utils/monacoRuntimeImpl.ts",
+      "spec": "monaco-editor/esm/vs/language/json/json.worker?worker"
+    }
+  ],
+  "unresolvedIds": [
+    "debug-gripper"
+  ],
+  "adapter": {
+    "file": "scripts/vite/monaco-single-editor.mjs",
+    "sha256": "a7220f2ad0e76477f4c1770f909454482676b592eba35f82c2e4d32320e66a9f"
+  },
+  "applicationFiles": {
+    "src/components/JsonToolWorkbench.vue": "f0ab3fe3abf7b2ecb59e764a4f98ccc3fa31d9e1ee3de4af61c7b4c7eff358c9",
+    "src/components/composables/useEditorContextMenu.ts": "db6132fd1e1b476b3919d13e389e7cee67e5a33573d7bc7b8d7cbe2855160332",
+    "src/components/utils/i18n.ts": "93459991b16a49ddf3cdad53fb1c186e678cd0bc369398e48eb066d4cec7faf4",
+    "src/components/composables/useMonacoLanguageRegistry.ts": "d78fe6472a6aee467f2f2c6861411ecb5831272fc75b222f05072a8a9d4e3f58",
+    "src/components/utils/jsonLanguageActivation.ts": "7e62d8c42e9aec40b7ed6aeb99da8a73697124cd29aa06f42d52382abf0c1f2c",
+    "src/components/utils/monacoRuntime.ts": "d0cf6fef4dd9086ea5d6b5e1548ad8c1f4db8fd7b1a93ca8e75ebf70a0033d03",
+    "src/components/composables/diffEditorRuntime.ts": "f59f8ac109e616d99657c68dac69780324845c651f1a4270860e867d93eb29a6",
+    "src/components/composables/useDiffEditors.ts": "24a27a68afa447bffcedec48fbdc6f850966c17bf5a94cc9c3ab66e99713e63b"
+  },
+  "boundary": "Reviewed extension workbench only. Captured JSON and user text are not interpreted as icon labels. New contributions, action/decorative icons, dynamic labels, or Monaco APIs need review. Runtime custom fonts remain supported. Baseline debug-gripper has no registered glyph."
+}

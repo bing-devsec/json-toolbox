@@ -1,7 +1,7 @@
 // 与 src/style.css 的 --json-tool-font-code 保持一致。
-// 保留 macOS 的 Menlo/Monaco 和 Windows 的 Consolas，并明确中文后备字体。
+// 优先使用随扩展提供的 JetBrains Mono，保留系统等宽及中文后备字体。
 export const JSON_TOOL_EDITOR_FONT_OPTIONS = {
-    fontFamily: "Menlo, Monaco, Consolas, 'Droid Sans Mono', 'Liberation Mono', 'Courier New', 'PingFang SC', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace",
+    fontFamily: "'JetBrains Mono', Menlo, Monaco, Consolas, 'Droid Sans Mono', 'Liberation Mono', 'Courier New', 'PingFang SC', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace",
     fontWeight: 'normal',
     fontLigatures: false,
 } as const;
