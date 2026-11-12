@@ -133,7 +133,7 @@ test('manual size changes update both normal editors, Diff options and layout wi
             scheduleDiffRecompute: () => layout.recompute++, configureJsonSchemaSupport() {},
             refreshInputEditorErrors() {}, checkToolBarScroll() {},
         }));
-        for (const [fontSize, lineHeight] of [[14, 20], [12, 17], [13, 18]]) {
+        for (const [fontSize, lineHeight] of [[14, 20], [12, 16], [13, 18]]) {
             settings.fontSize.value = fontSize;
             dialog.updateFontSize(); await vue.nextTick();
             for (const options of [normal[0].at(-1), normal[1].at(-1), diff.at(-1)]) {

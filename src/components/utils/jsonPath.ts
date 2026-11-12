@@ -1,6 +1,9 @@
 // JSON 路径解析与读写工具
 // 支持点号路径（a.b.c）以及数组语法（a[0]、a[*]）
 
+// Complete lightweight paths only; incomplete bracket input belongs to autocomplete.
+export const isValidJsonPath = (path: string): boolean => !path || /^(?:[^.\[\]]+(?:\[(?:\d+|\*)\])*|(?:\[(?:\d+|\*)\])+)(?:\.[^.\[\]]+(?:\[(?:\d+|\*)\])*)*$/.test(path);
+
 export interface PathPart {
     key: string;
     isArray?: boolean;
@@ -9,6 +12,7 @@ export interface PathPart {
 
 // 解析路径字符串，支持数组语法（如 settings[*] 或 settings[0]）
 export const parsePathToParts = (path: string): PathPart[] => {
+    if (!isValidJsonPath(path)) throw new Error(`Invalid JSON path: ${path}`);
     const parts: PathPart[] = [];
     let current = '';
     let inBrackets = false;
@@ -27,26 +31,16 @@ export const parsePathToParts = (path: string): PathPart[] => {
         } else if (char === ']') {
             if (inBrackets) {
                 if (bracketContent === '*' || /^\d+$/.test(bracketContent)) {
-                    // 数组通配符或索引
-                    if (parts.length > 0) {
-                        parts[parts.length - 1].isArray = true;
-                        parts[parts.length - 1].arrayIndex = bracketContent === '*' ? '*' : parseInt(bracketContent, 10);
-                    } else if (current) {
-                        // 如果还没有添加到parts，先添加key，然后标记为数组
-                        parts.push({
-                            key: current,
-                            isArray: true,
-                            arrayIndex: bracketContent === '*' ? '*' : parseInt(bracketContent, 10),
-                        });
-                        current = '';
-                    } else {
-                        // 根级别的数组访问，如 [1] 或 [*]
-                        parts.push({
-                            key: '',
-                            isArray: true,
-                            arrayIndex: bracketContent === '*' ? '*' : parseInt(bracketContent, 10),
-                        });
+                    // A bracket belongs to the preceding property only once.
+                    // Further brackets are separate array steps: a[0][1] must
+                    // retain both indexes rather than replacing 0 with 1.
+                    let part = parts[parts.length - 1];
+                    if (!part || part.isArray) {
+                        part = { key: '' };
+                        parts.push(part);
                     }
+                    part.isArray = true;
+                    part.arrayIndex = bracketContent === '*' ? '*' : parseInt(bracketContent, 10);
                 }
                 inBrackets = false;
                 bracketContent = '';
@@ -105,7 +99,8 @@ export const getValueByPathParts = (obj: any, parts: PathPart[]): any => {
             }
         }
 
-        if (part.isArray && Array.isArray(current)) {
+        if (part.isArray) {
+            if (!Array.isArray(current)) return null;
             // 如果是数组，根据arrayIndex返回对应元素
             if (part.arrayIndex === '*') {
                 // 通配符，返回第一个元素用于获取下一级key
@@ -126,6 +121,7 @@ export const getValueByPathParts = (obj: any, parts: PathPart[]): any => {
 // 获取对象中指定路径的值（支持数组索引语法）
 export const getValueByPath = (obj: any, path: string): any => {
     if (!path || !obj) return obj;
+    if (!isValidJsonPath(path)) return null;
 
     const parts = parsePathToParts(path);
     return getValueByPathParts(obj, parts);
@@ -133,7 +129,7 @@ export const getValueByPath = (obj: any, path: string): any => {
 
 // 设置对象中指定路径的值（支持数组索引语法）
 export const setValueByPath = (obj: any, path: string, value: any): boolean => {
-    if (!path || !obj) return false;
+    if (!path || !obj || !isValidJsonPath(path)) return false;
 
     const parts = parsePathToParts(path);
 
@@ -175,7 +171,8 @@ export const setValueByPath = (obj: any, path: string, value: any): boolean => {
             }
         }
 
-        if (part.isArray && Array.isArray(current)) {
+        if (part.isArray) {
+            if (!Array.isArray(current)) return false;
             // 如果是数组，根据arrayIndex返回对应元素
             if (part.arrayIndex === '*') {
                 // [*] 不应该出现在中间路径，只能用于叶子节点

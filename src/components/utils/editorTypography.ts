@@ -11,7 +11,7 @@ export function getJsonToolEditorTypography(fontSize: number) {
     return {
         ...JSON_TOOL_EDITOR_FONT_OPTIONS,
         fontSize: effectiveSize,
-        // 使用整数 CSS 像素，给中英文混排留出行间距。
-        lineHeight: Math.round(effectiveSize * 1.4),
+        // 紧凑行距：12/13/14px 字号对应 16/18/20px 行高。
+        lineHeight: { 12: 16, 13: 18, 14: 20 }[effectiveSize],
     };
 }

@@ -3297,9 +3297,9 @@
     "sha256": "a7220f2ad0e76477f4c1770f909454482676b592eba35f82c2e4d32320e66a9f"
   },
   "applicationFiles": {
-    "src/components/JsonToolWorkbench.vue": "f0ab3fe3abf7b2ecb59e764a4f98ccc3fa31d9e1ee3de4af61c7b4c7eff358c9",
+    "src/components/JsonToolWorkbench.vue": "84b4dd3ef54aa466c4c2be33995718cbc593ed46e2ed1078f0dd180e73242e6b",
     "src/components/composables/useEditorContextMenu.ts": "db6132fd1e1b476b3919d13e389e7cee67e5a33573d7bc7b8d7cbe2855160332",
-    "src/components/utils/i18n.ts": "93459991b16a49ddf3cdad53fb1c186e678cd0bc369398e48eb066d4cec7faf4",
+    "src/components/utils/i18n.ts": "6abf94f64c25b0c5efb23f5c27bc3382c7ac5f1f1649cf43b456d7989066eb88",
     "src/components/composables/useMonacoLanguageRegistry.ts": "d78fe6472a6aee467f2f2c6861411ecb5831272fc75b222f05072a8a9d4e3f58",
     "src/components/utils/jsonLanguageActivation.ts": "7e62d8c42e9aec40b7ed6aeb99da8a73697124cd29aa06f42d52382abf0c1f2c",
     "src/components/utils/monacoRuntime.ts": "d0cf6fef4dd9086ea5d6b5e1548ad8c1f4db8fd7b1a93ca8e75ebf70a0033d03",

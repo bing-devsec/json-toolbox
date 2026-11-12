@@ -86,14 +86,14 @@ body[data-interface-style="paper"] .el-select-dropdown__item.is-selected { color
 body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper :is(.column-title-icon, .settings-collapse-title .el-icon) { color: var(--theme-accent); }
 body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card { border-color: var(--json-tool-border) !important; }
 body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .settings-dialog-content .switch-card:hover { background: var(--json-tool-surface-soft) !important; border-color: var(--paper-neutral-border) !important; }
-body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered {
+body[data-interface-style="paper"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-bordered {
     background: var(--paper-neutral-background) !important; border-color: var(--paper-neutral-border) !important; color: var(--paper-neutral-foreground) !important;
 }
-body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked {
+body[data-interface-style="paper"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-bordered.is-checked {
     background: var(--paper-selected-bg) !important; border-color: var(--paper-focus) !important;
 }
-body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio .el-radio__label { color: var(--json-tool-text) !important; }
-body[data-interface-style="paper"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-checked .el-radio__label { color: var(--paper-selected-fg) !important; }
+body[data-interface-style="paper"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio .el-radio__label { color: var(--json-tool-text) !important; }
+body[data-interface-style="paper"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-checked .el-radio__label { color: var(--paper-selected-fg) !important; }
 body[data-interface-style="paper"] :is(.el-checkbox__input.is-checked, .el-checkbox__input.is-indeterminate) .el-checkbox__inner {
     background: var(--paper-primary-background) !important; border-color: var(--paper-primary-border) !important;
 }

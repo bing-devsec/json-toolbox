@@ -218,23 +218,23 @@ body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-ca
 body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card:hover {
     background: var(--retro-selected) !important;
 }
-body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered {
+body[data-interface-style="retro"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-bordered {
     background: var(--retro-face) !important;
     border-color: var(--retro-border) !important;
     border-radius: 3px;
     color: var(--json-tool-text);
 }
-body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered:not(.is-disabled):not(.is-checked):hover {
+body[data-interface-style="retro"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-bordered:not(.is-disabled):not(.is-checked):hover {
     background: var(--retro-neutral-hover-bg) !important;
 }
-body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked {
+body[data-interface-style="retro"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-bordered.is-checked {
     background: var(--retro-selected) !important;
     border-color: var(--retro-focus) !important;
 }
-body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-checked .el-radio__label {
+body[data-interface-style="retro"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-checked .el-radio__label {
     color: var(--retro-selected-text) !important;
 }
-body[data-interface-style="retro"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio:has(input:focus-visible) {
+body[data-interface-style="retro"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio:has(input:focus-visible) {
     outline: 2px solid var(--retro-focus);
     outline-offset: 2px;
 }

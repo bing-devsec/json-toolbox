@@ -15,12 +15,14 @@
                             <el-button
                                 size="small"
                                 :type="affixPrefixMode === 'add' ? 'primary' : 'default'"
+                                :aria-pressed="affixPrefixMode === 'add'"
                                 @click="affixPrefixMode = affixPrefixMode === 'add' ? 'none' : 'add'">
                                 {{ settingsTxt.affixModeAdd }}
                             </el-button>
                             <el-button
                                 size="small"
                                 :type="affixPrefixMode === 'remove' ? 'primary' : 'default'"
+                                :aria-pressed="affixPrefixMode === 'remove'"
                                 @click="affixPrefixMode = affixPrefixMode === 'remove' ? 'none' : 'remove'">
                                 {{ settingsTxt.affixModeRemove }}
                             </el-button>
@@ -42,12 +44,14 @@
                             <el-button
                                 size="small"
                                 :type="affixSuffixMode === 'add' ? 'primary' : 'default'"
+                                :aria-pressed="affixSuffixMode === 'add'"
                                 @click="affixSuffixMode = affixSuffixMode === 'add' ? 'none' : 'add'">
                                 {{ settingsTxt.affixModeAdd }}
                             </el-button>
                             <el-button
                                 size="small"
                                 :type="affixSuffixMode === 'remove' ? 'primary' : 'default'"
+                                :aria-pressed="affixSuffixMode === 'remove'"
                                 @click="affixSuffixMode = affixSuffixMode === 'remove' ? 'none' : 'remove'">
                                 {{ settingsTxt.affixModeRemove }}
                             </el-button>

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getValueByPath, setValueByPath } from '../src/components/utils/jsonPath.ts';
+import { getValueByPath, setValueByPath, parsePathToParts } from '../src/components/utils/jsonPath.ts';
 import { bundleModule } from '../scripts/compare-json-repair.mjs';
 const { sortJsonByField } = await bundleModule('src/components/utils/jsonSort.ts');
 
@@ -46,4 +46,45 @@ test('ordinary writes preserve indexed containers and allow new ordinary fields'
     assert.deepEqual(data.a, [0,4,'']);
     assert.equal(setValueByPath(data, 'new', false), true);
     assert.equal(data.new, false);
+});
+
+test('consecutive named indexes read and write the selected value without changing sibling arrays', () => {
+    const data = {a: [[0, false], ['', 7]]};
+    assert.equal(getValueByPath(data, 'a[0][1]'), false);
+    assert.equal(getValueByPath(data, 'a[1][0]'), '');
+    assert.equal(setValueByPath(data, 'a[0][1]', true), true);
+    assert.deepEqual(data, {a: [[0, true], ['', 7]]});
+});
+
+test('consecutive root indexes preserve each array level during reads and writes', () => {
+    const data = [[{id: 'a'}, {id: 'b'}], [{id: 'c'}, {id: 'd'}]];
+    assert.equal(getValueByPath(data, '[0][1].id'), 'b');
+    assert.equal(setValueByPath(data, '[0][1]', {id: 'updated'}), true);
+    assert.deepEqual(data, [[{id: 'a'}, {id: 'updated'}], [{id: 'c'}, {id: 'd'}]]);
+});
+
+test('properties after consecutive indexes keep their parent and unrelated branches intact', () => {
+    const data = {a: [[{items: ['first']}, {items: ['target']}], [{items: ['other']}]]};
+    assert.deepEqual(getValueByPath(data, 'a[0][1].items'), ['target']);
+    assert.equal(setValueByPath(data, 'a[0][1].items', ['updated']), true);
+    assert.deepEqual(data, {a: [[{items: ['first']}, {items: ['updated']}], [{items: ['other']}]]});
+});
+
+test('malformed paths cannot be partially parsed into a different target', () => {
+    const data = {users: [{id: 2}, {id: 1}]};
+    for (const path of ['users[abc]', 'users[0', 'users..', '.users', 'users[]', 'users[-1]', 'users[0]suffix']) {
+        assert.throws(() => parsePathToParts(path), /Invalid JSON path/);
+        assert.equal(getValueByPath(data, path), null, path);
+        assert.equal(setValueByPath(data, path, []), false, path);
+    }
+    assert.deepEqual(data, {users: [{id: 2}, {id: 1}]});
+});
+
+test('array steps reject object containers instead of skipping the index', () => {
+    const data = {record: {items: [{id: 2}, {id: 1}]}};
+    for (const path of ['record[0].items', 'record[0][1].items', 'record[*].items', '[0].record.items']) {
+        assert.equal(getValueByPath(data, path), null, path);
+        assert.equal(setValueByPath(data, path, []), false, path);
+    }
+    assert.deepEqual(data, {record: {items: [{id: 2}, {id: 1}]}});
 });

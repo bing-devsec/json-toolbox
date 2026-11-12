@@ -241,23 +241,23 @@ body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-ca
     border-color: var(--glass-card-hover-border) !important;
     box-shadow: var(--glass-card-hover-shadow);
 }
-body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered {
+body[data-interface-style="glass"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-bordered {
     background: var(--glass-neutral-bg) !important;
     border-color: var(--glass-neutral-border) !important;
     border-radius: var(--glass-radius-small);
     color: var(--json-tool-text);
 }
-body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered:not(.is-disabled):not(.is-checked):hover {
+body[data-interface-style="glass"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-bordered:not(.is-disabled):not(.is-checked):hover {
     background: var(--glass-neutral-hover-bg) !important;
 }
-body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked {
+body[data-interface-style="glass"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-bordered.is-checked {
     background: var(--glass-selected-bg) !important;
     border-color: var(--glass-focus) !important;
 }
-body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio.is-checked .el-radio__label {
+body[data-interface-style="glass"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio.is-checked .el-radio__label {
     color: var(--glass-selected-fg) !important;
 }
-body[data-interface-style="glass"] .el-dialog.settings-dialog-wrapper .switch-card-radio-group .el-radio:has(input:focus-visible) {
+body[data-interface-style="glass"] .el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group .el-radio:has(input:focus-visible) {
     outline: 2px solid var(--glass-focus);
     outline-offset: 2px;
 }

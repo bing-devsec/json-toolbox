@@ -1,5 +1,7 @@
 // JSON 排序工具：包含字典序、长度、字段值比较与递归排序
 import { getValueByPathParts, parsePathToParts } from './jsonPath';
+import { compareJsonNumberLiterals } from './jsonEngine/compareNumberLiterals';
+import { normalizeJsonNumberLiteral, tryParseHighPrecisionWrapper, tryReadHighPrecisionWrapperObject } from './jsonEngine/numberLiteral';
 
 export type SortMethod = 'dictionary' | 'length' | 'field';
 export type SortOrder = 'asc' | 'desc';
@@ -27,30 +29,38 @@ export const compareLength = (a: string, b: string): number => {
 
 // 比较两个值（用于字段排序）
 export const compareFieldValues = (a: any, b: any): number => {
-    // 处理null和undefined
-    if (a == null && b == null) return 0;
-    if (a == null) return -1;
-    if (b == null) return 1;
+    // JSON5 non-finite numbers are serialized as null, matching Diff sorting.
+    const nullA = a == null || (typeof a === 'number' && !Number.isFinite(a));
+    const nullB = b == null || (typeof b === 'number' && !Number.isFinite(b));
+    if (nullA && nullB) return 0;
+    if (nullA) return -1;
+    if (nullB) return 1;
 
-    // 数字比较
-    if (typeof a === 'number' && typeof b === 'number') {
-        return a - b;
+    const literalA = typeof a === 'string' ? tryParseHighPrecisionWrapper(a) : tryReadHighPrecisionWrapperObject(a);
+    const literalB = typeof b === 'string' ? tryParseHighPrecisionWrapper(b) : tryReadHighPrecisionWrapperObject(b);
+    // A fixed type order avoids cycles such as 2 < 10 < "15" < 2.
+    // Only authenticated engine wrappers count as numbers; numeric strings do not.
+    const rankA = typeof a === 'boolean' ? 1 : typeof a === 'number' || literalA !== null ? 2 : typeof a === 'string' ? 3 : Array.isArray(a) ? 4 : 5;
+    const rankB = typeof b === 'boolean' ? 1 : typeof b === 'number' || literalB !== null ? 2 : typeof b === 'string' ? 3 : Array.isArray(b) ? 4 : 5;
+    if (rankA !== rankB) return rankA - rankB;
+
+    if (rankA === 1) return a === b ? 0 : a ? 1 : -1;
+    if (rankA === 2) {
+        if (typeof a === 'number' && typeof b === 'number') return a - b;
+        return compareJsonNumberLiterals(
+            literalA === null ? String(a) : normalizeJsonNumberLiteral(literalA)!,
+            literalB === null ? String(b) : normalizeJsonNumberLiteral(literalB)!,
+        );
     }
 
-    // 字符串比较
-    if (typeof a === 'string' && typeof b === 'string') {
-        return a.localeCompare(b);
-    }
-
-    // 布尔值比较
-    if (typeof a === 'boolean' && typeof b === 'boolean') {
-        return a === b ? 0 : a ? 1 : -1;
-    }
-
-    // 不同类型转换为字符串比较
-    const strA = String(a);
-    const strB = String(b);
-    return strA.localeCompare(strB);
+    // Preserve array comma projection without calling JSON data named toString.
+    // Equal object projections stay stable; this does not recursively sort fields.
+    const project = (value: any): string => {
+        if (Array.isArray(value)) return value.map(item => item == null ? '' : project(item)).join(',');
+        if (value !== null && typeof value === 'object') return Object.prototype.toString.call(value);
+        return String(value);
+    };
+    return project(a).localeCompare(project(b));
 };
 
 // A field path is constant during a sort. Keep getValueByPath's empty-path and
@@ -183,7 +193,7 @@ export const sortJsonByField = (data: any, fieldPath: string, order: SortOrder =
             const entries = Object.entries(data);
             // 支持直接写 value.id，也支持简写 id（尝试回退）。
             const readField = createFieldReader(fieldPath);
-            const readFallback = fieldPath.startsWith('value.') ? null : createFieldReader('value.' + fieldPath);
+            const readFallback = fieldPath.startsWith('value.') ? null : createFieldReader(fieldPath.startsWith('[') ? 'value' + fieldPath : 'value.' + fieldPath);
             const extractValue = (obj: any) => {
                 const value = readField(obj);
                 return value == null && readFallback ? readFallback(obj) : value;

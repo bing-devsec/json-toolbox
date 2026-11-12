@@ -334,6 +334,7 @@ import 'element-plus/es/components/switch/style/css';
 
 import { interfaceStyles } from '../themes/registry';
 import { settingsSectionCopy } from './utils/settingsSections';
+import './styles/option-group.css';
 import './settingsLayout.css';
 import { computed, useId } from 'vue';
 import { Document, Edit, Refresh, Setting, Sort } from '@element-plus/icons-vue';
@@ -817,14 +818,6 @@ const sortMethodDynamicDesc = computed(() => {
     color: #9da0a6 !important;
 }
 
-/* 数值类卡片（字体大小 / 缩进）放在 head 右侧的 radio 组 */
-.switch-card-radio-group {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 5px;
-    flex-shrink: 0;
-}
-
 /* 排序方式下拉框固定宽度，为标题预留空间；选项使用简短文案。 */
 .switch-card-select {
     width: 180px;
@@ -842,62 +835,6 @@ const sortMethodDynamicDesc = computed(() => {
 .switch-card--wide .switch-card-radio-group {
     flex-wrap: wrap;
     justify-content: flex-end;
-}
-
-.switch-card-radio-group :deep(.el-radio.is-bordered) {
-    padding: 4px 10px;
-    height: 28px;
-    margin-right: 0;
-    border-radius: 6px;
-}
-
-:global(body[data-interface-style="default"].json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered) {
-    background: #252525 !important;
-    border-color: #3a3a3a !important;
-    color: #cccccc !important;
-}
-
-/* 只在视觉上隐藏圆点，保留原生 radio 的 Tab、方向键和空格键行为。 */
-.switch-card-radio-group :deep(.el-radio__input) {
-    display: inline-flex;
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-
-.switch-card-radio-group :deep(.el-radio:has(input:focus-visible)) {
-    outline: 2px solid #337ecc;
-    outline-offset: 2px;
-}
-
-:global(body[data-interface-style="default"].json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio:has(input:focus-visible)) {
-    outline-color: #79bbff;
-}
-
-.switch-card-radio-group :deep(.el-radio__label) {
-    font-size: 12px;
-    padding-left: 0;
-}
-
-:global(body[data-interface-style="default"].json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio__label) {
-    color: #cccccc !important;
-}
-
-/* 选中态：整颗胶囊高亮，强化"已选中"的视觉权重 */
-.switch-card-radio-group :deep(.el-radio.is-bordered.is-checked) {
-    background: #ecf5ff;
-}
-
-:global(body[data-interface-style="default"].json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked) {
-    background: #1d4f73 !important;
-    border-color: #3478a5 !important;
-}
-
-:global(body[data-interface-style="default"].json-tool-theme-dark .settings-dialog-wrapper .switch-card-radio-group .el-radio.is-bordered.is-checked .el-radio__label) {
-    color: #e8f4ff !important;
 }
 
 .button-visibility-list {

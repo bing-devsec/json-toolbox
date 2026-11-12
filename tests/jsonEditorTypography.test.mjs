@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { JSON_TOOL_EDITOR_FONT_OPTIONS, getJsonToolEditorTypography } from '../src/components/utils/editorTypography.ts';
 
 test('manual editor sizes use matching integer line heights and the shared font family', () => {
-    for (const [fontSize, lineHeight] of [[12, 17], [13, 18], [14, 20]]) {
+    for (const [fontSize, lineHeight] of [[12, 16], [13, 18], [14, 20]]) {
         const options = getJsonToolEditorTypography(fontSize);
         assert.equal(options.fontSize, fontSize);
         assert.equal(options.lineHeight, lineHeight);
@@ -28,7 +28,7 @@ test('invalid manual sizes always use the fixed 12px fallback and never reach Mo
     for (const invalid of [NaN, Infinity, -1, 0, 15, '14', 'auto', null, undefined]) {
         const options = getJsonToolEditorTypography(invalid);
         assert.equal(options.fontSize, 12);
-        assert.equal(options.lineHeight, 17);
+        assert.equal(options.lineHeight, 16);
     }
 });
 

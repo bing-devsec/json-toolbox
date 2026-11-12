@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import postcss from 'postcss';
 
+// The IDE control snapshot includes the approved selected-state design; other baselines remain unchanged.
 const baseline = JSON.parse(readFileSync(new URL('./fixtures/themeCssBeforeSharedExtraction.json', import.meta.url), 'utf8'));
 const shared = readFileSync('src/themes/nonDefaultBase.css', 'utf8');
 const all = 'body:is([data-interface-style="ide"], [data-interface-style="glass"], [data-interface-style="retro"], [data-interface-style="paper"])';
@@ -31,10 +32,16 @@ function declarations(source, theme, project = false) {
     return result;
 }
 for (const [theme, original] of Object.entries(baseline)) {
-    test(theme + ' preserves its entire ordered base/control cascade after shared-prefix extraction', () => {
+    test(theme + ' preserves its reviewed ordered base/control cascade', () => {
         const base = readFileSync(`src/themes/${theme}/base.css`, 'utf8');
         const controls = readFileSync(`src/themes/${theme}/controls.css`, 'utf8');
-        assert.deepEqual(declarations(shared + base + controls, theme, true), declarations(original.base + original.controls, theme));
+        // Sharing the setting options intentionally adds only the field-sort dialog.
+        // Keep every declaration and its cascade position checked against the baseline.
+        const expectedControls = original.controls.replaceAll(
+            '.el-dialog.settings-dialog-wrapper .switch-card-radio-group',
+            '.el-dialog:is(.settings-dialog-wrapper, .field-sort-dialog-wrapper) .switch-card-radio-group',
+        );
+        assert.deepEqual(declarations(shared + base + controls, theme, true), declarations(original.base + expectedControls, theme));
         const imports = readFileSync(`src/themes/${theme}/styles.ts`, 'utf8').match(/import '[^']+';/g);
         assert.deepEqual(imports, ["import '../nonDefaultBase.css';", "import './base.css';", "import './controls.css';"]);
     });

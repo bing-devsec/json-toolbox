@@ -456,7 +456,7 @@
             v-model:sort-root-path="sortRootPath"
             v-model:sort-field-name="sortFieldName"
             :settings-txt="settingsTxt"
-            :sort-order="sortOrder"
+            v-model:sort-order="sortOrder"
             :is-demo-mode="isDemoMode"
             :demo-guide-visible="demoGuideVisible"
             :current-demo-step-data="currentDemoStepData"
@@ -466,12 +466,6 @@
             :current-demo-step="currentDemoStep"
             :query-root-paths="queryRootPaths"
             :query-field-paths-from-scope="queryFieldPathsFromScope"
-            :handle-root-path-select="handleRootPathSelect"
-            :handle-root-path-input="handleRootPathInput"
-            :handle-root-path-keydown="handleRootPathKeydown"
-            :handle-field-path-select="handleFieldPathSelect"
-            :handle-field-path-input="handleFieldPathInput"
-            :handle-field-path-keydown="handleFieldPathKeydown"
             :get-type-label="getTypeLabel"
             :show-field-sort-demo="showFieldSortDemo"
             :execute-field-sort="executeFieldSort"
@@ -1175,35 +1169,14 @@ const ensureJsonSort = async (): Promise<UseJsonSortReturn> => {
     return jsonSortPromise;
 };
 
-const queryRootPaths = (queryString: string, cb: PathSuggestionCallback) => {
-    void ensureJsonSort()
-        .then((sort) => sort.queryRootPaths(queryString, cb))
-        .catch(() => cb([]));
+// The dialog only opens after ensureJsonSort has resolved. Keep queries synchronous.
+const queryRootPaths = (query: string, cb: PathSuggestionCallback) => {
+    if (!fieldSortDialogVisible.value || !jsonSort) return cb([]);
+    jsonSort.queryRootPaths(query, cb);
 };
-
-const queryFieldPathsFromScope = (queryString: string, cb: PathSuggestionCallback) => {
-    void ensureJsonSort()
-        .then((sort) => sort.queryFieldPathsFromScope(queryString, cb))
-        .catch(() => cb([]));
-};
-
-const handleRootPathSelect = (item: Record<string, any>) => {
-    void ensureJsonSort().then((sort) => sort.handleRootPathSelect(item as PathSuggestion));
-};
-const handleRootPathInput = (value: string | number) => {
-    void ensureJsonSort().then((sort) => sort.handleRootPathInput(value));
-};
-const handleRootPathKeydown = (event: KeyboardEvent) => {
-    void ensureJsonSort().then((sort) => sort.handleRootPathKeydown(event));
-};
-const handleFieldPathSelect = (item: Record<string, any>) => {
-    void ensureJsonSort().then((sort) => sort.handleFieldPathSelect(item as PathSuggestion));
-};
-const handleFieldPathInput = (value: string | number) => {
-    void ensureJsonSort().then((sort) => sort.handleFieldPathInput(value));
-};
-const handleFieldPathKeydown = (event: KeyboardEvent) => {
-    void ensureJsonSort().then((sort) => sort.handleFieldPathKeydown(event));
+const queryFieldPathsFromScope = (query: string, cb: PathSuggestionCallback) => {
+    if (!fieldSortDialogVisible.value || !jsonSort) return cb([]);
+    jsonSort.queryFieldPathsFromScope(query, cb);
 };
 const getTypeLabel = (type?: string) => jsonSort?.getTypeLabel(type ?? '') ?? '';
 const showFieldSortDemo = () => {
@@ -6725,11 +6698,6 @@ body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide
     background-color: var(--json-tool-surface-soft);
 }
 
-/* 调整光标样式 */
-:deep(.monaco-editor .cursor) {
-    height: 16px !important;
-}
-
 :deep(.monaco-editor .indent-guide) {
     box-shadow: 1px 0 0 0 rgba(0, 0, 0, 0.1) inset;
 }
@@ -6747,8 +6715,6 @@ body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide
 :deep(.monaco-editor .current-line) {
     background-color: var(--json-tool-current-line) !important;
     border: none !important;
-    height: 16px !important;
-    /* 设置与行高一致的高度 */
 }
 
 /* 禁用行号区域的高亮 */
@@ -7205,6 +7171,17 @@ body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide
     box-sizing: border-box;
     scrollbar-width: none;
     scrollbar-color: transparent transparent;
+}
+
+/* Scroll containers may retain :focus-visible after a pointer click.
+   Keep the list keyboard-scrollable, but show its ring only for keyboard use. */
+.archive-list:focus {
+    outline: none;
+}
+
+.json-tool-root[data-keyboard-navigation="true"] .archive-list:focus-visible {
+    outline: 2px solid var(--theme-accent, var(--el-color-primary));
+    outline-offset: -2px;
 }
 
 .archive-sidebar:hover .archive-list,

@@ -1,10 +1,12 @@
-import { resolveSortPathSelection } from '../utils/sortPathSelection';
+import { getRootPathSuggestions, getFieldPathSuggestions, type PathSuggestion } from '../utils/jsonSortSuggestions';
+export type { PathSuggestion } from '../utils/jsonSortSuggestions';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { nextTick, ref, watch, type Ref } from 'vue';
 
 import { replaceEditorValuePreservingUndo } from '../utils/diffMonaco';
 import type { SettingsTxt } from '../utils/i18n';
-import { getValueByPath, getValueByPathParts, parsePathToParts, setValueByPath } from '../utils/jsonPath';
+import { isValidJsonPath } from '../utils/jsonPath';
+import { resolveFieldSortTargets } from '../utils/jsonSortScope';
 import { sortJsonByField, sortJsonObject, type SortMethod, type SortOrder } from '../utils/jsonSort';
 
 export type FieldSortTarget = 'input' | 'diff-left' | 'diff-right';
@@ -15,11 +17,6 @@ export interface SortDemoStep {
     content: string;
     highlight: string | null;
     buttons: Array<{ text: string; action: () => void; type?: 'primary' | 'default' }>;
-}
-
-export interface PathSuggestion {
-    value: string;
-    type?: string;
 }
 
 export interface UseJsonSortSharedState {
@@ -102,11 +99,6 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
     const demoPopoverPlacement = ctx.state?.demoPopoverPlacement ?? ref<DemoPopoverPlacement>('right-start');
     const demoHighlightedEl = ref<HTMLElement | null>(null);
 
-    let lastRootPathInput = '';
-    let lastFieldPathInput = '';
-    let rootPathQueryContext = '';
-    let fieldPathQueryContext = '';
-
     watch(isDemoMode, (on) => {
         const readOnly = !!on;
         try {
@@ -181,281 +173,33 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
         ctx.updateEditorHeight(editor);
     };
 
-    const getSmartPathSuggestions = (jsonObj: any, input: string): PathSuggestion[] => {
-        if (!input.trim()) {
-            return getNextLevelKeys(jsonObj, '');
-        }
+    // Suggestions and execution must read the same editor and compatible JSON parser.
+    const getSortSourceEditor = () => fieldSortTarget.value === 'diff-left'
+        ? ctx.getDiffSideEditor('left')
+        : fieldSortTarget.value === 'diff-right' ? ctx.getDiffSideEditor('right') : ctx.getInputEditor();
 
-        if (input.endsWith('[')) {
-            const pathBeforeBracket = input.slice(0, -1);
-            const targetValue = pathBeforeBracket ? getValueByPath(jsonObj, pathBeforeBracket) : jsonObj;
-            if (Array.isArray(targetValue)) {
-                return [{ value: `${pathBeforeBracket}[*]`, type: 'array-wildcard' }];
-            }
-            return [];
-        }
-
-        const arrayMatch = input.match(/^(.+)\[(\d*|\*?)$/);
-        if (arrayMatch) {
-            const pathBeforeBracket = arrayMatch[1];
-            const indexPart = arrayMatch[2];
-            const targetValue = getValueByPath(jsonObj, pathBeforeBracket);
-            if (Array.isArray(targetValue)) {
-                if (indexPart === '') {
-                    return [{ value: `${pathBeforeBracket}[*]`, type: 'array-wildcard' }];
-                }
-                if ('*'.startsWith(indexPart)) {
-                    return [{ value: `${pathBeforeBracket}[*]`, type: 'array-wildcard' }];
-                }
-                if (/^\d+$/.test(indexPart)) {
-                    const numIndex = parseInt(indexPart, 10);
-                    const suggestions = [];
-
-                    if (numIndex < targetValue.length) {
-                        suggestions.push({
-                            value: `${pathBeforeBracket}[${indexPart}]`,
-                            type: 'array-index',
-                        });
-                    }
-
-                    if (!suggestions.some((s) => s.value === `${pathBeforeBracket}[*]`)) {
-                        suggestions.push({
-                            value: `${pathBeforeBracket}[*]`,
-                            type: 'array-wildcard',
-                        });
-                    }
-
-                    return suggestions;
-                }
-            }
-            return [];
-        }
-
-        if (input.endsWith('.')) {
-            const pathWithoutDot = input.slice(0, -1);
-            if (pathWithoutDot) {
-                return getNextLevelKeys(jsonObj, input);
-            }
-            return getNextLevelKeys(jsonObj, '');
-        }
-
-        const lastDotIndex = input.lastIndexOf('.');
-        const lastBracketIndex = input.lastIndexOf(']');
-        let basePath = '';
-        let contextInput = input;
-
-        if (lastBracketIndex !== -1) {
-            const bracketStart = input.lastIndexOf('[', lastBracketIndex);
-            if (bracketStart !== -1) {
-                const beforeBracket = input.substring(0, bracketStart);
-                const afterBracket = input.substring(lastBracketIndex + 1);
-                if (afterBracket.startsWith('.')) {
-                    basePath = input.substring(0, lastBracketIndex + 1) + '.';
-                    contextInput = afterBracket.substring(1);
-                } else if (afterBracket) {
-                    basePath = input.substring(0, lastBracketIndex + 1);
-                    contextInput = afterBracket;
-                } else {
-                    if (beforeBracket) {
-                        basePath = '';
-                        contextInput = input;
-                    } else {
-                        basePath = '';
-                        contextInput = input;
-                    }
-                }
-            }
-        } else if (lastDotIndex !== -1) {
-            basePath = input.substring(0, lastDotIndex + 1);
-            contextInput = input.substring(lastDotIndex + 1);
-        }
-
-        const allSuggestions = getNextLevelKeys(jsonObj, basePath);
-
-        if (!contextInput) {
-            return allSuggestions;
-        }
-
-        return allSuggestions.filter((suggestion) => suggestion.value.toLowerCase().startsWith(contextInput.toLowerCase()));
-    };
-
-    const queryRootPaths = (queryString: string, cb: (suggestions: PathSuggestion[]) => void) => {
-        rootPathQueryContext = queryString || '';
+    const queryPaths = (kind: 'root' | 'field', query: string, cb: (suggestions: PathSuggestion[]) => void) => {
+        let suggestions: PathSuggestion[] = [];
         try {
-            const jsonData = ctx.getInputEditor()?.getValue() || '';
-            if (!jsonData.trim()) {
-                cb([]);
-                return;
+            const raw = getSortSourceEditor()?.getValue() || '';
+            if (raw.trim()) {
+                const { data, escapeMap } = ctx.preprocessJSON(raw, { preserveNumberLiterals: true });
+                suggestions = kind === 'root'
+                    ? getRootPathSuggestions(data, query)
+                    : getFieldPathSuggestions(data, sortRootPath.value, query);
+                // Protected escape placeholders are internal and change on each parse.
+                // Never offer them as user-editable paths; keep the sort/escape contract intact.
+                const tokens = Array.from(escapeMap.keys()) as string[];
+                if (tokens.length) suggestions = suggestions.filter(item => !tokens.some(token => item.value.includes(token)));
             }
-            const jsonObj = JSON.parse(jsonData);
-            const suggestions = getSmartPathSuggestions(jsonObj, queryString || '');
-            cb(suggestions);
         } catch {
-            cb([]);
+            // Invalid/incomplete JSON has no suggestions. Execution reports parse errors.
         }
+        cb(suggestions);
     };
 
-    const collectKeysFromScope = (data: any, scopePath: string): string[] => {
-        const keySet = new Set<string>();
-
-        const harvestKeysFromArray = (arr: any[]) => {
-            for (const item of arr) {
-                if (item && typeof item === 'object' && !Array.isArray(item)) {
-                    for (const k of Object.keys(item)) keySet.add(k);
-                }
-            }
-        };
-
-        const path = (scopePath || '').trim();
-        if (!path) {
-            if (Array.isArray(data)) {
-                harvestKeysFromArray(data);
-            } else if (data && typeof data === 'object') {
-                for (const k of Object.keys(data)) keySet.add(k);
-            }
-        } else if (path.includes('[*]')) {
-            const segments = path.split('[*]').map((s) => s.replace(/^\./, ''));
-
-            const walk = (currentNode: any, segIndex: number): void => {
-                const seg = segments[segIndex];
-                const arr = seg === '' ? currentNode : getValueByPath(currentNode, seg);
-                if (!Array.isArray(arr)) return;
-
-                if (segIndex === segments.length - 1) {
-                    harvestKeysFromArray(arr);
-                    return;
-                }
-                for (const el of arr) {
-                    if (el && typeof el === 'object') walk(el, segIndex + 1);
-                }
-            };
-
-            walk(data, 0);
-        } else {
-            const target = getValueByPath(data, path);
-            if (Array.isArray(target)) {
-                harvestKeysFromArray(target);
-            } else if (target && typeof target === 'object') {
-                for (const k of Object.keys(target)) keySet.add(k);
-            }
-        }
-
-        return Array.from(keySet).sort((a, b) => a.localeCompare(b));
-    };
-
-    const queryFieldPathsFromScope = (queryString: string, cb: (suggestions: PathSuggestion[]) => void) => {
-        try {
-            let sourceEditor: monaco.editor.IStandaloneCodeEditor | null | undefined = null;
-            const target = fieldSortTarget.value;
-            if (target === 'diff-left') sourceEditor = ctx.getDiffSideEditor('left');
-            else if (target === 'diff-right') sourceEditor = ctx.getDiffSideEditor('right');
-            else sourceEditor = ctx.getInputEditor();
-
-            const raw = sourceEditor?.getValue?.() || '';
-            if (!raw.trim()) {
-                cb([]);
-                return;
-            }
-
-            let jsonObj: any;
-            try {
-                const result = ctx.preprocessJSON(raw, { preserveNumberLiterals: true });
-                jsonObj = result.data;
-            } catch {
-                try {
-                    jsonObj = JSON.parse(raw);
-                } catch {
-                    cb([]);
-                    return;
-                }
-            }
-
-            const keys = collectKeysFromScope(jsonObj, sortRootPath.value);
-            if (keys.length === 0) {
-                cb([]);
-                return;
-            }
-
-            const q = (queryString || '').toLowerCase();
-            const filtered = (q ? keys.filter((k) => k.toLowerCase().includes(q)) : keys).map<PathSuggestion>((k) => ({
-                value: k,
-                type: 'key',
-            }));
-            cb(filtered);
-        } catch {
-            cb([]);
-        }
-    };
-
-    const getNextLevelKeys = (jsonObj: any, contextPath: string): PathSuggestion[] => {
-        const suggestions: PathSuggestion[] = [];
-
-        if (!contextPath || !contextPath.trim()) {
-            if (Array.isArray(jsonObj)) {
-                suggestions.push({ value: '[*]', type: 'array-wildcard' });
-                return suggestions;
-            }
-
-            if (jsonObj && typeof jsonObj === 'object' && !Array.isArray(jsonObj)) {
-                for (const [key, value] of Object.entries(jsonObj)) {
-                    if (Array.isArray(value)) {
-                        suggestions.push({ value: key, type: 'exact' });
-                        suggestions.push({ value: `${key}[*]`, type: 'array-wildcard' });
-                    } else if (value && typeof value === 'object') {
-                        suggestions.push({ value: key, type: 'exact' });
-                    }
-                }
-            }
-            return suggestions.sort((a, b) => a.value.localeCompare(b.value));
-        }
-
-        const trimmedPath = contextPath.trim();
-        const pathToParse = trimmedPath.endsWith('.') ? trimmedPath.slice(0, -1) : trimmedPath;
-
-        if (!pathToParse) {
-            return getNextLevelKeys(jsonObj, '');
-        }
-
-        const parts = parsePathToParts(pathToParse);
-        const targetValue = getValueByPathParts(jsonObj, parts);
-
-        if (targetValue === null || targetValue === undefined) {
-            return [];
-        }
-
-        const endsWithArrayAccess = /\[(\*|\d+)\]$/.test(pathToParse);
-
-        if (Array.isArray(targetValue)) {
-            if (trimmedPath.endsWith('.') && !endsWithArrayAccess) {
-                return [];
-            }
-
-            if (targetValue.length > 0) {
-                const firstElement = targetValue[0];
-                if (firstElement && typeof firstElement === 'object' && !Array.isArray(firstElement)) {
-                    for (const [key, value] of Object.entries(firstElement)) {
-                        if (Array.isArray(value)) {
-                            suggestions.push({ value: key, type: 'exact' });
-                            suggestions.push({ value: `${key}[*]`, type: 'array-wildcard' });
-                        } else if (value && typeof value === 'object') {
-                            suggestions.push({ value: key, type: 'exact' });
-                        }
-                    }
-                }
-            }
-        } else if (typeof targetValue === 'object') {
-            for (const [key, value] of Object.entries(targetValue)) {
-                if (Array.isArray(value)) {
-                    suggestions.push({ value: key, type: 'exact' });
-                    suggestions.push({ value: `${key}[*]`, type: 'array-wildcard' });
-                } else if (value && typeof value === 'object') {
-                    suggestions.push({ value: key, type: 'exact' });
-                }
-            }
-        }
-
-        return suggestions.sort((a, b) => a.value.localeCompare(b.value));
-    };
+    const queryRootPaths = (query: string, cb: (suggestions: PathSuggestion[]) => void) => queryPaths('root', query, cb);
+    const queryFieldPathsFromScope = (query: string, cb: (suggestions: PathSuggestion[]) => void) => queryPaths('field', query, cb);
 
     const getTypeLabel = (type: string): string => {
         const typeMap: Record<string, string> = {
@@ -468,144 +212,22 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
         return typeMap[type] || type;
     };
 
-    const handleRootPathSelect = (item: Record<string, any>) => {
-        const path = resolveSortPathSelection(rootPathQueryContext || '', item.value);
-        sortRootPath.value = path;
-        lastRootPathInput = path;
-    };
-
-    const handleRootPathInput = (value: string | number) => {
-        const stringValue = typeof value === 'string' ? value : String(value);
-        lastRootPathInput = stringValue;
-        sortRootPath.value = stringValue;
-    };
-
-    const handleFieldPathSelect = (item: Record<string, any>) => {
-        const path = resolveSortPathSelection(fieldPathQueryContext || '', item.value);
-        sortFieldName.value = path;
-        lastFieldPathInput = path;
-    };
-
-    const handleFieldPathInput = (value: string | number) => {
-        const stringValue = typeof value === 'string' ? value : String(value);
-        lastFieldPathInput = stringValue;
-        sortFieldName.value = stringValue;
-    };
-
-    const handleRootPathKeydown = (event: KeyboardEvent) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-
-            const inputEditor = ctx.getInputEditor();
-            if (!inputEditor?.getValue()?.trim()) {
-                return;
-            }
-
-            try {
-                const jsonObj = JSON.parse(inputEditor.getValue());
-                const suggestions = getSmartPathSuggestions(jsonObj, lastRootPathInput);
-
-                if (lastRootPathInput && suggestions.some((s: PathSuggestion) => s.value === lastRootPathInput)) {
-                    return;
-                }
-
-                if (suggestions.length === 1) {
-                    handleRootPathSelect(suggestions[0]);
-                } else if (suggestions.length > 1) {
-                    const exactMatch = suggestions.find((s: PathSuggestion) => s.value.toLowerCase() === lastRootPathInput.toLowerCase());
-                    handleRootPathSelect(exactMatch || suggestions[0]);
-                }
-            } catch {
-                // ignore
-            }
-        }
-    };
-
-    const handleFieldPathKeydown = (event: KeyboardEvent) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-
-            const inputEditor = ctx.getInputEditor();
-            if (!inputEditor?.getValue()?.trim()) {
-                return;
-            }
-
-            try {
-                const jsonObj = JSON.parse(inputEditor.getValue());
-
-                let dataToAnalyze = jsonObj;
-                if (sortRootPath.value.trim()) {
-                    dataToAnalyze = getValueByPath(jsonObj, sortRootPath.value.trim());
-                    if (dataToAnalyze === undefined) {
-                        return;
-                    }
-                }
-
-                const suggestions = getSmartPathSuggestions(dataToAnalyze, lastFieldPathInput);
-
-                if (lastFieldPathInput && suggestions.some((s: PathSuggestion) => s.value === lastFieldPathInput)) {
-                    return;
-                }
-
-                if (suggestions.length === 1) {
-                    handleFieldPathSelect(suggestions[0]);
-                } else if (suggestions.length > 1) {
-                    const exactMatch = suggestions.find((s: PathSuggestion) => s.value.toLowerCase() === lastFieldPathInput.toLowerCase());
-                    handleFieldPathSelect(exactMatch || suggestions[0]);
-                }
-            } catch {
-                // ignore
-            }
-        }
-    };
-
     const performFieldSort = (data: any, rootPath: string, fieldName: string) => {
-        const result = JSON.parse(JSON.stringify(data));
-        const path = (rootPath || '').trim();
-
-        if (path && path.includes('[*]')) {
-            const rawSegments = path.split('[*]');
-            const segments = rawSegments.map((s) => s.replace(/^\./, ''));
-
-            const walk = (currentNode: any, segIndex: number): void => {
-                const seg = segments[segIndex];
-                const arr = seg === '' ? currentNode : getValueByPath(currentNode, seg);
-                if (!Array.isArray(arr)) {
-                    return;
-                }
-
-                if (segIndex === segments.length - 1) {
-                    const sorted = sortJsonByField(arr, fieldName, ctx.sortOrder.value);
-                    if (seg === '') {
-                        arr.length = 0;
-                        arr.push(...sorted);
-                    } else {
-                        setValueByPath(currentNode, seg, sorted);
-                    }
-                    return;
-                }
-
-                for (const el of arr) {
-                    if (el && typeof el === 'object') {
-                        walk(el, segIndex + 1);
-                    }
-                }
-            };
-
-            walk(result, 0);
-            return result;
+        const path = rootPath.trim();
+        const field = fieldName.trim();
+        if (!isValidJsonPath(path)) throw new Error(ctx.settingsTxt.value.msgFieldSortInvalidPath(path));
+        if (!isValidJsonPath(field)) throw new Error(ctx.settingsTxt.value.msgFieldSortInvalidField(field));
+        let result = JSON.parse(JSON.stringify(data));
+        const targets = [...resolveFieldSortTargets(result, path)];
+        if (path && !path.includes('[*]') && targets.length === 0) {
+            throw new Error(ctx.settingsTxt.value.msgFieldSortPathNotSortable(path));
         }
-
-        if (path) {
-            const target = getValueByPath(result, path);
-            if (!Array.isArray(target)) {
-                throw new Error(ctx.settingsTxt.value.msgFieldSortPathNotArray(path));
-            }
-            const sorted = sortJsonByField(target, fieldName, ctx.sortOrder.value);
-            setValueByPath(result, path, sorted);
-            return result;
+        for (const target of targets) {
+            const sorted = sortJsonByField(target.value, field, ctx.sortOrder.value);
+            if (target.parent === null) result = sorted;
+            else Object.defineProperty(target.parent, target.key!, { value: sorted, enumerable: true, configurable: true, writable: true });
         }
-        return sortJsonByField(result, fieldName, ctx.sortOrder.value);
+        return result;
     };
 
     const showFieldSortDemo = async () => {
@@ -875,8 +497,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
         fieldSortDialogVisible.value = false;
 
         const target = fieldSortTarget.value;
-        const sourceEditor =
-            target === 'diff-left' ? ctx.getDiffSideEditor('left') : target === 'diff-right' ? ctx.getDiffSideEditor('right') : ctx.getInputEditor();
+        const sourceEditor = getSortSourceEditor();
 
         if (!sourceEditor) {
             ctx.showMessageError(ctx.settingsTxt.value.msgNoAvailableEditor);
@@ -968,12 +589,6 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
         currentDemoStep,
         queryRootPaths,
         queryFieldPathsFromScope,
-        handleRootPathSelect,
-        handleRootPathInput,
-        handleRootPathKeydown,
-        handleFieldPathSelect,
-        handleFieldPathInput,
-        handleFieldPathKeydown,
         getTypeLabel,
         showFieldSortDemo,
         executeFieldSort,

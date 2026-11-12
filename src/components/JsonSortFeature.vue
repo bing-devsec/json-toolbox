@@ -6,31 +6,26 @@
                 <button class="demo-close-btn" @click="fieldSortDialogVisibleModel = false" :aria-label="settingsTxt.fieldSortCloseAria">✕</button>
             </div>
         </template>
-        <div class="form-item">
-            <div class="form-item-row">
-                <div class="form-value-quote--compact" style="width: 100%">
-                    <span class="form-compact-line">
-                        {{ settingsTxt.demoDirectionLabel }}
-                        <span class="form-value-text">{{ sortOrder === 'asc' ? settingsTxt.sortOrderAsc : settingsTxt.sortOrderDesc }}</span>
-                    </span>
-                </div>
-            </div>
+        <div class="form-item form-value-quote--compact sort-direction-control">
+            <span id="sort-direction-label" class="sort-direction-label">{{ settingsTxt.sortOrderLabel }}</span>
+            <el-radio-group v-model="sortOrderModel" class="switch-card-radio-group sort-direction-options" aria-labelledby="sort-direction-label">
+                <el-radio value="asc" border>{{ settingsTxt.sortOrderAsc }}</el-radio>
+                <el-radio value="desc" border>{{ settingsTxt.sortOrderDesc }}</el-radio>
+            </el-radio-group>
         </div>
 
         <div class="form-item">
-            <label class="form-label" for="sort-root-path-input">{{ settingsTxt.fieldSortRootPathLabel }}</label>
+            <div id="sort-root-path-label" class="form-label">{{ settingsTxt.fieldSortRootPathLabel }}</div>
             <el-autocomplete
                 id="sort-root-path-input"
-                :aria-label="settingsTxt.fieldSortRootPathLabel"
+                aria-labelledby="sort-root-path-label"
                 v-model="sortRootPathModel"
                 :fetch-suggestions="queryRootPaths"
                 popper-class="sort-path-autocomplete"
                 fit-input-width
                 :placeholder="settingsTxt.fieldSortRootPathPlaceholder"
                 clearable
-                @select="handleRootPathSelect"
-                @input="handleRootPathInput"
-                @keydown="handleRootPathKeydown">
+                highlight-first-item>
                 <template #default="{ item }">
                     <div class="autocomplete-item">
                         <span class="path-text" :title="item.value">{{ item.value }}</span>
@@ -42,10 +37,10 @@
         </div>
 
         <div class="form-item">
-            <label class="form-label" for="sort-field-name-input">{{ settingsTxt.fieldSortFieldLabel }}</label>
+            <div id="sort-field-name-label" class="form-label">{{ settingsTxt.fieldSortFieldLabel }}</div>
             <el-autocomplete
                 id="sort-field-name-input"
-                :aria-label="settingsTxt.fieldSortFieldLabel"
+                aria-labelledby="sort-field-name-label"
                 v-model="sortFieldNameModel"
                 :fetch-suggestions="queryFieldPathsFromScope"
                 popper-class="sort-path-autocomplete"
@@ -53,9 +48,7 @@
                 :trigger-on-focus="true"
                 :placeholder="settingsTxt.fieldSortFieldPlaceholder"
                 clearable
-                @select="handleFieldPathSelect"
-                @input="handleFieldPathInput"
-                @keydown="handleFieldPathKeydown">
+                highlight-first-item>
                 <template #default="{ item }">
                     <div class="autocomplete-item">
                         <span class="path-text" :title="item.value">{{ item.value }}</span>
@@ -128,21 +121,21 @@
 </template>
 
 <script setup lang="ts">
-import { ElAutocomplete, ElButton, ElDialog, ElPopover } from 'element-plus';
+import { ElAutocomplete, ElButton, ElDialog, ElPopover, ElRadio, ElRadioGroup } from 'element-plus';
 import 'element-plus/es/components/autocomplete/style/css';
 import 'element-plus/es/components/button/style/css';
 import 'element-plus/es/components/dialog/style/css';
 import 'element-plus/es/components/popover/style/css';
+import 'element-plus/es/components/radio/style/css';
+import 'element-plus/es/components/radio-group/style/css';
+import './styles/option-group.css';
 
 import { computed } from 'vue';
 import type { SettingsTxt } from './utils/i18n';
 import type { SortOrder } from './composables/useToolSettings';
 import type { SortDemoStep } from './composables/useJsonSort';
 
-interface PathSuggestion {
-    value: string;
-    type?: string;
-}
+import type { PathSuggestion } from './utils/jsonSortSuggestions';
 
 type SuggestionCallback = (suggestions: PathSuggestion[]) => void;
 
@@ -161,12 +154,6 @@ interface Props {
     currentDemoStep: number;
     queryRootPaths: (queryString: string, cb: SuggestionCallback) => void;
     queryFieldPathsFromScope: (queryString: string, cb: SuggestionCallback) => void;
-    handleRootPathSelect: (item: Record<string, any>) => void;
-    handleRootPathInput: (value: string | number) => void;
-    handleRootPathKeydown: (event: KeyboardEvent) => void;
-    handleFieldPathSelect: (item: Record<string, any>) => void;
-    handleFieldPathInput: (value: string | number) => void;
-    handleFieldPathKeydown: (event: KeyboardEvent) => void;
     getTypeLabel: (type: string) => string;
     showFieldSortDemo: () => void;
     executeFieldSort: () => void;
@@ -178,11 +165,17 @@ const emit = defineEmits<{
     'update:fieldSortDialogVisible': [value: boolean];
     'update:sortRootPath': [value: string];
     'update:sortFieldName': [value: string];
+    'update:sortOrder': [value: SortOrder];
 }>();
 
 const fieldSortDialogVisibleModel = computed({
     get: () => props.fieldSortDialogVisible,
     set: (value) => emit('update:fieldSortDialogVisible', value),
+});
+
+const sortOrderModel = computed({
+    get: () => props.sortOrder,
+    set: (value: SortOrder) => emit('update:sortOrder', value),
 });
 
 const sortRootPathModel = computed({
@@ -197,6 +190,19 @@ const sortFieldNameModel = computed({
 </script>
 
 <style scoped>
+/* Keep teleported dialog spacing local, below the themed title-bar rules. */
+:global(.el-dialog.field-sort-dialog-wrapper > :where(.el-dialog__header)) {
+    padding: 16px 20px 12px;
+}
+
+:global(.el-dialog.field-sort-dialog-wrapper > :where(.el-dialog__body)) {
+    padding: 20px;
+}
+
+:global(.el-dialog.field-sort-dialog-wrapper > :where(.el-dialog__footer)) {
+    padding: 12px 20px 16px;
+}
+
 .dialog-header-with-close {
     display: flex;
     align-items: center;
@@ -269,11 +275,6 @@ const sortFieldNameModel = computed({
     margin-bottom: 6px;
 }
 
-.form-item-row {
-    display: flex;
-    align-items: center;
-}
-
 .form-value-quote--compact {
     padding: 12px 16px;
     background: var(--json-tool-surface-soft, #f6f7f9);
@@ -281,22 +282,22 @@ const sortFieldNameModel = computed({
     box-sizing: border-box;
 }
 
-.form-compact-line {
-    font-weight: 600;
-    color: var(--json-tool-text, #394149);
-    font-size: 15px;
-    display: inline-block;
-    white-space: nowrap;
+.sort-direction-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
-.form-value-text {
-    color: var(--json-tool-text, #2f3b45);
+.sort-direction-label {
     font-weight: 600;
-    font-size: 15px;
-    display: inline-block;
-    margin-top: 0;
-    line-height: 1;
-    letter-spacing: 0.2px;
+    color: var(--json-tool-text, #303133);
+}
+
+.sort-direction-control .sort-direction-options {
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .form-hint {
