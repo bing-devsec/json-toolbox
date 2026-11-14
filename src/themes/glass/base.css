@@ -1,18 +1,4 @@
 /* glass: theme-specific material after nonDefaultBase.css. */
-body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-card {
-    border-color: var(--json-tool-border);
-    background: var(--json-tool-surface-raised);
-    box-shadow: var(--json-tool-shadow);
-}
-body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-title { color: var(--json-tool-text); }
-body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-desc { color: var(--json-tool-text-muted); }
-body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-skip {
-    color: var(--json-tool-text);
-    border-color: var(--json-tool-border);
-    background: var(--json-tool-surface);
-}
-body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-skip:hover,
-body[data-interface-style="glass"] .json-tool-root.theme-dark .first-use-guide-skip:focus-visible { color: var(--theme-accent); border-color: var(--theme-accent); background: var(--theme-selected); }
 
 @media (prefers-reduced-motion: reduce) {
     body[data-interface-style="glass"] :is(.json-tool-root, .json-tool-container, .el-button, .appearance-style-card) { transition: none !important; }
@@ -27,28 +13,24 @@ body[data-interface-style="glass"] .el-popper__arrow::before {
     border-color: var(--glass-popover-border) !important;
 }
 body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover.el-popover {
-    background: var(--json-tool-surface) !important;
+    background: var(--glass-popover) !important;
     border-color: var(--json-tool-border) !important;
     color: var(--json-tool-text) !important;
     box-shadow: var(--json-tool-shadow) !important;
 }
 body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover .el-popper__arrow::before {
-    background: var(--json-tool-surface) !important;
+    background: var(--glass-popover) !important;
     border-color: var(--json-tool-border) !important;
 }
 body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover .demo-guide-header {
     background: var(--json-tool-surface-header) !important;
     border-bottom-color: var(--json-tool-border) !important;
 }
-body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-header h3, .demo-current-settings strong, .demo-settings-label) {
+body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-header h3) {
     color: var(--json-tool-text) !important;
 }
-body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-content p, .demo-current-settings, .step-dot) {
+body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-content p) {
     color: var(--json-tool-text-muted) !important;
-}
-body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover .demo-current-settings code {
-    background: var(--json-tool-surface-soft) !important;
-    color: var(--json-tool-text) !important;
 }
 body[data-interface-style="glass"].json-tool-theme-dark .demo-guide-popover .demo-guide-footer {
     border-top-color: var(--json-tool-border) !important;
@@ -183,24 +165,6 @@ body[data-interface-style="glass"] .el-overlay {
     background: var(--glass-scrim) !important;
 }
 
-body[data-interface-style="glass"] .first-use-guide {
-    background: var(--glass-guide-scrim) !important;
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-}
-
-body[data-interface-style="glass"] .first-use-guide-card {
-    background: var(--glass-dialog) !important;
-    border-color: var(--glass-dialog-border) !important;
-    box-shadow: var(--glass-shadow) !important;
-    backdrop-filter: blur(calc(var(--glass-blur) + 6px));
-    -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 6px));
-}
-
-body[data-interface-style="glass"] .screen-size-warning {
-    background: var(--glass-dialog) !important;
-}
-
 body[data-interface-style="glass"] .el-message.el-message {
     border-radius: var(--glass-radius-small) !important;
     box-shadow: var(--glass-shadow-soft) !important;
@@ -209,22 +173,12 @@ body[data-interface-style="glass"] .el-message.el-message {
 }
 
 body[data-interface-style="glass"] .demo-guide-popover.el-popover {
-    background: var(--glass-dialog) !important;
+    background: var(--glass-popover) !important;
 }
 
 body[data-interface-style="glass"] .demo-guide-popover .demo-guide-header {
     background: var(--glass-chrome) !important;
     border-bottom-color: var(--glass-divider) !important;
-}
-
-body[data-interface-style="glass"] .demo-guide-popover .demo-current-settings {
-    background: var(--glass-panel-soft) !important;
-    border-color: var(--glass-chrome-border) !important;
-}
-
-body[data-interface-style="glass"] .demo-guide-popover .demo-current-settings code {
-    background: var(--glass-selected-bg) !important;
-    color: var(--glass-selected-fg) !important;
 }
 
 body[data-interface-style="glass"] .demo-guide-popover .demo-guide-footer {
@@ -251,9 +205,7 @@ body[data-interface-style="glass"] .capture-notice {
     -webkit-backdrop-filter: blur(var(--glass-blur));
 }
 body[data-interface-style="glass"] .capture-notice button {
-    background: var(--glass-neutral-bg) !important;
-    color: var(--glass-neutral-fg) !important;
-    border: 1px solid var(--glass-neutral-border) !important;
+    /* Shared notice controls use the theme button tokens for every state. */
     border-radius: var(--glass-radius-small);
 }
 body[data-interface-style="glass"] .review-invitation {

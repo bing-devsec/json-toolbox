@@ -28,7 +28,9 @@ function fixture() {
         setProperty: (name, value) => values.set(name, value),
         removeProperty: name => values.delete(name),
     } };
+    const toolbarStyle = { borderTopWidth: '0px', borderBottomWidth: '0px' };
     const view = {
+        getComputedStyle: () => toolbarStyle,
         innerWidth: 1200,
         ResizeObserver: class {
             targets = []; disconnected = false;
@@ -64,6 +66,7 @@ function fixture() {
         return { close: () => { call.closes++; } };
     } });
     return { ...module.exports, calls, values, listeners, observers, toolbar, parent, body, stacks, view,
+        toolbarStyle,
         move: next => { rect = { ...rect, ...next }; },
     };
 }
@@ -192,4 +195,27 @@ test('rebinding releases the entire old stack and ignores stale cleanup and clos
     f.move({ top: 200 });
     f.observers[1].callback();
     assert.equal(f.values.get('--json-tool-message-center-y'), '100px');
+});
+
+
+test('feedback shares the button area center as separator widths change', () => {
+    const f = fixture();
+    f.move({ top: 100, height: 43 });
+    f.toolbarStyle.borderBottomWidth = '1px';
+    const dispose = f.bindJsonToolMessageToolbar(f.toolbar);
+    assert.equal(f.values.get('--json-tool-message-center-y'), '121px');
+
+    // A new message must use the current border widths, without rounding fractions.
+    f.move({ height: 42.5 });
+    f.toolbarStyle.borderBottomWidth = '0.5px';
+    f.showMessageSuccess('formatted');
+    assert.equal(f.values.get('--json-tool-message-center-y'), '121px');
+
+    // Top and bottom borders are excluded independently, not a fixed upward offset.
+    f.move({ height: 47 });
+    f.toolbarStyle.borderTopWidth = '3px';
+    f.toolbarStyle.borderBottomWidth = '2px';
+    f.listeners.get('resize')();
+    assert.equal(f.values.get('--json-tool-message-center-y'), '124px');
+    dispose();
 });

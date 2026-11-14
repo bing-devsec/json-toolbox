@@ -22,6 +22,7 @@ const code = (await transform([
 function fixture() {
     const marks = [], calls = { height: 0, scroll: 0, gc: 0 };
     const context = {
+        walkthrough: { active: { value: false } },
         isLargeEditorContent: () => false,
         getJsonToolThemeForLanguage: () => 'json-tool-light-theme',
         themeMode: { value: 'light' }, props: { locale: 'en' },

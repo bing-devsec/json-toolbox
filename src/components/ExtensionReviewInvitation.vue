@@ -53,7 +53,7 @@ const showing = (element: Element): boolean => {
 const environment = (): ReviewEnvironment => ({
     visible: document.visibilityState === 'visible', focused: document.hasFocus(),
     blocked: props.blocked || composing || Array.from(document.querySelectorAll(
-        '.first-use-guide, .el-overlay, [aria-modal="true"], dialog[open], .floating-actions.is-open, .floating-actions.is-dragging, .monaco-editor .find-widget.visible, .monaco-editor .suggest-widget.visible, .context-view, .el-dropdown__popper',
+        '.el-overlay, [aria-modal="true"], dialog[open], .floating-actions.is-open, .floating-actions.is-dragging, .monaco-editor .find-widget.visible, .monaco-editor .suggest-widget.visible, .context-view, .el-dropdown__popper',
     )).some(showing),
 });
 const setVisible = (token: string | null) => {

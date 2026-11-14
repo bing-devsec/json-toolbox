@@ -82,6 +82,9 @@ const guideBundle = await build({
         builder.onResolve({ filter: /^vue$/ }, () => ({ path: 'vue', namespace: 'fixture' }));
         builder.onLoad({ filter: /.*/, namespace: 'fixture' }, () => ({ loader: 'js', contents: `
             export const ref = value => ({value});
+            export const shallowRef = ref;
+            export const onBeforeUnmount = () => {};
+            export const watch = () => {};
             export const computed = read => ({get value(){return read();}});
             export const onMounted = callback => callback();
             export const nextTick = callback => Promise.resolve().then(callback);
@@ -89,17 +92,21 @@ const guideBundle = await build({
     } }],
 });
 
-test('first-use guidance is available during loading and dismissal survives editor readiness', () => {
+test('first-use invitation waits for editor readiness and remembers dismissal across readiness changes', () => {
     const storage = new Map();
     const module = { exports: {} };
     runInNewContext(guideBundle.outputFiles[0].text, { module, exports: module.exports,
-        window: {localStorage: {getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value)}} });
+        localStorage: {getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value)} });
     const ready = {value: false};
     const guide = module.exports.useJsonToolFirstUseGuide({locale: {value: 'zh'}, editorsInitialized: ready,
-        isDiffMode: {value: false}, isInputDragActive: {value: false}, getInputEditor: () => null,
-        showEditorNotInitError: () => {}, formatJson: () => {}});
-    assert.equal(guide.shouldShowFirstUseGuide.value, true, 'guidance must not wait for the editor engine');
+        isDiffMode: {value: false}, isInputDragActive: {value: false}, unavailable: {value: false},
+        beginDemo: () => false, restoreDemo: () => {}, prepareStep: () => {}, performStep: () => {}, getTarget: () => null});
+    assert.equal(guide.shouldShowFirstUseGuide.value, false, 'an actionable invitation waits until the editor is ready');
+    ready.value = true;
+    assert.equal(guide.shouldShowFirstUseGuide.value, true);
     guide.dismissFirstUseGuide();
+    assert.equal(guide.shouldShowFirstUseGuide.value, false);
+    ready.value = false;
     assert.equal(guide.shouldShowFirstUseGuide.value, false);
     ready.value = true;
     assert.equal(guide.shouldShowFirstUseGuide.value, false, 'editor readiness must not reopen a dismissed guide');

@@ -7,6 +7,11 @@
     font-display: swap;
 }
 * { box-sizing: border-box; }
+/* Monaco's find buttons need a 16px content box plus 3px padding, as on Web.
+   The replace toggle keeps Monaco's explicit border-box sizing. */
+.monaco-editor .find-widget .button:not(.toggle) {
+    box-sizing: content-box;
+}
 html, body, #app { width: 100%; height: 100%; margin: 0; }
 body {
     overflow: hidden;

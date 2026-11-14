@@ -19,10 +19,11 @@ const patched = pruneUnusedElementButtonColors(original, file);
 const vue = template => `<template>${template}</template><script setup>import { ElButton, ElDropdown } from 'element-plus';</script>`;
 
 // Freeze the reviewed application evidence, rather than asserting only absence of a
-// token in the output. Package dependencies include optional dialogs as well as startup.
-test('current 58 button sites and the complete 334-module closure satisfy the invariant', () => {
+// token in the output. Native walkthrough controls do not consume Element buttons;
+// the two welcome buttons remain audited. The dependency closure includes optional dialogs.
+test('current 59 button sites and the complete 334-module closure satisfy the invariant', () => {
     const result = auditElementButtonApplication(root);
-    assert.equal(result.buttonCount, 58);
+    assert.equal(result.buttonCount, 59);
     assert.equal(result.modules, 334);
     assert.deepEqual(result.consumers, [
         'components/dropdown/src/dropdown.vue_vue_type_script_lang.mjs',

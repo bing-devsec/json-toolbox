@@ -1,6 +1,6 @@
 /* Retro controls. All colors and bevels come from retro tokens. */
 
-body[data-interface-style="retro"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn) {
+body[data-interface-style="retro"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .demo-close-btn, .dialog-close-btn) {
     --retro-control-bg: var(--retro-neutral-bg);
     --retro-control-fg: var(--retro-neutral-fg);
     --retro-control-border: var(--retro-neutral-border);
@@ -60,11 +60,11 @@ body[data-interface-style="retro"] .el-button.el-button--success { color: var(--
 body[data-interface-style="retro"] .el-button.el-button--warning { color: var(--retro-warning-fg) !important; }
 body[data-interface-style="retro"] .el-button.el-button--info { color: var(--json-tool-text-muted) !important; }
 
-body[data-interface-style="retro"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):hover:not(:disabled):not(.is-disabled) {
+body[data-interface-style="retro"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .demo-close-btn, .dialog-close-btn):hover:not(:disabled):not(.is-disabled) {
     background: var(--retro-control-hover-bg) !important;
     border-color: var(--retro-control-hover-border) !important;
 }
-body[data-interface-style="retro"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):active:not(:disabled):not(.is-disabled) {
+body[data-interface-style="retro"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .demo-close-btn, .dialog-close-btn):active:not(:disabled):not(.is-disabled) {
     background: var(--retro-control-active-bg) !important;
     box-shadow: inset 0 2px 4px var(--retro-shadow) !important;
 }
@@ -273,25 +273,12 @@ body[data-interface-style="retro"] .el-dialog .el-alert {
     border-color: var(--retro-border) !important;
     color: var(--json-tool-text) !important;
 }
-body[data-interface-style="retro"] .el-dialog :is(.dialog-title, .section-title, .rule-name-label, .field-path-label, .field-label, .saved-rule-name, .affix-row-label, .affix-section-title) {
+body[data-interface-style="retro"] .el-dialog :is(.dialog-title, .section-title, .rule-name-label, .field-path-label, .field-label, .saved-rule-name, .affix-row-label) {
     color: var(--json-tool-text) !important;
 }
-body[data-interface-style="retro"] .el-dialog :is(.priority-hint, .saved-rule-meta, .affix-hint) {
+body[data-interface-style="retro"] .el-dialog :is(.priority-hint, .saved-rule-meta) {
     color: var(--json-tool-text-muted) !important;
 }
-body[data-interface-style="retro"] .sort-direction-card,
-body[data-interface-style="retro"] .sort-option-card {
-    background: var(--retro-face) !important;
-    border-color: var(--retro-border) !important;
-    border-radius: 3px;
-}
-body[data-interface-style="retro"] .sort-direction-card.is-active,
-body[data-interface-style="retro"] .sort-option-card.is-active {
-    background: var(--retro-selected) !important;
-    border-color: var(--retro-focus) !important;
-    color: var(--retro-selected-text) !important;
-}
-body[data-interface-style="retro"] .step-dot.active { background: var(--theme-accent) !important; }
 body[data-interface-style="retro"] .diff-sync-btn-group.is-active .diff-sync-btn {
     background: var(--retro-selected) !important;
     color: var(--retro-selected-text) !important;

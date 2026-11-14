@@ -1,18 +1,4 @@
 /* ide: theme-specific material after nonDefaultBase.css. */
-body[data-interface-style="ide"] .json-tool-root.theme-dark .first-use-guide-card {
-    border-color: var(--json-tool-border);
-    background: var(--json-tool-surface-raised);
-    box-shadow: var(--ide-dialog-shadow);
-}
-body[data-interface-style="ide"] .json-tool-root.theme-dark .first-use-guide-title { color: var(--json-tool-text); }
-body[data-interface-style="ide"] .json-tool-root.theme-dark .first-use-guide-desc { color: var(--json-tool-text-muted); }
-body[data-interface-style="ide"] .json-tool-root.theme-dark .first-use-guide-skip {
-    color: var(--json-tool-text);
-    border-color: var(--json-tool-border);
-    background: var(--json-tool-surface);
-}
-body[data-interface-style="ide"] .json-tool-root.theme-dark .first-use-guide-skip:hover,
-body[data-interface-style="ide"] .json-tool-root.theme-dark .first-use-guide-skip:focus-visible { color: var(--theme-accent); border-color: var(--theme-accent); background: var(--theme-selected); }
 
 @media (prefers-reduced-motion: reduce) {
     body[data-interface-style="ide"] :is(.json-tool-root, .json-tool-container, .el-button, .appearance-style-card) { transition: none !important; }
@@ -40,15 +26,11 @@ body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover .demo-
     background: var(--json-tool-surface-header) !important;
     border-bottom-color: var(--json-tool-border) !important;
 }
-body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-header h3, .demo-current-settings strong, .demo-settings-label) {
+body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-header h3) {
     color: var(--json-tool-text) !important;
 }
-body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-content p, .demo-current-settings, .step-dot) {
+body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-content p) {
     color: var(--json-tool-text-muted) !important;
-}
-body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover .demo-current-settings code {
-    background: var(--json-tool-surface-soft) !important;
-    color: var(--json-tool-text) !important;
 }
 body[data-interface-style="ide"].json-tool-theme-dark .demo-guide-popover .demo-guide-footer {
     border-top-color: var(--json-tool-border) !important;
@@ -70,7 +52,7 @@ body[data-interface-style="ide"] .json-tool-container {
 body[data-interface-style="ide"] :is(.el-popper, .el-popover, .el-select__popper, .el-dropdown__popper, .el-message, .el-notification) {
     box-shadow: var(--ide-popover-shadow) !important;
 }
-body[data-interface-style="ide"] :is(.el-dialog, .el-message-box, .first-use-guide-card, .review-invitation) {
+body[data-interface-style="ide"] :is(.el-dialog, .el-message-box, .review-invitation) {
     box-shadow: var(--ide-dialog-shadow) !important;
 }
 /* Element dialogs and message boxes have no real border. An inset contour keeps their existing geometry. */

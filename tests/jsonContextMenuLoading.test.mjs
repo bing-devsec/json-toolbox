@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { build } from 'esbuild';
 import { runInNewContext } from 'node:vm';
+import { readFile } from 'node:fs/promises';
+import ts from 'typescript';
 const bundle = await build({
     stdin: { contents: `export { useEditorContextMenu } from './src/components/composables/useEditorContextMenu';`, resolveDir: process.cwd(), loader: 'ts' },
     bundle: true, write: false, platform: 'node', format: 'cjs',
@@ -10,7 +12,7 @@ const bundle = await build({
         build.onResolve({ filter: /^vue$/ }, () => ({ path: 'vue', namespace: 'fixture' }));
         build.onResolve({ filter: /^js-base64$/ }, () => ({ path: 'base64', namespace: 'fixture' }));
         build.onLoad({ filter: /.*/, namespace: 'fixture' }, ({ path }) => ({ contents:
-            path === 'vue' ? 'export const onBeforeUnmount = fn => fixture.hooks.push(fn);' :
+            path === 'vue' ? 'export const onBeforeUnmount = fn => fixture.hooks.push(fn); export const nextTick = fn => Promise.resolve().then(fn);' :
             path.endsWith('loadJsonToolMessageBox') ? 'export const loadJsonToolMessageBox = () => fixture.loadMessageBox();' :
             path.endsWith('overlayTarget') ? 'export const getJsonToolOverlayTarget = () => undefined;' :
             path.endsWith('jsonDiffSort') ? 'export const sortJsonArrayByCanonicalKey = array => array;' :
@@ -18,12 +20,12 @@ const bundle = await build({
             'fixture.base64Loads++; export const Base64 = { encode: text => `encoded:${text}`, decode: text => `decoded:${text}` };' }));
     } }],
 });
-function setup() {
+function setup(overrides = {}) {
     const fixture = { hooks: [], base64Loads: 0, prompts: 0, errors: [], successes: [], outputs: [],
         loadMessageBox: async () => ({ prompt: async () => { fixture.prompts++; return { value: 'key' }; } }),
     };
     const module = { exports: {} };
-    runInNewContext(bundle.outputFiles[0].text, { module, exports: module.exports, fixture, console });
+    runInNewContext(bundle.outputFiles[0].text, { module, exports: module.exports, fixture, console, AbortController });
     const actions = new Map();
     const model = { version: 1, disposed: false, getVersionId() { return this.version; }, isDisposed() { return this.disposed; }, getValueInRange: () => 'source' };
     const editor = { model, edits: [], addAction: action => actions.set(action.id, action), getSelection: () => ({}), getModel() { return this.model; }, executeEdits(...args) { this.edits.push(args); } };
@@ -40,6 +42,7 @@ function setup() {
         extractValuesByKey: () => ({ values: ['value'], skippedComplex: 0 }),
         formatJsonValueForContextAction: () => '["value"]',
     };
+    Object.assign(context, overrides);
     return { fixture, editor, model, outputModel, context, actions, menu: module.exports.useEditorContextMenu(context) };
 }
 
@@ -103,4 +106,109 @@ test('new extract request supersedes older prompt and stale import rejection is 
     await f.actions.get('json-tool-extract-values-by-key').run();
     wait.reject(Error('stale network')); await old;
     assert.equal(f.fixture.outputs.length, 1); assert.equal(f.fixture.errors.length, 0);
+});
+
+
+test('explicit extraction cancellation stops a delayed import before a prompt can appear', async () => {
+    const f = setup(); f.menu.registerProcessingActions(f.editor);
+    const waiting = deferred();
+    f.fixture.loadMessageBox = () => waiting.promise;
+    const running = f.actions.get('json-tool-extract-values-by-key').run();
+    f.menu.cancelPendingExtraction();
+    waiting.resolve({ prompt: async () => { f.fixture.prompts++; return { value: 'key' }; } });
+    await running;
+    assert.equal(f.fixture.prompts, 0);
+    assert.deepEqual(f.fixture.outputs, []);
+    assert.deepEqual(f.fixture.errors, []);
+});
+
+test('explicit cancellation settles an open prompt even when its provider has not resolved', { timeout: 1500 }, async () => {
+    const f = setup(); f.menu.registerProcessingActions(f.editor);
+    const waiting = deferred();
+    let promptOptions;
+    f.fixture.loadMessageBox = async () => ({ prompt: (_message, _title, options) => {
+        promptOptions = options; return waiting.promise;
+    } });
+    const running = f.actions.get('json-tool-extract-values-by-key').run();
+    for (let i = 0; i < 8; i++) await Promise.resolve();
+    assert.match(promptOptions.customClass, /json-tool-extract-values-prompt/);
+    assert.equal(promptOptions.confirmButtonClass, 'json-tool-extract-confirm');
+    assert.equal(promptOptions.cancelButtonClass, 'json-tool-extract-cancel');
+    f.menu.cancelPendingExtraction();
+    await running;
+    waiting.resolve({ value: 'key' });
+    await Promise.resolve();
+    assert.deepEqual(f.fixture.outputs, []);
+    assert.deepEqual(f.fixture.successes, []);
+    assert.deepEqual(f.fixture.errors, []);
+});
+
+test('reentry cancels the old open prompt and old finally cannot detach cancellation from the new prompt', { timeout: 1500 }, async () => {
+    const f = setup(); f.menu.registerProcessingActions(f.editor);
+    const first = deferred(), second = deferred();
+    let opens = 0;
+    f.fixture.loadMessageBox = async () => ({ prompt: () => ++opens === 1 ? first.promise : second.promise });
+    const action = f.actions.get('json-tool-extract-values-by-key');
+    const oldRun = action.run();
+    for (let i = 0; i < 8; i++) await Promise.resolve();
+    const newRun = action.run();
+    await oldRun;
+    for (let i = 0; i < 8; i++) await Promise.resolve();
+    assert.equal(opens, 2);
+    f.menu.cancelPendingExtraction();
+    await newRun;
+    first.resolve({ value: 'old' }); second.resolve({ value: 'new' });
+    await Promise.resolve();
+    assert.deepEqual(f.fixture.outputs, []);
+    assert.deepEqual(f.fixture.errors, []);
+});
+
+// Execute the workbench's actual extraction/formatting functions, not copies of
+// their algorithms. This checks the menu against the same lossless JSON engine.
+const workbenchSource = await readFile('src/components/JsonToolWorkbench.vue', 'utf8');
+const script = workbenchSource.match(/<script\b[^>]*>([\s\S]*?)<\/script>/)[1];
+const ast = ts.createSourceFile('workbench.ts', script, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+const expressions = new Map();
+const findExpressions = node => {
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer
+        && ['extractValuesByKey', 'formatJsonValueForContextAction'].includes(node.name.text)) {
+        expressions.set(node.name.text, node.initializer.getText(ast));
+    }
+    ts.forEachChild(node, findExpressions);
+};
+findExpressions(ast);
+assert.equal(expressions.size, 2);
+const realEngine = await build({
+    stdin: { resolveDir: process.cwd(), loader: 'ts', contents:
+        "import { useJsonEngine } from './src/components/composables/useJsonEngine';\n"
+        + "const jsonEngine = useJsonEngine({indentSize:{value:2},arrayNewLine:{value:true},preserveNumberLiterals:{value:true},encodingMode:{value:false}});\n"
+        + 'export const parse = jsonEngine.parse;\n'
+        + [...expressions].map(([name, expression]) => 'export const ' + name + ' = ' + expression + ';').join('\n') },
+    bundle: true, write: false, platform: 'node', format: 'esm',
+});
+const actual = await import('data:text/javascript;base64,' + Buffer.from(realEngine.outputFiles[0].text).toString('base64'));
+
+async function runActualExtraction(raw, key) {
+    const f = setup({
+        getEditorSelectedOrFullSource: () => ({ text: raw, isSelection: false }),
+        preprocessJSON: actual.parse,
+        formatJsonValueForContextAction: actual.formatJsonValueForContextAction,
+        extractValuesByKey: actual.extractValuesByKey,
+    });
+    f.menu.registerProcessingActions(f.editor);
+    f.fixture.loadMessageBox = async () => ({ prompt: async () => ({ value: key }) });
+    await f.actions.get('json-tool-extract-values-by-key').run();
+    assert.deepEqual(f.fixture.errors, []);
+    assert.equal(f.fixture.outputs.length, 1);
+    return f.fixture.outputs[0];
+}
+
+test('real extraction walks nested records and arrays in source order', async () => {
+    const result = await runActualExtraction('{"users":[{"name":"Ada"},{"name":"Lin"}],"meta":{"name":"Toolkit"}}', 'name');
+    assert.deepEqual(JSON.parse(result), ['Ada', 'Lin', 'Toolkit']);
+});
+
+test('real extraction and formatter preserve numeric lexemes and keep quoted numbers as strings', async () => {
+    const result = await runActualExtraction('{"name":9007199254740993,"nested":{"name":-0},"more":[{"name":1.2300},{"name":1e+30}],"quoted":{"name":"9007199254740993"}}', 'name');
+    assert.equal(result, '[\n  9007199254740993,\n  -0,\n  1.2300,\n  1e+30,\n  "9007199254740993"\n]');
 });

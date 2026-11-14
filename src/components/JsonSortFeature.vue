@@ -78,43 +78,56 @@
         :teleported="true"
         popper-class="demo-guide-popover"
         :offset="12">
-        <div class="demo-guide-inner">
+        <div class="demo-guide-inner" @keydown.esc.stop.prevent="endDemoMode">
             <div class="demo-guide-header">
                 <h3>{{ currentDemoStepData.title }}</h3>
                 <button class="demo-close-btn" @click="endDemoMode" :aria-label="settingsTxt.demoCloseAria">✕</button>
             </div>
             <div class="demo-guide-content">
-                <p>{{ currentDemoStepData.content }}</p>
-                <div class="demo-current-settings">
-                    <strong>{{ settingsTxt.demoCurrentSettings }}</strong>
-                    <ul class="demo-settings-list">
-                        <li>
-                            <span class="demo-settings-label">{{ settingsTxt.demoDirectionLabel }}</span>
-                            <code>{{ sortOrder === 'asc' ? settingsTxt.sortOrderAsc : settingsTxt.sortOrderDesc }}</code>
-                        </li>
-                        <li>
-                            <span class="demo-settings-label">{{ settingsTxt.demoRootPathLabel }}</span>
-                            <code>{{ sortRootPath || settingsTxt.demoEmptyValue }}</code>
-                        </li>
-                        <li>
-                            <span class="demo-settings-label">{{ settingsTxt.demoFieldLabel }}</span>
-                            <code>{{ sortFieldName || settingsTxt.demoUnsetValue }}</code>
-                        </li>
-                    </ul>
+                <p class="demo-guide-hint"><strong>{{ settingsTxt.demoExamplesHint }}</strong></p>
+                <div class="demo-example-switcher" role="group" :aria-label="settingsTxt.demoExamplesTitle">
+                    <button v-for="(example, index) in currentDemoStepData.examples" :key="index"
+                        type="button" class="demo-example-button" :class="{ 'is-active': currentDemoStep === index }"
+                        :aria-pressed="currentDemoStep === index" @click="example.action()">
+                        {{ example.text }}
+                    </button>
                 </div>
+                <section class="demo-section">
+                    <h4>{{ settingsTxt.demoGoalLabel }}</h4>
+                    <p>{{ currentDemoStepData.goal }}</p>
+                </section>
+                <section class="demo-section">
+                    <h4>{{ settingsTxt.demoParametersLabel }}</h4>
+                    <dl class="demo-parameters">
+                        <div>
+                            <dt>{{ settingsTxt.demoRootPathLabel }}</dt>
+                            <dd><code>{{ sortRootPath || settingsTxt.demoEmptyValue }}</code></dd>
+                        </div>
+                        <div>
+                            <dt>{{ settingsTxt.demoFieldLabel }}</dt>
+                            <dd><code>{{ sortFieldName || settingsTxt.demoUnsetValue }}</code></dd>
+                        </div>
+                    </dl>
+                </section>
+                <section class="demo-section demo-reason">
+                    <h4>{{ settingsTxt.demoReasonLabel }}</h4>
+                    <p>{{ currentDemoStepData.reason }}</p>
+                    <p v-if="currentDemoStepData.transferHint" class="demo-transfer-hint"><strong>{{ settingsTxt.demoTransferLabel }}</strong>{{ currentDemoStepData.transferHint }}</p>
+                </section>
+                <p v-if="currentDemoStepData.completed" class="demo-result-status" role="status">{{ settingsTxt.demoResultReady }}</p>
             </div>
             <div class="demo-guide-footer">
-                <el-button
-                    v-for="(btn, index) in currentDemoStepData.buttons"
-                    :key="index"
-                    size="small"
-                    :type="btn.type ?? 'default'"
-                    @click="btn.action()">
-                    {{ btn.text }}
-                </el-button>
-            </div>
-            <div class="demo-step-indicator">
-                <span v-for="i in demoStepsCount" :key="i" :class="['step-dot', { active: i === currentDemoStep + 1 }]"></span>
+                <span class="demo-direction-summary">{{ settingsTxt.demoDirectionLabel }} {{ sortOrder === 'asc' ? settingsTxt.sortOrderAsc : settingsTxt.sortOrderDesc }}</span>
+                <div class="demo-footer-actions">
+                    <el-button
+                        v-for="(btn, index) in currentDemoStepData.buttons"
+                        :key="index"
+                        size="small"
+                        :type="btn.type ?? 'default'"
+                        @click="btn.action()">
+                        {{ btn.text }}
+                    </el-button>
+                </div>
             </div>
         </div>
     </el-popover>
@@ -150,7 +163,6 @@ interface Props {
     currentDemoStepData: SortDemoStep | null;
     demoPopoverAnchor: HTMLElement | null;
     demoPopoverPlacement: 'right-start' | 'left-start' | 'bottom-start' | 'top-start';
-    demoStepsCount: number;
     currentDemoStep: number;
     queryRootPaths: (queryString: string, cb: SuggestionCallback) => void;
     queryFieldPathsFromScope: (queryString: string, cb: SuggestionCallback) => void;
@@ -333,7 +345,10 @@ const sortFieldNameModel = computed({
 /* el-popover 会被 teleport 到 body，使用 popper-class 定位 */
 :global(.demo-guide-popover.el-popover) {
     padding: 0 !important;
-    border-radius: var(--theme-radius, 6px) !important;
+    max-width: calc(100vw - 24px);
+    box-sizing: border-box;
+    /* The native arrow extends beyond this shell. Only the inner content scrolls. */
+    overflow: visible;
     box-shadow: var(--json-tool-shadow, 0 6px 28px rgba(0, 0, 0, 0.18)) !important;
     border: 1px solid var(--json-tool-border, #dcdfe6) !important;
 }
@@ -349,7 +364,16 @@ const sortFieldNameModel = computed({
     border-color: #2b2b2b !important;
 }
 
+/* Keep the demo shell square even when the theme rounds other floating panels. */
+:global(body[data-interface-style] .demo-guide-popover.el-popover.el-popper) {
+    border-radius: 0 !important;
+}
+
 .demo-guide-inner {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    max-height: calc(100dvh - 24px);
     animation: demoPopup 0.25s ease-out;
 }
 
@@ -369,6 +393,8 @@ const sortFieldNameModel = computed({
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex: 0 0 auto;
+    gap: 12px;
     padding: 10px 14px;
     border-bottom: 1px solid var(--json-tool-border, #f0f0f0);
     background: var(--json-tool-surface-header, transparent);
@@ -391,157 +417,150 @@ const sortFieldNameModel = computed({
 }
 
 .demo-guide-content {
-    padding: 10px 14px 4px;
+    min-height: 0;
+    min-width: 0;
+    padding: 12px 14px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: anywhere;
+    overscroll-behavior: contain;
 }
 
 .demo-guide-content p {
-    margin: 0 0 10px 0;
-    color: var(--json-tool-text-muted, #606266);
+    margin: 0;
+    color: var(--json-tool-text-muted, var(--el-text-color-regular, #606266));
     font-size: 13px;
     line-height: 1.6;
 }
 
-:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-guide-content p) {
-    color: #9da0a6 !important;
+.demo-guide-content .demo-guide-hint {
+    margin-bottom: 12px;
+    color: var(--json-tool-text, var(--el-text-color-primary, #303133));
 }
 
-.demo-current-settings {
-    background: var(--json-tool-surface-soft, #f5f7fa);
-    border: 1px solid var(--json-tool-border, #ebeef5);
-    border-radius: 4px;
-    padding: 6px 10px;
-    font-size: 12px;
-    color: var(--json-tool-text-muted, #606266);
-}
+.demo-guide-hint strong { font-weight: 600; }
 
-:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-current-settings) {
-    background: #242424 !important;
-    border-color: #333333 !important;
-    color: #cccccc !important;
-}
-
-.demo-current-settings strong {
-    display: block;
-    margin-bottom: 4px;
-    color: var(--json-tool-text, #303133);
+.demo-section + .demo-section { margin-top: 14px; }
+.demo-section h4 {
+    margin: 0 0 6px;
+    color: var(--json-tool-text, var(--el-text-color-primary, #303133));
+    font-size: 13px;
+    line-height: 1.5;
     font-weight: 600;
 }
 
-:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-current-settings strong) {
-    color: #f0f0f0 !important;
-}
-
-.demo-settings-list {
-    list-style: none;
+.demo-parameters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
     margin: 0;
-    padding: 0;
 }
-
-.demo-settings-list li {
+.demo-parameters > div {
     display: flex;
-    align-items: center;
-    padding: 2px 0;
-    line-height: 1.7;
-}
-
-.demo-settings-label {
-    flex-shrink: 0;
-    color: var(--json-tool-text-muted, #606266);
-    min-width: 68px;
-}
-
-:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-settings-label) {
-    color: #9da0a6 !important;
-}
-
-.demo-current-settings code {
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-family: var(--json-tool-font-code);
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 4px;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid var(--json-tool-border, var(--el-border-color, #dcdfe6));
+    background: var(--json-tool-surface-soft, var(--el-fill-color-light, #f5f7fa));
     font-size: 12px;
-    color: var(--theme-accent, #d73a49);
-    background: var(--theme-selected, transparent);
+    line-height: 1.6;
 }
-
-:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-current-settings code) {
-    background: #303030 !important;
-    color: #d4d4d4 !important;
+.demo-parameters dt { color: var(--json-tool-text-muted, var(--el-text-color-regular, #606266)); }
+.demo-parameters dd { min-width: 0; margin: 0; }
+.demo-parameters code {
+    color: var(--json-tool-text, var(--el-text-color-primary, #303133));
+    font-family: var(--json-tool-font-code, monospace);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
+.demo-reason .demo-transfer-hint {
+    margin-top: 8px;
+    padding-left: 9px;
+    border-left: 2px solid var(--json-tool-border, var(--el-border-color, #dcdfe6));
+    font-size: 12px;
+}
+.demo-transfer-hint strong { font-weight: 600; }
 
 .demo-guide-footer {
-    padding: 8px 14px;
-    text-align: right;
-    border-top: 1px solid var(--json-tool-border, #f5f7fa);
-}
-
-:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .demo-guide-footer) {
-    border-top-color: #2b2b2b !important;
-    background: #1f1f1f !important;
-}
-
-.demo-guide-footer .el-button + .el-button {
-    margin-left: 6px;
-}
-
-.demo-step-indicator {
+    flex: 0 0 auto;
     display: flex;
-    justify-content: center;
-    padding: 0 14px 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px;
+    border-top: 1px solid var(--json-tool-border, var(--el-border-color, #dcdfe6));
+}
+.demo-direction-summary {
+    color: var(--json-tool-text-muted, var(--el-text-color-regular, #606266));
+    font-size: 12px;
+    line-height: 1.5;
+}
+.demo-footer-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.demo-guide-footer .el-button + .el-button { margin-left: 0; }
+
+.demo-example-switcher {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
+    margin-bottom: 12px;
 }
 
-.step-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--json-tool-border-strong, #e4e7ed);
-    transition: background-color 0.3s;
+.demo-example-button {
+    min-height: 34px;
+    padding: 6px 8px;
+    border: 1px solid var(--json-tool-border, #dcdfe6);
+    border-radius: var(--theme-radius, 4px);
+    background: var(--json-tool-surface-soft, #f5f7fa);
+    color: var(--json-tool-text, #303133);
+    font: inherit;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
 }
 
-:global(body[data-interface-style="default"].json-tool-theme-dark .demo-guide-popover .step-dot) {
-    background: #4a4a4a !important;
+.demo-example-button:hover {
+    border-color: var(--theme-accent, #409eff);
 }
 
-.step-dot.active {
-    background: var(--theme-accent, #409eff);
+.demo-example-button.is-active {
+    border-color: var(--theme-accent, #409eff);
+    background: color-mix(in srgb, var(--theme-accent, #409eff) 15%, var(--json-tool-surface-soft, #f5f7fa));
+    font-weight: 600;
 }
 
-/* 演示模式下当前引导元素的脉冲高亮描边 */
-/* 通过 transform: scale 让元素主动从贴边位置微微缩进，留出 box-shadow 绘制空间，
-   避免在浏览器窗口边缘（编辑区左侧、预览区右侧）被视口裁切看不到 */
-:global(.demo-highlight-target) {
-    position: relative;
-    z-index: 2000;
-    border-radius: 4px;
-    transform: scale(0.994);
-    transform-origin: center center;
-    animation: demoPulse 1.8s ease-in-out infinite;
-    transition:
-        box-shadow 0.2s,
-        transform 0.2s;
+.demo-example-button:focus-visible {
+    outline: 2px solid var(--theme-accent, #409eff);
+    outline-offset: 2px;
 }
 
-@keyframes demoPulse {
-    0%,
-    100% {
-        box-shadow:
-            0 0 0 2px var(--theme-accent, #409eff),
-            0 0 0 5px color-mix(in srgb, var(--theme-accent, #409eff) 30%, transparent);
-    }
-    50% {
-        box-shadow:
-            0 0 0 2px var(--theme-accent, #409eff),
-            0 0 0 8px color-mix(in srgb, var(--theme-accent, #409eff) 12%, transparent);
-    }
-}
-
-/* 当前设置区域样式，增加与按钮的间距 */
-.demo-current-settings {
+.demo-guide-content .demo-result-status {
     margin-top: 12px;
-    margin-bottom: 18px;
-    color: var(--json-tool-text-muted, #606266);
-    font-size: 14px;
+    color: var(--json-tool-text, var(--el-text-color-primary, #303133));
+    font-size: 12px;
     line-height: 1.6;
-    word-break: break-word;
+}
+
+/* Animate only the frame, never scale or shift editor text. */
+:global(.demo-highlight-target::after) {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    animation: demoHighlightWave 1.8s ease-out infinite;
+}
+@keyframes demoHighlightWave {
+    0% { box-shadow: inset 0 0 0 2px rgba(64, 158, 255, .5); }
+    65%, 100% { box-shadow: inset 0 0 0 8px rgba(64, 158, 255, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .demo-guide-inner { animation: none; }
+    :global(.demo-highlight-target::after) { animation: none; }
 }
 </style>

@@ -1,7 +1,8 @@
 import { getRootPathSuggestions, getFieldPathSuggestions, type PathSuggestion } from '../utils/jsonSortSuggestions';
 export type { PathSuggestion } from '../utils/jsonSortSuggestions';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { nextTick, ref, watch, type Ref } from 'vue';
+import { getCurrentScope, nextTick, onScopeDispose, ref, watch, type Ref } from 'vue';
+import { createEditorDemoSession } from '../utils/editorDemoSession';
 
 import { replaceEditorValuePreservingUndo } from '../utils/diffMonaco';
 import type { SettingsTxt } from '../utils/i18n';
@@ -14,9 +15,13 @@ export type DemoPopoverPlacement = 'right-start' | 'left-start' | 'bottom-start'
 
 export interface SortDemoStep {
     title: string;
-    content: string;
+    goal: string;
+    reason: string;
+    transferHint?: string;
     highlight: string | null;
     buttons: Array<{ text: string; action: () => void; type?: 'primary' | 'default' }>;
+    examples: Array<{ text: string; action: () => void }>;
+    completed: boolean;
 }
 
 export interface UseJsonSortSharedState {
@@ -29,7 +34,6 @@ export interface UseJsonSortSharedState {
     currentDemoStepData: Ref<SortDemoStep | null>;
     demoPopoverAnchor: Ref<HTMLElement | null>;
     demoPopoverPlacement: Ref<DemoPopoverPlacement>;
-    demoStepsCount: Ref<number>;
     currentDemoStep: Ref<number>;
 }
 
@@ -49,7 +53,6 @@ export interface UseJsonSortCtx {
     isDiffMode: Ref<boolean>;
     enterDiffMode: () => void;
     exitDiffMode: () => Promise<void>;
-    updateDiffEditorOptions: (options: monaco.editor.IEditorOptions) => void;
 
     ensureProcessingFeatureAvailable: () => boolean;
     showMessageSuccess: (msg: string) => void;
@@ -61,9 +64,10 @@ export interface UseJsonSortCtx {
     writeOutputJson: (content: string) => void;
     setOutputTypeJson: () => void;
     clearOutputEditor: () => void;
-    clearOutputFoldingInfo: () => void;
     updateEditorHeight: (editor: monaco.editor.IStandaloneCodeEditor) => void;
     updateLineNumberWidth: (editor: monaco.editor.IStandaloneCodeEditor) => void;
+    onDemoSessionStart?: () => void;
+    onDemoSessionRestore?: () => void;
     state?: Partial<UseJsonSortSharedState>;
 }
 
@@ -78,11 +82,19 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
     const isDemoMode = ctx.state?.isDemoMode ?? ref(false);
     const demoGuideVisible = ctx.state?.demoGuideVisible ?? ref(false);
     const currentDemoStepData = ctx.state?.currentDemoStepData ?? ref<SortDemoStep | null>(null);
-    const savedInputContent = ref<string | null>(null);
     const currentDemoStep = ctx.state?.currentDemoStep ?? ref(0);
-    const demoStepsCount = ctx.state?.demoStepsCount ?? ref(0);
     const demoStartedFromDiff = ref(false);
-    const demoFieldSortTargetBeforeStart = ref<FieldSortTarget>('input');
+    let demoGeneration = 0;
+    let demoStarting = false;
+    let demoResultVisible = false;
+    let disposed = false;
+    let hasExternalDemoSnapshot = false;
+    let savedSortState: { root: string; field: string; order: SortOrder; method: SortMethod; target: FieldSortTarget } | null = null;
+    const editorDemoSession = createEditorDemoSession({
+        getInputEditor: ctx.getInputEditor,
+        getOutputEditor: ctx.getOutputEditor,
+        createModel: (value, language) => monaco.editor.createModel(value, language),
+    });
     const demoData = ref(
         JSON.parse(
             '[{"id":3,"name":"Emma Davis","education":[{"university":"Stanford University","graduationYear":2010},{"university":"Columbia University","graduationYear":2015}]},{"id":1,"name":"Dylan Mullins","education":[{"university":"MIT","graduationYear":2003},{"university":"Harvard University","graduationYear":1983}]},{"id":2,"name":"Logan Boyle","education":[{"university":"Yale University","graduationYear":2000},{"university":"University of Pennsylvania","graduationYear":2020}]}]',
@@ -98,17 +110,6 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
     const demoPopoverAnchor = ctx.state?.demoPopoverAnchor ?? ref<HTMLElement | null>(null);
     const demoPopoverPlacement = ctx.state?.demoPopoverPlacement ?? ref<DemoPopoverPlacement>('right-start');
     const demoHighlightedEl = ref<HTMLElement | null>(null);
-
-    watch(isDemoMode, (on) => {
-        const readOnly = !!on;
-        try {
-            ctx.getInputEditor()?.updateOptions({ readOnly });
-            ctx.getOutputEditor()?.updateOptions({ readOnly });
-            ctx.updateDiffEditorOptions({ readOnly });
-        } catch {
-            // 编辑器尚未初始化也无妨，静默忽略
-        }
-    });
 
     const resolveDemoAnchor = (selector: string | null): HTMLElement | null => {
         if (typeof window === 'undefined') return null;
@@ -231,266 +232,156 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
     };
 
     const showFieldSortDemo = async () => {
+        if (disposed || demoStarting || isDemoMode.value || !ctx.ensureProcessingFeatureAvailable()) return;
+        demoStarting = true;
+        const generation = ++demoGeneration;
         fieldSortDialogVisible.value = false;
-        demoFieldSortTargetBeforeStart.value = fieldSortTarget.value;
+        savedSortState = {
+            root: sortRootPath.value, field: sortFieldName.value,
+            order: ctx.sortOrder.value, method: ctx.sortMethod.value, target: fieldSortTarget.value,
+        };
         demoStartedFromDiff.value = ctx.isDiffMode.value;
-
-        if (ctx.isDiffMode.value) {
-            await ctx.exitDiffMode();
+        try {
+            if (ctx.isDiffMode.value) await ctx.exitDiffMode();
+            if (disposed || generation !== demoGeneration) return;
             fieldSortTarget.value = 'input';
+            hasExternalDemoSnapshot = true;
+            ctx.onDemoSessionStart?.();
+            if (!editorDemoSession.begin({ language: 'json' })) {
+                endDemoMode();
+                ctx.showMessageError(ctx.settingsTxt.value.msgNoAvailableEditor);
+                return;
+            }
+            startDemoMode();
+        } catch (error) {
+            if (!disposed && generation === demoGeneration) {
+                endDemoMode();
+                ctx.showMessageError(ctx.settingsTxt.value.msgSortFail(error instanceof Error ? error.message : String(error)));
+            }
+        } finally {
+            demoStarting = false;
         }
-
-        startDemoMode();
     };
 
     const startDemoMode = () => {
+        if (disposed || !editorDemoSession.active) return;
         isDemoMode.value = true;
-        currentDemoStep.value = 0;
-
-        const inputEditor = ctx.getInputEditor();
-        if (inputEditor && savedInputContent.value === null) {
-            try {
-                savedInputContent.value = inputEditor.getValue() || '';
-            } catch {
-                savedInputContent.value = '';
-            }
-        }
-
-        if (inputEditor) {
-            try {
-                const demoJson = JSON.stringify(demoData.value, null, 2);
-                inputEditor.setValue(demoJson);
-                refreshEditorAfterDemoContentChange(inputEditor);
-            } catch {
-                // ignore
-            }
-        }
-
-        sortRootPath.value = '';
-        sortFieldName.value = '';
-        ctx.clearOutputEditor();
-
-
         showDemoStep(0);
     };
 
-    const setDemoParams = (rootPath: string, fieldName: string) => {
-        sortRootPath.value = rootPath;
-        sortFieldName.value = fieldName;
-    };
-
-    const setAndNext = (rootPath: string, fieldName: string, nextStep: number) => {
-        setDemoParams(rootPath, fieldName);
-        showDemoStep(nextStep);
-    };
-
-    const execAndNext = (rootPath: string, fieldName: string, nextStep: number) => {
-        const dataToUse = demoData.value;
-        const result = performFieldSort(dataToUse, rootPath, fieldName);
-        const finalOutput = ctx.formatDemoResult(result, dataToUse);
-        const outputEditor = ctx.getOutputEditor();
-        if (outputEditor) {
-            outputEditor.setValue(finalOutput);
-            refreshEditorAfterDemoContentChange(outputEditor);
-        }
-        showDemoStep(nextStep);
-    };
-
-    const execAndNextMap = (rootPath: string, fieldName: string, nextStep: number) => {
-        const dataToUse = demoMapData.value;
-        const result = performFieldSort(dataToUse, rootPath, fieldName);
-        const finalOutput = ctx.formatDemoResult(result, dataToUse);
-        const outputEditor = ctx.getOutputEditor();
-        if (outputEditor) {
-            outputEditor.setValue(finalOutput);
-            refreshEditorAfterDemoContentChange(outputEditor);
-        }
-        showDemoStep(nextStep);
-    };
-
-    const loadDemoMapNoAdvance = () => {
-        const inputEditor = ctx.getInputEditor();
-        if (inputEditor) {
-            const demoJson = JSON.stringify(demoMapData.value, null, 2);
-            inputEditor.setValue(demoJson);
-            refreshEditorAfterDemoContentChange(inputEditor);
-        }
-    };
-
-    const showDemoStep: (step: number) => void = (step: number) => {
-        currentDemoStep.value = step;
-
-        const steps: SortDemoStep[] = [
+    // The four foundational usages are independent examples. Selecting one
+    // prepares its real input and parameters; one click performs the real sort.
+    const showDemoStep = (example: number, completed = false) => {
+        if (disposed || !isDemoMode.value || example < 0 || example > 3) return;
+        currentDemoStep.value = example;
+        demoResultVisible = completed;
+        const txt = ctx.settingsTxt.value;
+        const examples = [
             {
-                title: ctx.settingsTxt.value.demoStartTitle,
-                content: ctx.settingsTxt.value.demoStartContent,
-                highlight: '.editor-panel-input',
-                buttons: [{ text: ctx.settingsTxt.value.demoStartButton, type: 'primary', action: () => showDemoStep(1) }],
+                text: txt.demoTabArrayId,
+                goal: txt.demoArrayIdGoal, reason: txt.demoArrayIdReason, transferHint: txt.demoArrayIdTransferHint,
+                root: '', field: 'id', data: demoData.value,
             },
             {
-                title: ctx.settingsTxt.value.demoArrayIdTitle,
-                content: ctx.settingsTxt.value.demoArrayIdContent,
-                highlight: '.editor-panel-input',
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(0) },
-                    { text: ctx.settingsTxt.value.demoSetParams, type: 'primary', action: () => setAndNext('', 'id', 2) },
-                ],
+                text: txt.demoTabArrayNested,
+                goal: txt.demoArrayEducationGoal, reason: txt.demoArrayEducationReason, transferHint: txt.demoArrayEducationTransferHint,
+                root: '[*].education', field: 'graduationYear', data: demoData.value,
             },
             {
-                title: ctx.settingsTxt.value.demoExecuteTitle,
-                content: ctx.settingsTxt.value.demoExecuteContent,
-                highlight: '.editor-panel-input',
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(1) },
-                    { text: ctx.settingsTxt.value.demoExecuteSort, type: 'primary', action: () => execAndNext('', 'id', 3) },
-                ],
+                text: txt.demoTabMapId,
+                goal: txt.demoMapIdGoal, reason: txt.demoMapIdReason, transferHint: txt.demoMapIdTransferHint,
+                root: '', field: 'id', data: demoMapData.value,
             },
             {
-                title: ctx.settingsTxt.value.demoSortDoneTitle,
-                content: ctx.settingsTxt.value.demoSortDoneContent,
-                highlight: null,
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(2) },
-                    { text: ctx.settingsTxt.value.demoNextExample, type: 'primary', action: () => showDemoStep(4) },
-                ],
-            },
-            {
-                title: ctx.settingsTxt.value.demoArrayEducationTitle,
-                content: ctx.settingsTxt.value.demoArrayEducationContent,
-                highlight: '.editor-panel-input',
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(3) },
-                    {
-                        text: ctx.settingsTxt.value.demoSetParams, type: 'primary',
-                        action: () => setAndNext('[*].education', 'graduationYear', 5),
-                    },
-                ],
-            },
-            {
-                title: ctx.settingsTxt.value.demoExecuteTitle,
-                content: ctx.settingsTxt.value.demoExecuteContent,
-                highlight: '.editor-panel-input',
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(4) },
-                    {
-                        text: ctx.settingsTxt.value.demoExecuteSort, type: 'primary',
-                        action: () => execAndNext('[*].education', 'graduationYear', 6),
-                    },
-                ],
-            },
-            {
-                title: ctx.settingsTxt.value.demoSortDoneEducationTitle,
-                content: ctx.settingsTxt.value.demoSortDoneEducationContent,
-                highlight: null,
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(5) },
-                    { text: ctx.settingsTxt.value.demoNextExample, type: 'primary', action: () => showDemoStep(7) },
-                ],
-            },
-            {
-                title: ctx.settingsTxt.value.demoMapIdTitle,
-                content: ctx.settingsTxt.value.demoMapIdContent,
-                highlight: '.editor-panel-input',
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(6) },
-                    { text: ctx.settingsTxt.value.demoSetParams, type: 'primary', action: () => setAndNext('', 'id', 8) },
-                ],
-            },
-            {
-                title: ctx.settingsTxt.value.demoExecuteTitle,
-                content: ctx.settingsTxt.value.demoMapExecuteContent,
-                highlight: '.editor-panel-input',
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(7) },
-                    { text: ctx.settingsTxt.value.demoExecuteSort, type: 'primary', action: () => execAndNextMap('', 'id', 9) },
-                ],
-            },
-            {
-                title: ctx.settingsTxt.value.demoMapIdDoneTitle,
-                content: ctx.settingsTxt.value.demoMapIdDoneContent,
-                highlight: null,
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(8) },
-                    { text: ctx.settingsTxt.value.demoNextExample, type: 'primary', action: () => showDemoStep(10) },
-                ],
-            },
-            {
-                title: ctx.settingsTxt.value.demoMapScoreTitle,
-                content: ctx.settingsTxt.value.demoMapScoreContent,
-                highlight: '.editor-panel-input',
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(9) },
-                    { text: ctx.settingsTxt.value.demoSetParams, type: 'primary', action: () => setAndNext('', 'value.score', 11) },
-                ],
-            },
-            {
-                title: ctx.settingsTxt.value.demoExecuteTitle,
-                content: ctx.settingsTxt.value.demoMapScoreExecuteContent,
-                highlight: '.editor-panel-input',
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoPrev, action: () => showDemoStep(10) },
-                    {
-                        text: ctx.settingsTxt.value.demoExecuteSort, type: 'primary',
-                        action: () => execAndNextMap('', 'value.score', 12),
-                    },
-                ],
-            },
-            {
-                title: ctx.settingsTxt.value.demoMapScoreDoneTitle,
-                content: ctx.settingsTxt.value.demoMapScoreDoneContent,
-                highlight: null,
-                buttons: [
-                    { text: ctx.settingsTxt.value.demoTryAgain, action: () => startDemoMode() },
-                    { text: ctx.settingsTxt.value.demoEnd, type: 'primary', action: () => endDemoMode() },
-                ],
+                text: txt.demoTabMapNested,
+                goal: txt.demoMapScoreGoal, reason: txt.demoMapScoreReason, transferHint: txt.demoMapScoreTransferHint,
+                root: '', field: 'value.score', data: demoMapData.value,
             },
         ];
-        demoStepsCount.value = steps.length;
-
-        if (step < steps.length) {
-            currentDemoStepData.value = steps[step];
-            demoGuideVisible.value = true;
-            nextTick(() => {
-                updateDemoPopoverAnchor(steps[step].highlight);
-            });
+        const selected = examples[example];
+        sortRootPath.value = selected.root;
+        sortFieldName.value = selected.field;
+        const inputEditor = ctx.getInputEditor();
+        if (inputEditor) {
+            const content = JSON.stringify(selected.data, null, 2);
+            if (inputEditor.getValue() !== content) inputEditor.setValue(content);
+            refreshEditorAfterDemoContentChange(inputEditor);
         }
-
-        if ([1, 4, 7, 10].includes(step)) {
-            sortRootPath.value = '';
-            sortFieldName.value = '';
+        if (completed) {
+            const result = performFieldSort(selected.data, selected.root, selected.field);
+            const outputEditor = ctx.getOutputEditor();
+            if (outputEditor) {
+                const content = ctx.formatDemoResult(result, selected.data);
+                if (outputEditor.getValue() !== content) outputEditor.setValue(content);
+                refreshEditorAfterDemoContentChange(outputEditor);
+            }
+        } else {
             ctx.clearOutputEditor();
         }
-        if (step === 7 || step === 10) {
-            loadDemoMapNoAdvance();
-        }
+        currentDemoStepData.value = {
+            title: txt.demoExamplesTitle,
+            goal: selected.goal,
+            reason: selected.reason,
+            transferHint: selected.transferHint,
+            highlight: completed ? '.editor-panel-output' : '.editor-panel-input',
+            examples: examples.map((item, index) => ({ text: item.text, action: () => showDemoStep(index) })),
+            completed,
+            buttons: [
+                { text: txt.demoEnd, action: () => endDemoMode() },
+                { text: txt.demoExecuteSort, type: 'primary', action: () => showDemoStep(example, true) },
+            ],
+        };
+        demoGuideVisible.value = true;
+        const generation = demoGeneration;
+        nextTick(() => {
+            if (disposed || !isDemoMode.value || generation !== demoGeneration || currentDemoStep.value !== example || demoResultVisible !== completed) return;
+            updateDemoPopoverAnchor(currentDemoStepData.value?.highlight ?? null);
+        });
     };
 
-    const endDemoMode = () => {
+    const finishDemo = (returnToDiff: boolean) => {
+        ++demoGeneration;
+        const shouldReturnToDiff = returnToDiff && demoStartedFromDiff.value;
+        demoStartedFromDiff.value = false;
         isDemoMode.value = false;
         demoGuideVisible.value = false;
         currentDemoStepData.value = null;
         demoPopoverAnchor.value = null;
         applyDemoHighlight(null);
-
-        const inputEditor = ctx.getInputEditor();
-        if (inputEditor) {
-            const restored = savedInputContent.value !== null ? savedInputContent.value : '';
-            inputEditor.setValue(restored);
-            refreshEditorAfterDemoContentChange(inputEditor);
+        editorDemoSession.restore();
+        if (hasExternalDemoSnapshot) {
+            hasExternalDemoSnapshot = false;
+            ctx.onDemoSessionRestore?.();
         }
-
-        ctx.clearOutputEditor();
-        savedInputContent.value = null;
-
-        const shouldReturnToDiff = demoStartedFromDiff.value;
-        fieldSortTarget.value = demoFieldSortTargetBeforeStart.value;
-        demoStartedFromDiff.value = false;
-        demoFieldSortTargetBeforeStart.value = 'input';
-
-        if (shouldReturnToDiff) {
-            ctx.enterDiffMode();
+        if (savedSortState) {
+            sortRootPath.value = savedSortState.root;
+            sortFieldName.value = savedSortState.field;
+            ctx.sortOrder.value = savedSortState.order;
+            ctx.sortMethod.value = savedSortState.method;
+            fieldSortTarget.value = savedSortState.target;
+            savedSortState = null;
+        }
+        if (!disposed) {
+            for (const editor of [ctx.getInputEditor(), ctx.getOutputEditor()]) {
+                if (editor) refreshEditorAfterDemoContentChange(editor);
+            }
+            if (shouldReturnToDiff) ctx.enterDiffMode();
         }
     };
+
+    const endDemoMode = () => finishDemo(true);
+    const stopDemoTextWatch = watch([ctx.settingsTxt, ctx.sortOrder], () => {
+        if (isDemoMode.value) showDemoStep(currentDemoStep.value, demoResultVisible);
+    });
+    const dispose = () => {
+        if (disposed) return;
+        disposed = true;
+        stopDemoTextWatch();
+        finishDemo(false);
+    };
+    // The workbench lazy-loads this composable after setup; it also calls dispose
+    // explicitly. Scope cleanup covers synchronous consumers and test fixtures.
+    if (getCurrentScope()) onScopeDispose(dispose);
 
     const executeFieldSort = () => {
         if (!ctx.ensureProcessingFeatureAvailable()) return;
@@ -585,7 +476,6 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
         currentDemoStepData,
         demoPopoverAnchor,
         demoPopoverPlacement,
-        demoStepsCount,
         currentDemoStep,
         queryRootPaths,
         queryFieldPathsFromScope,
@@ -595,6 +485,7 @@ export const useJsonSort = (ctx: UseJsonSortCtx) => {
         endDemoMode,
         applySort,
         openFieldSortDialogForDiff,
+        dispose,
     };
 };
 

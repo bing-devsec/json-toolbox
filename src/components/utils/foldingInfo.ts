@@ -287,25 +287,6 @@ export const buildJsonFoldingSummaryIndex = (formattedText: string): JsonFolding
     };
 };
 
-export const findJsonFoldingSummaryIndex = (index: JsonFoldingSummaryIndex, startLine: number): number => {
-    const { startLines } = index;
-    let low = 0;
-    let high = startLines.length - 1;
-
-    while (low <= high) {
-        const middle = (low + high) >>> 1;
-        const value = startLines[middle];
-        if (value === startLine) return middle;
-        if (value < startLine) {
-            low = middle + 1;
-        } else {
-            high = middle - 1;
-        }
-    }
-
-    return -1;
-};
-
 export const findJsonFoldingSummaryIndexAtOrBefore = (index: JsonFoldingSummaryIndex, lineNumber: number, maxLookBehind: number = 0): number => {
     const { startLines } = index;
     let low = 0;

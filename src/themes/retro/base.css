@@ -1,18 +1,4 @@
 /* retro: theme-specific material after nonDefaultBase.css. */
-body[data-interface-style="retro"] .json-tool-root.theme-dark .first-use-guide-card {
-    border-color: var(--json-tool-border);
-    background: var(--json-tool-surface-raised);
-    box-shadow: var(--retro-dialog-shadow);
-}
-body[data-interface-style="retro"] .json-tool-root.theme-dark .first-use-guide-title { color: var(--json-tool-text); }
-body[data-interface-style="retro"] .json-tool-root.theme-dark .first-use-guide-desc { color: var(--json-tool-text-muted); }
-body[data-interface-style="retro"] .json-tool-root.theme-dark .first-use-guide-skip {
-    color: var(--json-tool-text);
-    border-color: var(--json-tool-border);
-    background: var(--json-tool-surface);
-}
-body[data-interface-style="retro"] .json-tool-root.theme-dark .first-use-guide-skip:hover,
-body[data-interface-style="retro"] .json-tool-root.theme-dark .first-use-guide-skip:focus-visible { color: var(--theme-accent); border-color: var(--theme-accent); background: var(--theme-selected); }
 
 @media (prefers-reduced-motion: reduce) {
     body[data-interface-style="retro"] :is(.json-tool-root, .json-tool-container, .el-button, .appearance-style-card) { transition: none !important; }
@@ -40,15 +26,11 @@ body[data-interface-style="retro"].json-tool-theme-dark .demo-guide-popover .dem
     background: var(--json-tool-surface-header) !important;
     border-bottom-color: var(--json-tool-border) !important;
 }
-body[data-interface-style="retro"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-header h3, .demo-current-settings strong, .demo-settings-label) {
+body[data-interface-style="retro"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-header h3) {
     color: var(--json-tool-text) !important;
 }
-body[data-interface-style="retro"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-content p, .demo-current-settings, .step-dot) {
+body[data-interface-style="retro"].json-tool-theme-dark .demo-guide-popover :is(.demo-guide-content p) {
     color: var(--json-tool-text-muted) !important;
-}
-body[data-interface-style="retro"].json-tool-theme-dark .demo-guide-popover .demo-current-settings code {
-    background: var(--json-tool-surface-soft) !important;
-    color: var(--json-tool-text) !important;
 }
 body[data-interface-style="retro"].json-tool-theme-dark .demo-guide-popover .demo-guide-footer {
     border-top-color: var(--json-tool-border) !important;
@@ -154,17 +136,6 @@ body[data-interface-style="retro"] :is(.el-dialog__footer, .el-message-box__btns
     background: var(--retro-window) !important;
 }
 body[data-interface-style="retro"] .el-overlay { background: var(--retro-scrim) !important; }
-body[data-interface-style="retro"] .first-use-guide { background: var(--retro-guide-scrim) !important; }
-body[data-interface-style="retro"] .first-use-guide-card {
-    background: var(--retro-window) !important;
-    border: 1px solid var(--retro-window-border) !important;
-    border-radius: var(--retro-radius);
-    box-shadow: var(--retro-dialog-shadow) !important;
-}
-body[data-interface-style="retro"] :is(.first-use-guide-title, .first-use-guide-desc) { color: var(--json-tool-text) !important; }
-body[data-interface-style="retro"] .screen-size-warning { background: var(--retro-desktop) !important; color: var(--retro-title-text); }
-body[data-interface-style="retro"] .screen-size-warning .warning-text { color: var(--retro-title-text) !important; }
-body[data-interface-style="retro"] .screen-size-warning .warning-icon { color: var(--retro-warning-fg) !important; }
 
 body[data-interface-style="retro"] .demo-guide-popover.el-popover {
     background: var(--retro-window) !important;
@@ -179,14 +150,6 @@ body[data-interface-style="retro"] .demo-guide-popover .demo-guide-header h3 {
     font-weight: 700;
 }
 body[data-interface-style="retro"] .demo-guide-popover .demo-guide-footer { border-top-color: var(--retro-dotted) !important; }
-body[data-interface-style="retro"] .demo-guide-popover .demo-current-settings {
-    background: var(--retro-face-solid) !important;
-    border: 1px solid var(--retro-border) !important;
-}
-body[data-interface-style="retro"] .demo-guide-popover .demo-current-settings code {
-    background: var(--retro-selected) !important;
-    color: var(--retro-selected-text) !important;
-}
 body[data-interface-style="retro"] .el-popper__arrow::before {
     background: var(--retro-window) !important;
     border-color: var(--retro-window-border) !important;
@@ -200,9 +163,12 @@ body[data-interface-style="retro"] .capture-notice {
     color: var(--json-tool-text) !important;
 }
 body[data-interface-style="retro"] .capture-notice button {
-    background: var(--retro-neutral-bg) !important;
-    color: var(--retro-neutral-fg) !important;
-    border: 1px solid var(--retro-neutral-border) !important;
+    /* Shared notice controls use the theme button tokens for every state. */
+    --json-tool-button-bg: var(--retro-neutral-bg);
+    --json-tool-button-text: var(--retro-neutral-fg);
+    --json-tool-button-border: var(--retro-neutral-border);
+    --json-tool-button-hover-bg: var(--retro-neutral-hover-bg);
+    --json-tool-button-hover-border: var(--retro-neutral-hover-border);
     border-radius: var(--retro-radius);
     box-shadow: inset 0 1px 0 var(--retro-highlight);
 }

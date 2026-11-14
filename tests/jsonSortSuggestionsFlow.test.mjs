@@ -80,7 +80,7 @@ function fixture(t, initialValue, diffValues = {}) {
         getOutputEditor: () => outputEditor,
         getDiffSideEditor: side => diffEditors[side],
         isDiffMode: ref(false), enterDiffMode() {}, exitDiffMode: async () => {},
-        updateDiffEditorOptions() {}, ensureProcessingFeatureAvailable: () => true,
+        ensureProcessingFeatureAvailable: () => true,
         showMessageError: message => errors.push(message),
         showMessageSuccess: message => successes.push(message),
         preprocessJSON(raw, options) {
@@ -93,7 +93,7 @@ function fixture(t, initialValue, diffValues = {}) {
         formatDemoResult: data => engine.stringify(data),
         writeOutputJson: value => outputEditor.setValue(value),
         setOutputTypeJson() {}, clearOutputEditor: () => outputEditor.setValue(''),
-        clearOutputFoldingInfo() {}, updateEditorHeight() {}, updateLineNumberWidth() {},
+        updateEditorHeight() {}, updateLineNumberWidth() {},
     }));
     return {
         sort, errors, successes, parsedInputs, parsedResults, sortOrder, outputEditor, diffEditors,

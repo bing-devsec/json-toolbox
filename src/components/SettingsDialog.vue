@@ -2,20 +2,22 @@
     <el-dialog
         v-model="visibleModel"
         class="settings-dialog-wrapper"
+        :class="{ 'has-guide': walkthroughActive }"
         :close-on-click-modal="false"
         :show-close="false"
         :align-center="false"
-        top="12vh"
-        width="850px">
+        :top="walkthroughActive ? '6vh' : '12vh'"
+        :width="walkthroughActive ? 'min(850px, calc(100vw - 360px))' : '850px'">
         <template #header>
             <div class="dialog-header-with-close">
                 <span class="dialog-title-with-close">{{ settingsTxt.dialogTitle }}</span>
                 <button class="demo-close-btn" @click="visibleModel = false" :aria-label="settingsTxt.closeAria">✕</button>
             </div>
         </template>
-        <div class="settings-dialog-content">
+        <div class="settings-dialog-layout" :class="{ 'has-guide': walkthroughActive }">
+        <div class="settings-dialog-content" :inert="walkthroughActive">
             <el-collapse v-model="activeNameModel" accordion>
-                <el-collapse-item name="theme">
+                <el-collapse-item name="theme" data-guide-section="theme">
                     <template #title><div class="settings-collapse-title"><el-icon class="column-title-icon"><Setting /></el-icon><span>{{ sectionCopy.theme.title }}</span><span class="settings-section-current">{{ currentThemeSummary }}</span></div></template>
                     <div class="settings-collapse-content interface-settings-content">
                         <div class="switch-card">
@@ -32,7 +34,7 @@
                     </div>
                 </el-collapse-item>
 
-                <el-collapse-item v-if="!isDiffMode" name="settings">
+                <el-collapse-item v-if="!isDiffMode" name="settings" data-guide-section="settings">
                     <template #title>
                         <div class="settings-collapse-title"><el-icon class="column-title-icon"><Setting /></el-icon><span>{{ settingsTxt.sectionGeneral }}</span></div>
                     </template>
@@ -71,7 +73,7 @@
                     </div>
                 </el-collapse-item>
 
-                <el-collapse-item name="browser">
+                <el-collapse-item name="browser" data-guide-section="browser">
                     <template #title>
                         <div class="settings-collapse-title"><el-icon class="column-title-icon"><Setting /></el-icon><span>{{ sectionCopy.browser.title }}</span></div>
                     </template>
@@ -80,7 +82,7 @@
                     </div>
                 </el-collapse-item>
 
-                <el-collapse-item name="editor">
+                <el-collapse-item name="editor" data-guide-section="editor">
                     <template #title><div class="settings-collapse-title"><el-icon class="column-title-icon"><Edit /></el-icon><span>{{ sectionCopy.editor.title }}</span></div></template>
                     <div class="settings-collapse-content"><div class="settings-switch-grid"><div class="switch-card">
                                 <div class="switch-card-head">
@@ -141,7 +143,7 @@
                 </el-collapse-item>
 
                 <!-- 格式化设置 -->
-                <el-collapse-item name="format">
+                <el-collapse-item name="format" data-guide-section="format">
                     <template #title>
                         <div class="settings-collapse-title">
                             <el-icon class="column-title-icon">
@@ -194,7 +196,7 @@
                 </el-collapse-item>
 
                 <!-- 去除转义设置 -->
-                <el-collapse-item v-if="!isDiffMode" name="unescape">
+                <el-collapse-item v-if="!isDiffMode" name="unescape" data-guide-section="unescape">
                     <template #title>
                         <div class="settings-collapse-title">
                             <el-icon class="column-title-icon">
@@ -220,7 +222,7 @@
                 </el-collapse-item>
 
                 <!-- 排序设置 -->
-                <el-collapse-item name="sort">
+                <el-collapse-item name="sort" data-guide-section="sort">
                     <template #title>
                         <div class="settings-collapse-title">
                             <el-icon class="column-title-icon">
@@ -284,7 +286,7 @@
                 </el-collapse-item>
 
                 <!-- 存档设置（与通用设置同级，位于去除转义之后） -->
-                <el-collapse-item v-if="!isDiffMode" name="archive">
+                <el-collapse-item v-if="!isDiffMode" name="archive" data-guide-section="archive">
                     <template #title>
                         <div class="settings-collapse-title">
                             <el-icon class="column-title-icon">
@@ -310,8 +312,10 @@
                 </el-collapse-item>
             </el-collapse>
         </div>
+        </div>
         <template #footer>
-            <div class="dialog-footer">
+            <slot v-if="walkthroughActive" name="walkthrough" />
+            <div v-if="!walkthroughActive" class="dialog-footer">
                 <el-button @click="visibleModel = false">{{ settingsTxt.btnClose }}</el-button>
             </div>
         </template>
@@ -345,6 +349,7 @@ import JsonResponseCaptureSwitch from './JsonResponseCaptureSwitch.vue';
 import type { ButtonVisibility, SortMethod, SortOrder } from './composables/useToolSettings';
 
 interface Props {
+    walkthroughActive?: boolean;
     locale?: 'zh' | 'en';
     interfaceStyle: InterfaceStyle;
     themeMode: AppearanceMode;
@@ -674,10 +679,6 @@ const sortMethodDynamicDesc = computed(() => {
     gap: 10px;
 }
 
-.settings-switch-grid--toggles {
-    margin-top: 12px;
-}
-
 /* 抽屉较窄时回退到单列，避免文字与开关挤在一起 */
 @media (max-width: 560px) {
     .settings-switch-grid {
@@ -886,4 +887,14 @@ const sortMethodDynamicDesc = computed(() => {
     }
 
 }
+
+/* The real settings dialog remains the focus owner; guidance controls sit in its footer. */
+:global(.el-dialog.settings-dialog-wrapper.has-guide) {
+    max-width: calc(100vw - 48px);
+    height: min(760px, 84dvh);
+    max-height: 84dvh;
+    margin: 6vh 0 0 max(24px, calc((100vw - 1180px) / 2)) !important;
+}
+:global(.el-dialog.settings-dialog-wrapper.has-guide > .el-dialog__body) { min-height: 0; overflow-y: auto; }
+.settings-dialog-layout.has-guide { display: block; }
 </style>

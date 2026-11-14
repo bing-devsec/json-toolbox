@@ -9,6 +9,7 @@ const end = source.indexOf('\nconst syncEditorLargeFileOptions', start);
 assert(start > 0 && end > start);
 const { code } = await transform(source.slice(start, end) + '\nglobalThis.getOptions = getEditorOptions;', { loader: 'ts' });
 const context = {
+    walkthrough: { active: { value: false } },
     isLargeEditorContent: (lines, bytes) => lines > 10000 || bytes > 1000000,
     getJsonToolThemeForLanguage: () => 'theme', themeMode: { value: 'light' }, props: { locale: 'en' },
     showMinimap: { value: true }, stickyScroll: { value: true }, effectiveWordWrap: { value: true }, fontSize: { value: 12 },
@@ -43,4 +44,26 @@ test('installed Monaco native readonly requires both flags and does not disable 
         assert.equal(attrs.has('readonly'), readOnly && domReadOnly);
         assert.equal(attrs.has('disabled'), false);
     }
+});
+
+
+test('walkthrough locks both input flags temporarily and normal editor behavior returns afterward', () => {
+    try {
+        context.walkthrough.active.value = true;
+        for (const locale of ['en', 'zh']) for (const language of ['json', 'yaml', 'xml', 'plaintext', 'typescript']) {
+            context.props.locale = locale;
+            for (const readOnly of [false, true]) {
+                const options = context.getOptions(2, readOnly, language);
+                assert.equal(options.readOnly, true);
+                assert.equal(options.domReadOnly, true);
+                assert.equal(options.contextmenu, true, 'the demo still exposes the real context menu');
+            }
+        }
+    } finally {
+        context.walkthrough.active.value = false;
+    }
+    assert.equal(context.getOptions(2, false).readOnly, false);
+    assert.equal(context.getOptions(2, false).domReadOnly, false);
+    assert.equal(context.getOptions(2, true).readOnly, true);
+    assert.equal(context.getOptions(2, true).domReadOnly, true);
 });

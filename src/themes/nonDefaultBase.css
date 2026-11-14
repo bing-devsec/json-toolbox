@@ -67,8 +67,3 @@ body:is([data-interface-style="ide"], [data-interface-style="glass"], [data-inte
 body:is([data-interface-style="ide"], [data-interface-style="glass"], [data-interface-style="retro"], [data-interface-style="paper"]) .el-message--info .el-message__content { color: var(--json-tool-text-muted) !important; }
 
 /* First-use guide follows theme surfaces in dark mode. */
-body:is([data-interface-style="ide"], [data-interface-style="glass"], [data-interface-style="retro"], [data-interface-style="paper"]) .json-tool-root.theme-dark .first-use-guide {
-    background:
-        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--theme-accent) 12%, transparent), transparent 34%),
-        linear-gradient(180deg, color-mix(in srgb, var(--json-tool-surface) 78%, transparent), color-mix(in srgb, var(--json-tool-surface) 54%, transparent));
-}

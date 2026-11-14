@@ -1,5 +1,4 @@
 import { onBeforeUnmount, type Ref } from 'vue';
-import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { monacoApi, createMonacoWorker } from '../utils/monacoRuntime';
 import { createOptionalLanguageLoader } from '../utils/optionalLanguageLoader';
 import { createJsonLanguageActivation } from '../utils/jsonLanguageActivation';

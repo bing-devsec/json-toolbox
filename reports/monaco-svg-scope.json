@@ -3297,13 +3297,13 @@
     "sha256": "a7220f2ad0e76477f4c1770f909454482676b592eba35f82c2e4d32320e66a9f"
   },
   "applicationFiles": {
-    "src/components/JsonToolWorkbench.vue": "84b4dd3ef54aa466c4c2be33995718cbc593ed46e2ed1078f0dd180e73242e6b",
-    "src/components/composables/useEditorContextMenu.ts": "db6132fd1e1b476b3919d13e389e7cee67e5a33573d7bc7b8d7cbe2855160332",
-    "src/components/utils/i18n.ts": "6abf94f64c25b0c5efb23f5c27bc3382c7ac5f1f1649cf43b456d7989066eb88",
-    "src/components/composables/useMonacoLanguageRegistry.ts": "d78fe6472a6aee467f2f2c6861411ecb5831272fc75b222f05072a8a9d4e3f58",
+    "src/components/JsonToolWorkbench.vue": "b5339112c6665488ab448ae50956aa7964db832d83663747b646b603bf3e0fc3",
+    "src/components/composables/useEditorContextMenu.ts": "9828373cc35e77b32fe0922324309e19ccea1aa3938974fc143c88c382366f24",
+    "src/components/utils/i18n.ts": "8a05c9153983491b4e026fe2b36a4b2280388304b86433cc99274ef16739dafe",
+    "src/components/composables/useMonacoLanguageRegistry.ts": "b87347eed38da9825bfe590d85612963a0da74fcf9d30728083eb4dbffa6e286",
     "src/components/utils/jsonLanguageActivation.ts": "7e62d8c42e9aec40b7ed6aeb99da8a73697124cd29aa06f42d52382abf0c1f2c",
     "src/components/utils/monacoRuntime.ts": "d0cf6fef4dd9086ea5d6b5e1548ad8c1f4db8fd7b1a93ca8e75ebf70a0033d03",
-    "src/components/composables/diffEditorRuntime.ts": "f59f8ac109e616d99657c68dac69780324845c651f1a4270860e867d93eb29a6",
+    "src/components/composables/diffEditorRuntime.ts": "59883d887f0da9733838e1e52fcc34cb7cf561acf8f59434d4333ac8e164e230",
     "src/components/composables/useDiffEditors.ts": "24a27a68afa447bffcedec48fbdc6f850966c17bf5a94cc9c3ab66e99713e63b"
   },
   "boundary": "Reviewed extension workbench only. Captured JSON and user text are not interpreted as icon labels. New contributions, action/decorative icons, dynamic labels, or Monaco APIs need review. Runtime custom fonts remain supported. Baseline debug-gripper has no registered glyph."

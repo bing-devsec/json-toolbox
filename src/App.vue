@@ -8,7 +8,9 @@
             </span>
             <button v-if="captureState.phase === 'error'" type="button" @click="captureSession?.load()">{{ retryLabel }}</button>
             <button v-if="captureState.phase !== 'reading'" type="button" :disabled="returningToSource" @click="viewOriginal">{{ locale === 'en' ? 'Return to response URL' : '返回响应页面' }}</button>
-            <button v-if="captureState.phase === 'imported'" type="button" :aria-label="locale === 'en' ? 'Dismiss import notice' : '关闭导入提示'" @click="captureNoticeVisible = false">×</button>
+            <button v-if="captureState.phase === 'imported'" class="capture-notice-close" type="button" :aria-label="locale === 'en' ? 'Dismiss import notice' : '关闭导入提示'" :title="locale === 'en' ? 'Dismiss import notice' : '关闭导入提示'" @click="captureNoticeVisible = false">
+                <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="m4 4 8 8M12 4l-8 8" /></svg>
+            </button>
         </div>
         <component v-if="workbench && captureReadSettled" v-show="viewportEligible" :is="workbench" class="extension-workbench" :locale="locale" :external-import="captureState.request"
             @switch-locale="switchLocale" @external-imported="onExternalImported" @external-import-failed="onExternalImportFailed"
@@ -168,11 +170,16 @@ watch(locale, (value) => {
 <style scoped>
 .extension-shell { position: relative; display: flex; flex-direction: column; width: 100%; height: 100%; }
 .extension-workbench { flex: 1; min-height: 0; }
-.capture-notice { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; min-height: 32px; padding: 4px 12px; border-bottom: 1px solid var(--el-border-color, #dcdfe6); background: var(--el-fill-color-light, #f5f7fa); color: var(--el-text-color-regular, #606266); font-size: 12px; }
+.capture-notice { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; min-height: 32px; padding: 4px 12px; border-bottom: 1px solid var(--json-tool-border, var(--el-border-color, #dcdfe6)); background: var(--json-tool-surface-soft, var(--el-fill-color-light, #f5f7fa)); color: var(--json-tool-text-muted, var(--el-text-color-regular, #606266)); font-size: 12px; }
 .capture-notice-copy { display: flex; flex: 1; min-width: 0; align-items: center; gap: 10px; }
 .capture-source { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .8; }
-.capture-notice.is-error { color: var(--el-color-danger, #f56c6c); }
-.capture-notice button { flex-shrink: 0; padding: 2px 6px; border: 1px solid var(--el-border-color, #dcdfe6); border-radius: 4px; color: inherit; background: var(--el-bg-color, #fff); font-size: 12px; }
+.capture-notice.is-error .capture-notice-copy { color: var(--el-color-danger, #f56c6c); }
+.capture-notice button { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; min-height: 24px; padding: 2px 6px; border: 1px solid var(--json-tool-button-border, var(--el-border-color, #dcdfe6)); border-radius: 4px; color: var(--json-tool-button-text, inherit); background: var(--json-tool-button-bg, var(--el-bg-color, #fff)); font-size: 12px; line-height: 18px; }
+.capture-notice button:hover:not(:disabled) { background: var(--json-tool-button-hover-bg, var(--el-fill-color-light, #f5f7fa)); border-color: var(--json-tool-button-hover-border, var(--el-border-color-dark, #cdd0d6)); }
+.capture-notice button:active:not(:disabled) { background: var(--action-panel-active-bg, var(--el-fill-color, #f0f2f5)); }
+.capture-notice button:disabled { opacity: .6; }
+.capture-notice .capture-notice-close { width: 24px; height: 24px; padding: 0; }
+.capture-notice-close svg { display: block; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
 .capture-notice button:focus-visible { outline: 2px solid var(--el-color-primary, #409eff); outline-offset: 2px; }
 @media (max-width: 1000px) { .capture-notice-copy { align-items: flex-start; flex-direction: column; gap: 0; } .capture-source { max-width: 100%; } }
 .extension-shell :deep(.editor-skeleton) { min-height: 0; border: 0; border-radius: 0; }

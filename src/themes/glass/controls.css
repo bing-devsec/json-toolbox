@@ -1,6 +1,6 @@
 /* Glass controls. Every color comes from glass tokens through variables. */
 
-body[data-interface-style="glass"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn) {
+body[data-interface-style="glass"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .demo-close-btn, .dialog-close-btn) {
     --glass-control-bg: var(--glass-neutral-bg);
     --glass-control-fg: var(--glass-neutral-fg);
     --glass-control-border: var(--glass-neutral-border);
@@ -61,12 +61,12 @@ body[data-interface-style="glass"] .el-button.el-button--success { color: var(--
 body[data-interface-style="glass"] .el-button.el-button--warning { color: var(--glass-warning-fg) !important; }
 body[data-interface-style="glass"] .el-button.el-button--info { color: var(--json-tool-text-muted) !important; }
 
-body[data-interface-style="glass"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):hover:not(:disabled):not(.is-disabled) {
+body[data-interface-style="glass"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .demo-close-btn, .dialog-close-btn):hover:not(:disabled):not(.is-disabled) {
     background: var(--glass-control-hover-bg) !important;
     border-color: var(--glass-control-hover-border) !important;
 }
 
-body[data-interface-style="glass"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .first-use-guide-skip, .demo-close-btn, .dialog-close-btn):active:not(:disabled):not(.is-disabled) {
+body[data-interface-style="glass"] :is(.el-button.el-button, .archive-header-action, .diff-nav-action, .diff-sync-btn, .panel-action, .demo-close-btn, .dialog-close-btn):active:not(:disabled):not(.is-disabled) {
     background: var(--glass-control-active-bg) !important;
 }
 
@@ -312,28 +312,14 @@ body[data-interface-style="glass"] .el-dialog .el-alert {
     border-color: var(--glass-chrome-border) !important;
     color: var(--json-tool-text) !important;
 }
-body[data-interface-style="glass"] .el-dialog :is(.dialog-title, .section-title, .rule-name-label, .field-path-label, .field-label, .saved-rule-name, .affix-row-label, .affix-section-title) {
+body[data-interface-style="glass"] .el-dialog :is(.dialog-title, .section-title, .rule-name-label, .field-path-label, .field-label, .saved-rule-name, .affix-row-label) {
     color: var(--json-tool-text) !important;
 }
-body[data-interface-style="glass"] .el-dialog :is(.priority-hint, .saved-rule-meta, .affix-hint) {
+body[data-interface-style="glass"] .el-dialog :is(.priority-hint, .saved-rule-meta) {
     color: var(--json-tool-text-muted) !important;
 }
 
 /* Sort dialog, demo and Diff chrome */
-body[data-interface-style="glass"] .sort-direction-card,
-body[data-interface-style="glass"] .sort-option-card {
-    background: var(--glass-neutral-bg) !important;
-    border-color: var(--glass-neutral-border) !important;
-    border-radius: var(--glass-radius-small);
-}
-body[data-interface-style="glass"] .sort-direction-card.is-active,
-body[data-interface-style="glass"] .sort-option-card.is-active {
-    background: var(--glass-selected-bg) !important;
-    border-color: var(--glass-focus) !important;
-}
-body[data-interface-style="glass"] .step-dot.active {
-    background: var(--theme-accent) !important;
-}
 body[data-interface-style="glass"] .diff-sync-btn-group.is-active .diff-sync-btn {
     background: var(--glass-selected-bg) !important;
     color: var(--glass-selected-fg) !important;

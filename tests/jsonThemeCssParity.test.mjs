@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import postcss from 'postcss';
 
-// The IDE control snapshot includes the approved selected-state design; other baselines remain unchanged.
+// Reviewed snapshots include IDE selected controls and the approved glass/retro capture-notice button tokens.
+// Every other declaration and the full cascade comparison remain unchanged.
 const baseline = JSON.parse(readFileSync(new URL('./fixtures/themeCssBeforeSharedExtraction.json', import.meta.url), 'utf8'));
 const shared = readFileSync('src/themes/nonDefaultBase.css', 'utf8');
 const all = 'body:is([data-interface-style="ide"], [data-interface-style="glass"], [data-interface-style="retro"], [data-interface-style="paper"])';

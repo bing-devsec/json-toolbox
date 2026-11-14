@@ -55,7 +55,11 @@ export const bindJsonToolMessageToolbar = (toolbar: HTMLElement): (() => void) =
         if (disposed) return;
         const rect = toolbar.getBoundingClientRect();
         if (rect.height <= 0 || rect.width <= 0) return;
-        write(POSITION_VARIABLES[0], rect.top + rect.height / 2);
+        // Match the buttons' centering area; the bottom separator is outside it.
+        const toolbarStyle = view.getComputedStyle(toolbar);
+        const borderTop = parseFloat(toolbarStyle.borderTopWidth) || 0;
+        const borderBottom = parseFloat(toolbarStyle.borderBottomWidth) || 0;
+        write(POSITION_VARIABLES[0], rect.top + (rect.height + borderTop - borderBottom) / 2);
         write(POSITION_VARIABLES[1], Math.max(0, view.innerWidth - rect.right) + MESSAGE_INSET);
         write(POSITION_VARIABLES[2], Math.max(0, rect.width - MESSAGE_INSET * 2));
     };

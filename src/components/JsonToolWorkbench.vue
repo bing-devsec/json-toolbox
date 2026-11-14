@@ -9,7 +9,7 @@
         <!-- 原有的 JSON 工具容器 -->
         <div class="json-tool-container">
             <!-- 工具栏 -->
-            <div class="tool-bar-wrapper" ref="messageToolbarRef" :inert="!editorRuntimeReady">
+            <div class="tool-bar-wrapper" ref="messageToolbarRef" :inert="!editorRuntimeReady || walkthrough.active.value">
                 <!-- 左侧渐变遮罩和滚动按钮 -->
                 <div v-if="canScrollLeft" class="scroll-indicator scroll-indicator-left">
                     <el-button type="primary" circle size="small" class="scroll-btn scroll-btn-left" :aria-label="props.locale === 'en' ? 'Scroll toolbar left' : '向左滚动工具栏'" @click="scrollToolBar('left')" :icon="ArrowLeft" />
@@ -60,30 +60,30 @@
                     <!-- 演示模式下，除"设置"按钮外的所有功能暂时禁用，避免用户误操作打断引导流程 -->
                     <div class="toolbar-actions" :class="{ 'demo-locked-area': isDemoMode }" :inert="repair.repairing.value">
                         <el-button-group class="main-action-group">
-                            <el-button v-if="buttonVisibility.format" class="json-format-button" type="primary" :loading="repair.showLoading.value" :disabled="repair.repairing.value" :aria-busy="repair.repairing.value" @click="formatJSON">
+                            <el-button v-if="buttonVisibility.format || walkthrough.active.value" data-guide-tool="format" class="json-format-button" type="primary" :loading="repair.showLoading.value" :disabled="repair.repairing.value" :aria-busy="repair.repairing.value" @click="formatJSON">
                                 {{ settingsTxt.toolFormat }}
                             </el-button>
-                            <el-button v-if="buttonVisibility.compress" type="primary" :disabled="repair.repairing.value" @click="compressJSON">
+                            <el-button v-if="buttonVisibility.compress" data-guide-tool="compress" type="primary" :disabled="repair.repairing.value" @click="compressJSON">
                                 {{ settingsTxt.toolCompress }}
                             </el-button>
-                            <el-button v-if="buttonVisibility.escape" type="primary" :disabled="repair.repairing.value" @click="compressAndEscapeJSON">
+                            <el-button v-if="buttonVisibility.escape" data-guide-tool="escape" type="primary" :disabled="repair.repairing.value" @click="compressAndEscapeJSON">
                                 {{ settingsTxt.toolEscape }}
                             </el-button>
-                            <el-button v-if="buttonVisibility.unescape" type="primary" :disabled="repair.repairing.value" @click="handleEscapeCommand('unescape')">
+                            <el-button v-if="buttonVisibility.unescape" data-guide-tool="unescape" type="primary" :disabled="repair.repairing.value" @click="handleEscapeCommand('unescape')">
                                 {{ settingsTxt.toolUnescape }}
                             </el-button>
-                            <el-button v-if="buttonVisibility.masking" type="primary" :disabled="repair.repairing.value" @click="openDataMaskingDialog">
+                            <el-button v-if="buttonVisibility.masking" data-guide-tool="masking" type="primary" :disabled="repair.repairing.value" @click="openDataMaskingDialog">
                                 {{ settingsTxt.toolMasking }}
                             </el-button>
-                            <el-button v-if="buttonVisibility.sort" type="primary" :disabled="repair.repairing.value" @click="handleAdvancedCommand('sort')">
+                            <el-button v-if="buttonVisibility.sort" data-guide-tool="sort" type="primary" :disabled="repair.repairing.value" @click="handleAdvancedCommand('sort')">
                                 {{ settingsTxt.toolSort }}
                             </el-button>
-                            <el-button v-if="buttonVisibility.archive" type="primary" :disabled="repair.repairing.value" @click="handleSaveArchive">
+                            <el-button v-if="buttonVisibility.archive" data-guide-tool="archive" type="primary" :disabled="repair.repairing.value" @click="handleSaveArchive">
                                 {{ settingsTxt.toolArchive }}
                             </el-button>
-                            <el-button v-if="buttonVisibility.diff" type="primary" :disabled="repair.repairing.value" @click="diffMode.enterDiffMode">{{ settingsTxt.toolDiff }}</el-button>
+                            <el-button v-if="buttonVisibility.diff" data-guide-tool="diff" type="primary" :disabled="repair.repairing.value" @click="diffMode.enterDiffMode">{{ settingsTxt.toolDiff }}</el-button>
 
-                            <el-dropdown v-if="buttonVisibility.dataConvert" class="data-convert-dropdown" trigger="click" :disabled="repair.repairing.value" @command="handleConvert">
+                            <el-dropdown v-if="buttonVisibility.dataConvert" data-guide-tool="convert" class="data-convert-dropdown" trigger="click" :disabled="repair.repairing.value" @command="handleConvert">
                                 <el-button type="primary" :disabled="repair.repairing.value">
                                     {{ settingsTxt.toolDataConvert }}
                                     <el-icon class="el-icon--right">
@@ -103,7 +103,7 @@
                             </el-dropdown>
                         </el-button-group>
 
-                        <div v-if="buttonVisibility.collapse" class="collapse-control" role="group" :aria-disabled="repair.repairing.value || maxLevel === 0" :aria-label="props.locale === 'en' ? 'Folding controls' : '层级折叠'">
+                        <div v-if="buttonVisibility.collapse" data-guide-tool="fold" class="collapse-control" role="group" :aria-disabled="repair.repairing.value || maxLevel === 0" :aria-label="props.locale === 'en' ? 'Folding controls' : '层级折叠'">
                             <el-select
                                 v-model="selectedLevel"
                                 fit-input-width
@@ -113,7 +113,7 @@
                                 popper-class="level-select-dropdown"
                                 :disabled="repair.repairing.value || maxLevel === 0">
                                 <el-option v-if="maxLevel === 0" :label="settingsTxt.levelLabel(0)" :value="0" :disabled="true" />
-                                <el-option v-for="n in maxLevel" :key="n" :label="getFoldLevelOptionLabel(n)" :value="n" :disabled="isFoldLevelDisabled(n)" />
+                                <el-option v-for="n in maxLevel" :key="n" :label="getFoldLevelOptionLabel(n)" :data-guide-fold-level="n" :value="n" :disabled="isFoldLevelDisabled(n)" />
                             </el-select>
                             <el-button
                                 type="primary"
@@ -135,6 +135,8 @@
                 </div>
             </div>
 
+            <JsonToolWelcome v-if="shouldShowFirstUseGuide" :visible="shouldShowFirstUseGuide" :locale="props.locale" @start="walkthrough.start" @skip="dismissFirstUseGuide" />
+
             <div v-if="editorRuntimeError" class="editor-runtime-error" role="alert">
                 <span>{{ props.locale === 'en' ? 'The editor could not load.' : '编辑器加载失败。' }}</span>
                 <el-button size="small" @click="reloadEditorPage">{{ props.locale === 'en' ? 'Reload page' : '刷新重试' }}</el-button>
@@ -148,7 +150,7 @@
                 <template v-if="archives.length">
                     <div
                         class="archive-sidebar"
-                        :inert="!editorsInitialized"
+                        :inert="!editorsInitialized || walkthrough.active.value"
                         :class="{
                             collapsed: archiveSidebarWidth <= calculateArchiveMinWidth(),
                             'archive-dragging': !!draggingArchiveId,
@@ -233,7 +235,7 @@
                             <span>{{ settingsTxt.panelEditor }}</span>
                         </div>
                         <div
-                            class="panel-actions"
+                            class="panel-actions" :inert="walkthrough.active.value"
                             @dblclick.stop
                             :style="{
                                 '--panel-actions-opacity': showInputActions ? 1 : 0,
@@ -312,7 +314,7 @@
                 <!-- 添加可拖动分隔线 -->
                 <div class="resizer" :class="{ 'resizer-locked-during-demo': isDemoMode }" @pointerdown.self="startResize">
                     <el-button
-                        class="transfer-button"
+                        class="transfer-button" data-guide-tool="transfer"
                         type="primary"
                         :disabled="isDemoMode || repair.repairing.value"
                         @pointerdown.stop
@@ -337,7 +339,7 @@
                     <div class="panel-header" @dblclick="toggleOutputMaximize">
                         <div class="panel-title">{{ settingsTxt.panelPreview }}</div>
                         <div
-                            class="panel-actions"
+                            class="panel-actions" :inert="walkthrough.active.value"
                             @dblclick.stop
                             :style="{
                                 '--panel-actions-opacity': showOutputActions ? 1 : 0,
@@ -380,25 +382,7 @@
                         </div>
                     </div>
                 </div>
-                <div
-                    v-if="shouldShowFirstUseGuide && !editorRuntimeError && !comparisonMode && !props.externalImport"
-                    class="first-use-guide"
-                    role="region"
-                    :aria-label="settingsTxt.firstUseGuideTitle"
-                    :style="{ '--first-use-guide-left': archives.length ? `${archiveSidebarWidth + 3}px` : '0px' }">
-                    <div class="first-use-guide-card">
-                        <h3 class="first-use-guide-title">{{ settingsTxt.firstUseGuideTitle }}</h3>
-                        <p class="first-use-guide-desc">{{ settingsTxt.firstUseGuideDesc }}</p>
-                        <div class="first-use-guide-actions">
-                            <el-button type="primary" size="small" :disabled="!editorsInitialized" @click="loadFirstUseSample">
-                                {{ settingsTxt.firstUseGuideLoad }}
-                            </el-button>
-                            <button type="button" class="first-use-guide-skip" @click="dismissFirstUseGuide">
-                                {{ settingsTxt.firstUseGuideSkip }}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
 
@@ -417,6 +401,8 @@
             :locale="props.locale"
             @confirm="handleArchiveNameConfirm"
             @cancel="handleArchiveNameCancel" />
+
+        <JsonToolWalkthrough v-if="walkthrough.active.value && !settingsDialogVisible" :active="walkthrough.active.value" :step="walkthrough.step.value" :busy="walkthrough.busy.value" :done="walkthrough.done.value" :error="walkthrough.error.value" :target="walkthroughLiveTarget || walkthrough.target.value" :pointer="walkthroughPointer" :caption="walkthroughGuideCaption" :awaiting-continue="walkthroughAwaitingFold" :locale="props.locale" :extension="true" @action="walkthrough.action" @select="walkthrough.goTo" @next="walkthrough.next" @back="walkthrough.back" @close="walkthrough.finish()" />
 
         <SettingsDialog
             v-if="settingsDialogVisible"
@@ -448,7 +434,12 @@
             @update-font-size="updateFontSize"
             @update-word-wrap="updateWordWrap"
             @update-minimap="updateMinimap"
-            @update-sticky-scroll="updateStickyScroll" />
+            @update-sticky-scroll="updateStickyScroll"
+            :walkthrough-active="walkthrough.active.value">
+            <template v-if="walkthrough.active.value" #walkthrough>
+                <JsonToolWalkthrough embedded :active="walkthrough.active.value" :step="walkthrough.step.value" :busy="walkthrough.busy.value" :done="walkthrough.done.value" :error="walkthrough.error.value" :target="walkthroughLiveTarget || walkthrough.target.value" :pointer="walkthroughPointer" :caption="walkthroughGuideCaption" :awaiting-continue="walkthroughAwaitingFold" :locale="props.locale" :extension="true" @action="walkthrough.action" @select="walkthrough.goTo" @next="walkthrough.next" @back="walkthrough.back" @close="walkthrough.finish()" />
+            </template>
+        </SettingsDialog>
 
         <JsonSortFeature
             v-if="fieldSortDialogVisible || demoGuideVisible"
@@ -462,7 +453,6 @@
             :current-demo-step-data="currentDemoStepData"
             :demo-popover-anchor="demoPopoverAnchor"
             :demo-popover-placement="demoPopoverPlacement"
-            :demo-steps-count="demoStepsCount"
             :current-demo-step="currentDemoStep"
             :query-root-paths="queryRootPaths"
             :query-field-paths-from-scope="queryFieldPathsFromScope"
@@ -530,7 +520,14 @@ import { setupJsonFoldingInfoDisplay } from './composables/useJsonFoldingInfoDis
 import { getDefaultFoldLevel, useJsonFoldingLevels } from './composables/useJsonFoldingLevels';
 import { useJsonFoldingSummaryPrecompute } from './composables/useJsonFoldingSummaryPrecompute';
 import type { DemoPopoverPlacement, PathSuggestion, UseJsonSortReturn } from './composables/useJsonSort';
+import { createEditorDemoSession } from './utils/editorDemoSession';
+import { getFirstUseSampleJson } from './utils/firstUseSampleJson';
+import { getWalkthroughTopics, type WalkthroughTopic } from './utils/jsonToolWalkthroughContent';
+import { getMonacoMenuItems } from './utils/monacoMenuItems';
+import { createWalkthroughPlayback, type DemoPointer } from './utils/walkthroughPlayback';
 import { useJsonToolFirstUseGuide } from './composables/useJsonToolFirstUseGuide';
+const JsonToolWelcome = defineAsyncComponent(() => import('./JsonToolWelcome.vue'));
+const JsonToolWalkthrough = defineAsyncComponent(() => import('./JsonToolWalkthrough.vue'));
 import { useJsonToolSettingsDialog } from './composables/useJsonToolSettingsDialog';
 import { useMonacoLanguageRegistry } from './composables/useMonacoLanguageRegistry';
 import { useTabId } from './composables/useTabId';
@@ -682,7 +679,7 @@ const reloadEditorPage = () => window.location.reload();
 // 切换编辑区域最大化状态
 const toggleInputMaximize = () => {
     // 演示模式下禁用面板最大化（双击面板头），避免 Popover 锚点突变导致引导错位
-    if (isDemoMode.value) return;
+    if (isDemoMode.value || walkthrough.active.value) return;
     if (isInputMaximized.value) {
         // 从最大化恢复均分
         isInputMaximized.value = false;
@@ -704,7 +701,7 @@ const toggleInputMaximize = () => {
 // 切换预览区域最大化状态
 const toggleOutputMaximize = () => {
     // 演示模式下禁用面板最大化（双击面板头），避免 Popover 锚点突变导致引导错位
-    if (isDemoMode.value) return;
+    if (isDemoMode.value || walkthrough.active.value) return;
     if (isOutputMaximized.value) {
         // 从最大化恢复均分
         isInputMaximized.value = false;
@@ -873,6 +870,7 @@ const countLinesWithoutSplit = (text: string): number => {
 
 // Esc 退出 Diff，恢复普通编辑器。
 const handleEscapeKey = (event: KeyboardEvent) => {
+    if (walkthrough.active.value) return;
     if (event.key === 'Escape' && diffMode.isDiffMode.value) {
         void exitComparisonMode();
     }
@@ -1074,6 +1072,8 @@ const diffMode = useDiffMode({
     },
 });
 
+let sortDemoSnapshot: { output: typeof outputType.value; level: number; max: number; foldable: number | null } | null = null;
+let jsonSortOwnerDisposed = false;
 let jsonSort: UseJsonSortReturn | null = null;
 let jsonSortPromise: Promise<UseJsonSortReturn> | null = null;
 
@@ -1086,7 +1086,6 @@ const demoGuideVisible = ref(false);
 const currentDemoStepData = ref<any>(null);
 const demoPopoverAnchor = ref<HTMLElement | null>(null);
 const demoPopoverPlacement = ref<DemoPopoverPlacement>('right-start');
-const demoStepsCount = ref(0);
 const currentDemoStep = ref(0);
 
 type PathSuggestionCallback = (suggestions: PathSuggestion[]) => void;
@@ -1094,6 +1093,16 @@ type PathSuggestionCallback = (suggestions: PathSuggestion[]) => void;
 const createJsonSort = async (): Promise<UseJsonSortReturn> => {
     const jsonSortModule = await import('./composables/useJsonSort');
     return jsonSortModule.useJsonSort({
+        onDemoSessionStart: () => { sortDemoSnapshot = { output: outputType.value, level: selectedLevel.value, max: maxLevel.value, foldable: maxFoldableLevel.value }; },
+        onDemoSessionRestore: () => {
+            if (sortDemoSnapshot) {
+                outputType.value = sortDemoSnapshot.output; selectedLevel.value = sortDemoSnapshot.level;
+                maxLevel.value = sortDemoSnapshot.max; maxFoldableLevel.value = sortDemoSnapshot.foldable;
+                sortDemoSnapshot = null;
+            }
+            inputHasContent.value = Boolean(inputEditor?.getValue());
+            clearOutputFoldingInfo();
+        },
         settingsTxt,
         sortMethod,
         sortOrder,
@@ -1103,7 +1112,6 @@ const createJsonSort = async (): Promise<UseJsonSortReturn> => {
         isDiffMode: diffMode.isDiffMode,
         enterDiffMode: () => diffMode.enterDiffMode(),
         exitDiffMode: () => diffMode.exitDiffMode(),
-        updateDiffEditorOptions: (options: monaco.editor.IEditorOptions) => diffMode.updateDiffEditorOptions(options),
         ensureProcessingFeatureAvailable: () => ensureProcessingFeatureAvailable(),
         showMessageSuccess: (msg: string) => showMessageSuccess(msg),
         showMessageError: (msg: string) => showMessageError(msg),
@@ -1136,7 +1144,6 @@ const createJsonSort = async (): Promise<UseJsonSortReturn> => {
             clearOutputFoldingInfo();
             setOutputEditorValue('', 'json', true);
         },
-        clearOutputFoldingInfo: () => clearOutputFoldingInfo(),
         updateEditorHeight: (editor: monaco.editor.IStandaloneCodeEditor) => updateEditorHeight(editor),
         updateLineNumberWidth: (editor: monaco.editor.IStandaloneCodeEditor) => updateLineNumberWidth(editor),
         state: {
@@ -1149,7 +1156,6 @@ const createJsonSort = async (): Promise<UseJsonSortReturn> => {
             currentDemoStepData,
             demoPopoverAnchor,
             demoPopoverPlacement,
-            demoStepsCount,
             currentDemoStep,
         },
     });
@@ -1159,7 +1165,8 @@ const ensureJsonSort = async (): Promise<UseJsonSortReturn> => {
     if (jsonSort) return jsonSort;
     if (!jsonSortPromise) {
         jsonSortPromise = createJsonSort().then((instance) => {
-            jsonSort = instance;
+            if (jsonSortOwnerDisposed) instance.dispose();
+            else jsonSort = instance;
             return instance;
         }).catch(error => {
             jsonSortPromise = null;
@@ -1222,26 +1229,274 @@ const { settingsDialogVisible, settingsCollapseActiveNames, updateWordWrap, upda
 
 // Review invitations follow actual completed work, and wait outside editing/processing dialogs.
 const recordReviewUse = (kind: ReviewUsageKind) => {
-    if (!isTabPageClosing.value) emit('successful-use', kind);
+    if (!isTabPageClosing.value && !walkthrough.active.value && !isDemoMode.value) emit('successful-use', kind);
 };
 const reviewUiBlocked = computed(() => !externalEditorReady.value || isTabPageClosing.value
     || repair.busy.value || reviewConversionBusy.value > 0 || comparisonMode.value || comparisonLoading.value
     || diffMode.isDiffMode.value || diffMode.comparisonBusy.value || isResizing.value || isInputDragActive.value
     || settingsDialogVisible.value || dataMaskingDialogVisible.value || archiveNameDialogVisible.value
-    || affixDialogVisible.value || fieldSortDialogVisible.value || demoGuideVisible.value);
-watch(reviewUiBlocked, blocked => emit('review-blocked', blocked), { immediate: true, flush: 'sync' });
+    || affixDialogVisible.value || fieldSortDialogVisible.value || demoGuideVisible.value
+    || walkthrough.active.value || shouldShowFirstUseGuide.value);
+
 
 provide(DIFF_MODE_INJECTION_KEY, diffMode);
 
-const { inputHasContent, shouldShowFirstUseGuide, dismissFirstUseGuide, loadFirstUseSample } = useJsonToolFirstUseGuide({
-    locale: computed(() => props.locale),
-    editorsInitialized,
-    isDiffMode: diffMode.isDiffMode,
-    isInputDragActive,
+// The walkthrough owns temporary models; the user's actual models keep their undo history.
+const walkthroughViewportAvailable = ref(window.innerWidth > 900);
+const updateWalkthroughViewport = () => { walkthroughViewportAvailable.value = window.innerWidth > 900; };
+onMounted(() => window.addEventListener('resize', updateWalkthroughViewport, { passive: true }));
+onBeforeUnmount(() => window.removeEventListener('resize', updateWalkthroughViewport));
+const walkthroughSession = createEditorDemoSession({
     getInputEditor: () => inputEditor,
-    showEditorNotInitError: () => showMessageError(settingsTxt.value.msgEditorNotInit),
-    formatJson: () => formatJSON(),
+    getOutputEditor: () => outputEditor,
+    createModel: (value, language) => monacoApi.editor.createModel(value, language),
 });
+let walkthroughSnapshot: { output: typeof outputType.value; language: EditorContentLanguage; level: number; max: number; foldable: number | null; section: string | number; layout: [number, number, boolean, boolean] } | null = null;
+const walkthroughTopics = computed(() => getWalkthroughTopics(props.locale === 'en' ? 'en' : 'zh', true));
+const walkthroughFloatingOpen = ref(false);
+const loadWalkthroughSource = () => {
+    cancelPendingLevelAnalysis();
+    setInputEditorValue(getFirstUseSampleJson(props.locale));
+    outputType.value = 'json';
+    setOutputEditorValue('', 'json', true);
+    inputEditor?.setScrollTop(0);
+};
+const walkthroughPointer = ref<DemoPointer>({ x: 0, y: 0, visible: false, pressing: false });
+const walkthroughLiveTarget = ref<HTMLElement | null>(null);
+const walkthroughCaption = ref('');
+const walkthroughAwaitingFold = ref(false);
+const walkthroughGuideCaption = computed(() => walkthroughCaption.value || (walkthroughAwaitingFold.value
+    ? (props.locale === 'en'
+        ? 'The original demo is on the left and the formatted result is on the right. Compare the indentation, wrapping and structure. Continue when you are ready to fold and transfer.'
+        : '左侧保留 Demo 原文，右侧是格式化结果。可以对照缩进、换行和结构；看完后，再继续折叠与转移。')
+    : ''));
+const walkthroughPlayback = createWalkthroughPlayback(pointer => { walkthroughPointer.value = pointer; });
+const prepareWalkthroughExtraction = () => {
+    loadWalkthroughSource();
+    setInputEditorValue(JSON.stringify({ team: [{ name: 'Alice', role: 'Design' }, { name: 'Bob', profile: { name: 'Charlie' } }] }, null, 2));
+    inputEditor?.setPosition({ lineNumber: 4, column: 8 });
+    inputEditor?.setScrollTop(0);
+};
+const clearWalkthroughPlayback = () => {
+    walkthroughPlayback.cancel();
+    document.querySelector('[data-guide-tool="fold"] input')?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true }));
+    cancelPendingExtraction();
+    walkthroughLiveTarget.value = null;
+    walkthroughCaption.value = '';
+    // Closing via Monaco's focused menu preserves its own cleanup/focus handling.
+    const menu = getMonacoMenuItems()[0];
+    menu?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+};
+const showWalkthroughSettings = async (topic: WalkthroughTopic, isCurrent: () => boolean) => {
+    await Promise.all([import('./SettingsDialog.vue'), preloadThemeStyles()]);
+    if (!isCurrent()) return;
+    settingsCollapseActiveNames.value = topic.settingsSection || 'format';
+    openSettingsDialog();
+    const preparation = walkthroughPlayback.start(isCurrent);
+    try {
+        const section = await preparation.waitFor(() => {
+            const element = document.querySelector<HTMLElement>(topic.target);
+            return element?.getClientRects().length ? element : null;
+        });
+        preparation.check();
+        section.scrollIntoView({ block: 'nearest' });
+    } finally { preparation.finish(); }
+};
+const walkthrough = useJsonToolFirstUseGuide({
+    stepCount: walkthroughTopics.value.length,
+    locale: computed(() => props.locale), editorsInitialized, isDiffMode: diffMode.isDiffMode, isInputDragActive,
+    unavailable: computed(() => !walkthroughViewportAvailable.value || editorRuntimeError.value || comparisonMode.value || isDemoMode.value),
+    suppressAutomaticInvitation: computed(() => Boolean(props.externalImport)),
+    beginDemo: () => {
+        if (repair.busy.value) return false;
+        walkthroughSnapshot = { output: outputType.value, language: inputContentLanguage.value, level: selectedLevel.value,
+            max: maxLevel.value, foldable: maxFoldableLevel.value, section: settingsCollapseActiveNames.value, layout: [leftPanelWidth.value, stableLeftPanelWidth.value, isInputMaximized.value, isOutputMaximized.value] };
+        if (!walkthroughSession.begin()) return false;
+        leftPanelWidth.value = 50; stableLeftPanelWidth.value = 50; isInputMaximized.value = false; isOutputMaximized.value = false;
+        void nextTick(() => updateEditorLayout());
+        return true;
+    },
+    restoreDemo: () => {
+        clearWalkthroughPlayback();
+        walkthroughAwaitingFold.value = false;
+        repair.cancel();
+        cancelPendingLevelAnalysis();
+        foldRequestSequence++;
+        isFoldOperationLocked = false;
+        transferRequestSequence++;
+        settingsDialogVisible.value = false;
+        walkthroughFloatingOpen.value = false;
+        affixDialogVisible.value = false;
+        const saved = walkthroughSnapshot;
+        walkthroughSnapshot = null;
+        if (saved) { outputType.value = saved.output; inputContentLanguage.value = saved.language; }
+        walkthroughSession.restore();
+        monacoApi.editor.setTheme(getJsonToolThemeForLanguage(outputEditor?.getModel()?.getLanguageId() || 'json', themeMode.value));
+        if (saved) {
+            selectedLevel.value = saved.level; maxLevel.value = saved.max; maxFoldableLevel.value = saved.foldable;
+            settingsCollapseActiveNames.value = saved.section;
+            [leftPanelWidth.value, stableLeftPanelWidth.value, isInputMaximized.value, isOutputMaximized.value] = saved.layout;
+            void nextTick(() => updateEditorLayout());
+        }
+        inputHasContent.value = Boolean(inputEditor?.getValue());
+        clearOutputFoldingInfo();
+        refreshInputEditorErrors();
+        updateLineNumberWidth(inputEditor); updateLineNumberWidth(outputEditor);
+    },
+    prepareStep: async (step, isCurrent) => {
+        clearWalkthroughPlayback();
+        walkthroughAwaitingFold.value = false;
+        const topic = walkthroughTopics.value[step];
+        if (!topic) throw new Error('Unknown walkthrough step');
+        if (topic.action !== 'settings') settingsDialogVisible.value = false;
+        walkthroughFloatingOpen.value = false;
+        inputEditor?.focus();
+        if (topic.action === 'settings') {
+            if (!inputEditor?.getValue()) loadWalkthroughSource();
+            await showWalkthroughSettings(topic, isCurrent);
+        } else if (topic.action === 'extract') prepareWalkthroughExtraction();
+        else if (topic.action === 'format') loadWalkthroughSource();
+        await nextTick();
+        if (isCurrent() && topic.action === 'format') document.querySelector(topic.target)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    },
+    performStep: async (step, isCurrent) => {
+        const topic = walkthroughTopics.value[step];
+        if (!topic) throw new Error('Unknown walkthrough step');
+        const playback = walkthroughPlayback.start(isCurrent, window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        const explain = (target: HTMLElement, zh: string, en: string) => {
+            playback.check(); walkthroughLiveTarget.value = target; walkthroughCaption.value = props.locale === 'en' ? en : zh;
+        };
+        try {
+            if (topic.action === 'format') {
+                if (!walkthroughAwaitingFold.value) {
+                    // Replay starts with the original demo, before any folding or transfer.
+                    loadWalkthroughSource();
+                    const button = document.querySelector<HTMLElement>(topic.target);
+                    if (!button) throw new Error('Format button unavailable');
+                    explain(button, '点击“格式化”，将左侧原文整理到右侧预览。', 'Click Format to organize the input into the preview.');
+                    await playback.point(button);
+                    let formatting: Promise<void> | undefined;
+                    await playback.press(() => { formatting = formatJSON(); });
+                    await formatting;
+                    playback.check();
+                    if (!outputEditor?.getValue()) throw new Error('No formatted result');
+                    walkthroughAwaitingFold.value = true;
+                    return false;
+                }
+                const preview = document.querySelector<HTMLElement>('.editor-panel-output');
+                if (!preview) throw new Error('Preview unavailable');
+                const levelSelect = document.querySelector<HTMLElement>('[data-guide-tool="fold"] .el-select__wrapper');
+                if (!levelSelect) throw new Error('Folding selector unavailable');
+                levelSelect.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                explain(levelSelect, '展开层级选项，选择“第 2 层”。', 'Open the folding options and choose Level 2.');
+                await playback.point(levelSelect);
+                await playback.press(() => levelSelect.click());
+                const levelTwo = await playback.waitFor(() => {
+                    const option = document.querySelector<HTMLElement>('.level-select-dropdown [data-guide-fold-level="2"]');
+                    return option?.getClientRects().length && !option.classList.contains('is-disabled') ? option : null;
+                });
+                explain(levelTwo, '选择第 2 层，保留外层结构，收起内部细节。', 'Choose Level 2 to keep the outer structure and collapse its details.');
+                await playback.point(levelTwo);
+                await playback.press(() => levelTwo.click());
+                await playback.waitFor(() => selectedLevel.value === 2);
+                const foldButton = document.querySelector<HTMLButtonElement>('[data-guide-tool="fold"] .level-action-button');
+                if (!foldButton || foldButton.disabled) throw new Error('Fold button unavailable');
+                explain(foldButton, '点击“折叠”，在预览区查看第 2 层结构。', 'Click Fold to view the level 2 structure in the preview.');
+                await playback.point(foldButton);
+                await playback.press(() => foldButton.click());
+
+                // Both toolbar actions finish asynchronously. Observe the actual folds,
+                // rather than treating the click or an animation delay as completion.
+                const foldedRanges = (editor: monaco.editor.IStandaloneCodeEditor | null) => {
+                    const ranges = editor?.saveViewState()?.contributionsState?.['editor.contrib.folding']?.collapsedRegions;
+                    return Array.isArray(ranges) ? ranges.map((range: { startLineNumber: number; endLineNumber: number }) =>
+                        [range.startLineNumber, range.endLineNumber]) : [];
+                };
+                const previewFolds = await playback.waitFor(() => {
+                    const ranges = foldedRanges(outputEditor);
+                    return !isFoldOperationLocked && ranges.length ? ranges : null;
+                });
+                playback.check();
+                const previewText = outputEditor!.getValue();
+                explain(preview, '第 2 层已折叠。内容转移会把文本和折叠状态一起带到左侧。', 'Level 2 is folded. Transfer moves both the text and its folded state to the input.');
+                await playback.pause(1000);
+                const transferButton = document.querySelector<HTMLButtonElement>('[data-guide-tool="transfer"]');
+                if (!transferButton || transferButton.disabled) throw new Error('Transfer button unavailable');
+                explain(transferButton, '点击内容转移，将预览结果移回编辑区，继续编辑。', 'Click Transfer to move the preview back into the input and continue editing.');
+                await playback.point(transferButton);
+                await playback.press(() => transferButton.click());
+                await playback.waitFor(() => inputEditor?.getValue() === previewText && !outputEditor?.getValue()
+                    && JSON.stringify(foldedRanges(inputEditor)) === JSON.stringify(previewFolds));
+                playback.check();
+                walkthroughAwaitingFold.value = false;
+            } else if (topic.action === 'extract' && inputEditor) {
+                prepareWalkthroughExtraction();
+                const editor = inputEditor;
+                const node = editor.getDomNode();
+                if (!node) throw new Error('Editor unavailable');
+                const rect = node.getBoundingClientRect();
+                const caret = editor.getScrolledVisiblePosition(editor.getPosition()!);
+                explain(node, '先在示例 JSON 中打开右键菜单。', 'First, open the context menu in the example JSON.');
+                await playback.point({ x: rect.left + (caret?.left || 130), y: rect.top + (caret?.top || 80) + 8 });
+                await playback.press(() => { editor.focus(); void editor.getAction('editor.action.showContextMenu')?.run(); });
+                const item = await playback.waitFor(() => getMonacoMenuItems().find(element => element.textContent?.trim() === settingsTxt.value.ctxExtractValuesByKey));
+                explain(item.closest<HTMLElement>('.monaco-menu-container') || item, '选择“按 key 提取 value”。', 'Choose Extract Values by Key.');
+                await playback.pause(450);
+                await playback.point(item);
+                await playback.press(() => {
+                    // Use Monaco's synchronous activation path so cancellation owns the action immediately.
+                    item.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, cancelable: true, view: window }));
+                    item.focus({ preventScroll: true });
+                    item.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true, cancelable: true, view: window }));
+                });
+                const input = await playback.waitFor(() => document.querySelector<HTMLInputElement>('.json-tool-extract-values-prompt input'));
+                explain(input.closest<HTMLElement>('.el-message-box') || input, '输入 name，查找各层级中同名字段的值。', 'Enter name to find matching fields at every nesting level.');
+                await playback.point(input);
+                await playback.press(() => input.focus());
+                const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+                if (!setter) throw new Error('Input setter unavailable');
+                for (const value of ['n', 'na', 'nam', 'name']) {
+                    playback.check(); setter.call(input, value); input.dispatchEvent(new Event('input', { bubbles: true }));
+                    await playback.pause(150);
+                }
+                const confirm = await playback.waitFor(() => document.querySelector<HTMLElement>('.json-tool-extract-values-prompt .json-tool-extract-confirm'));
+                await playback.pause(350);
+                await playback.point(confirm);
+                await playback.press(() => confirm.click());
+                await playback.waitFor(() => {
+                    try { return JSON.stringify(JSON.parse(outputEditor?.getValue() || '')) === '["Alice","Bob","Charlie"]'; }
+                    catch { return false; }
+                });
+                playback.check();
+            } else if (topic.action === 'floating') {
+                walkthroughFloatingOpen.value = false;
+                await nextTick();
+                const trigger = document.querySelector<HTMLElement>('.floating-trigger');
+                if (!trigger) throw new Error('Floating control unavailable');
+                explain(trigger, '点击这个悬浮入口，找到问题反馈和浏览器扩展。', 'Open this floating control to find feedback and the browser extension.');
+                await playback.point(trigger);
+                await playback.press(() => trigger.click());
+                playback.check(); walkthroughFloatingOpen.value = true;
+            }
+        } catch (error) {
+            if (isCurrent()) clearWalkthroughPlayback();
+            throw error;
+        } finally {
+            playback.finish();
+            if (isCurrent()) { walkthroughLiveTarget.value = null; walkthroughCaption.value = ''; }
+        }
+    },
+    getTarget: step => {
+        const topic = walkthroughTopics.value[step];
+        if (topic?.action === 'format' && walkthrough.done.value) return document.querySelector<HTMLElement>('.editor-panel-input');
+        if (['format', 'extract'].includes(topic?.action || '') && outputEditor?.getValue()) return document.querySelector<HTMLElement>('.editor-panel-output');
+        return topic ? document.querySelector<HTMLElement>(topic.target) : null;
+    },
+});
+const { inputHasContent, shouldShowFirstUseGuide, dismissFirstUseGuide } = walkthrough;
+watch(() => props.externalImport, () => walkthrough.finish(false), { flush: 'sync' });
+watch(reviewUiBlocked, blocked => emit('review-blocked', blocked), { immediate: true, flush: 'sync' });
+
 
 let tabInitialization: Promise<void> | null = null;
 let startupGcScheduled = false;
@@ -1809,9 +2064,9 @@ const getEditorOptions = (
         value: '',
         language,
         theme: getJsonToolThemeForLanguage(language, themeMode.value),
-        readOnly: isReadOnly,
+        readOnly: isReadOnly || walkthrough.active.value,
         // Keep the native textarea truthful without changing editable paste handling.
-        domReadOnly: isReadOnly,
+        domReadOnly: isReadOnly || walkthrough.active.value,
         ariaLabel: props.locale === 'en'
             ? (isReadOnly ? 'JSON preview editor' : 'JSON input editor')
             : (isReadOnly ? 'JSON 预览编辑器' : 'JSON 输入编辑器'),
@@ -2736,6 +2991,7 @@ const {
     registerClipboardActions,
     registerReadonlyClipboardActions,
     registerEncodingActions,
+    cancelPendingExtraction,
     filterBuiltinContextMenuActions,
     applyBatchAffix,
 } = useEditorContextMenu({
@@ -2762,8 +3018,8 @@ const {
     formatJsonValueForContextAction: (data, escapeMap, compressed) => formatJsonValueForContextAction(data, escapeMap, compressed),
     dedupeSimpleArray: (arr) => dedupeSimpleArray(arr),
     extractValuesByKey: (data, key) => extractValuesByKey(data, key),
-    sendInputContentToDiff: (side) => diffMode.sendInputContentToDiff(side),
-    sendContentToDiff: (side, content, emptyMessage) => diffMode.sendContentToDiff(side, content, emptyMessage),
+    sendInputContentToDiff: (side) => { if (!walkthrough.active.value) diffMode.sendInputContentToDiff(side); },
+    sendContentToDiff: (side, content, emptyMessage) => { if (!walkthrough.active.value) diffMode.sendContentToDiff(side, content, emptyMessage); },
     setInputSendToDiffContextKeys: (left, right) => {
         diffMode.setInputSendToDiffContextKeys(left, right);
     },
@@ -2957,7 +3213,10 @@ const createInputEditor = () => {
     if (!inputEditorContainer.value) return;
 
     const inputOptions = getEditorOptions(indentSize.value, false, inputContentLanguage.value, true, 1);
-    inputEditor = monacoApi.editor.create(inputEditorContainer.value, inputOptions);
+    // Explicit model ownership lets walkthroughs detach it without Monaco disposing its undo history.
+    const initialModel = monacoApi.editor.createModel('', inputContentLanguage.value);
+    try { inputEditor = monacoApi.editor.create(inputEditorContainer.value, { ...inputOptions, model: initialModel }); }
+    catch (error) { initialModel.dispose(); throw error; }
     optimizeLargeEditorLineMapping(inputEditor);
     currentInputLineCount.value = getEditorLineCount(inputEditor);
 
@@ -2987,7 +3246,9 @@ const createOutputEditor = () => {
 
     // 默认启用大文件折叠优化（因为是输出编辑器，通常会处理较大的JSON）
     const options = getEditorOptions(indentSize.value, true, 'json', true);
-    outputEditor = monacoApi.editor.create(outputEditorContainer.value, options);
+    const initialModel = monacoApi.editor.createModel('', 'json');
+    try { outputEditor = monacoApi.editor.create(outputEditorContainer.value, { ...options, model: initialModel }); }
+    catch (error) { initialModel.dispose(); throw error; }
     optimizeLargeEditorLineMapping(outputEditor);
     outputEditorTextareaAttrObserver?.disconnect();
     outputEditorTextareaAttrObserver = ensureMonacoTextareaAttrs(outputEditorContainer.value, 'monaco-output-editor');
@@ -3446,6 +3707,9 @@ onMounted(async () => {
 
 // 清理编辑器实例
 onBeforeUnmount(() => {
+    walkthrough.finish(false);
+    jsonSortOwnerDisposed = true;
+    jsonSort?.dispose();
     // Release the feedback slot and its layout observers with this workbench.
     disposeMessageToolbar();
     destroyLevelAnalysisWorker();
@@ -4864,7 +5128,7 @@ const stopResize = () => {
 // 分割线拖动实现
 const startResize = (e: PointerEvent) => {
     // 演示模式下锁定分割线，防止 Popover 锚点抖动导致引导卡片位置乱跳
-    if (isDemoMode.value) {
+    if (isDemoMode.value || walkthrough.active.value) {
         e.preventDefault();
         return;
     }
@@ -5771,26 +6035,17 @@ body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select
 :global(body[data-interface-style="default"].json-tool-theme-dark .dialog-title),
 :global(body[data-interface-style="default"].json-tool-theme-dark .dialog-title-with-close),
 :global(body[data-interface-style="default"].json-tool-theme-dark .section-title),
-:global(body[data-interface-style="default"].json-tool-theme-dark .config-name),
 :global(body[data-interface-style="default"].json-tool-theme-dark .saved-rule-name),
 :global(body[data-interface-style="default"].json-tool-theme-dark .field-path-label) {
     color: var(--json-tool-text) !important;
 }
 
 :global(body[data-interface-style="default"].json-tool-theme-dark .form-label),
-:global(body[data-interface-style="default"].json-tool-theme-dark .form-label-row .form-label),
 :global(body[data-interface-style="default"].json-tool-theme-dark .form-hint),
 :global(body[data-interface-style="default"].json-tool-theme-dark .field-label),
 :global(body[data-interface-style="default"].json-tool-theme-dark .rule-name-label),
-:global(body[data-interface-style="default"].json-tool-theme-dark .preview-label),
-:global(body[data-interface-style="default"].json-tool-theme-dark .preview-value),
-:global(body[data-interface-style="default"].json-tool-theme-dark .config-details),
-:global(body[data-interface-style="default"].json-tool-theme-dark .config-url),
-:global(body[data-interface-style="default"].json-tool-theme-dark .config-headers),
 :global(body[data-interface-style="default"].json-tool-theme-dark .saved-rule-meta),
-:global(body[data-interface-style="default"].json-tool-theme-dark .delete-confirm-text),
-:global(body[data-interface-style="default"].json-tool-theme-dark .empty-hint),
-:global(body[data-interface-style="default"].json-tool-theme-dark .textarea-counter) {
+:global(body[data-interface-style="default"].json-tool-theme-dark .delete-confirm-text) {
     color: var(--json-tool-text-muted) !important;
 }
 
@@ -6069,9 +6324,6 @@ body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select
 }
 
 :global(body[data-interface-style="default"].json-tool-theme-dark .form-value-quote--compact),
-:global(body[data-interface-style="default"].json-tool-theme-dark .empty-hint),
-:global(body[data-interface-style="default"].json-tool-theme-dark .config-preview),
-:global(body[data-interface-style="default"].json-tool-theme-dark .config-item),
 :global(body[data-interface-style="default"].json-tool-theme-dark .rule-item),
 :global(body[data-interface-style="default"].json-tool-theme-dark .field-path-item),
 :global(body[data-interface-style="default"].json-tool-theme-dark .saved-rule-item) {
@@ -6080,14 +6332,11 @@ body[data-interface-style="default"] .json-tool-root.theme-dark :deep(.el-select
     color: var(--json-tool-text) !important;
 }
 
-:global(body[data-interface-style="default"].json-tool-theme-dark .config-item:hover),
 :global(body[data-interface-style="default"].json-tool-theme-dark .saved-rule-item:hover) {
     background-color: #2a2d35 !important;
     border-color: var(--json-tool-border-strong) !important;
 }
 
-:global(body[data-interface-style="default"].json-tool-theme-dark .form-compact-line),
-:global(body[data-interface-style="default"].json-tool-theme-dark .form-value-text),
 :global(body[data-interface-style="default"].json-tool-theme-dark .path-text),
 :global(body[data-interface-style="default"].json-tool-theme-dark .saved-rule-name) {
     color: var(--json-tool-text) !important;
@@ -6427,120 +6676,6 @@ body[data-interface-style="default"] .json-tool-root.theme-dark .resizer.resizer
     border-radius: 4px;
     color: var(--el-text-color-primary);
     background: var(--el-bg-color);
-}
-
-.first-use-guide {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: var(--first-use-guide-left, 0);
-    z-index: 12;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    pointer-events: none;
-    background:
-        radial-gradient(circle at 50% 42%, rgba(64, 158, 255, 0.08), transparent 34%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.54));
-}
-
-.first-use-guide-card {
-    width: min(420px, calc(100% - 48px));
-    padding: 20px 22px 18px;
-    pointer-events: auto;
-    border: 1px solid rgba(64, 158, 255, 0.18);
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 18px 52px rgba(31, 45, 61, 0.14);
-}
-
-.first-use-guide-title {
-    margin: 0;
-    color: #1f2d3d;
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.35;
-}
-
-.first-use-guide-desc {
-    margin: 10px 0 0;
-    color: #5f6673;
-    font-size: 13px;
-    line-height: 1.7;
-}
-
-.first-use-guide-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 18px;
-}
-
-.first-use-guide-actions :deep(.el-button--small) {
-    height: 24px;
-}
-
-.first-use-guide-skip {
-    height: 24px;
-    padding: 4px 10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    color: #606266;
-    font-size: 13px;
-    line-height: 1;
-    border: 1px solid #dcdfe6;
-    border-radius: 4px;
-    background: #ffffff;
-    cursor: pointer;
-    transition:
-        color 140ms ease,
-        border-color 140ms ease,
-        background-color 140ms ease;
-}
-
-.first-use-guide-skip:hover,
-.first-use-guide-skip:focus-visible {
-    color: var(--theme-accent, #409eff);
-    border-color: #a0cfff;
-    background: #ecf5ff;
-    outline: none;
-}
-
-body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide {
-    background:
-        radial-gradient(circle at 50% 42%, rgba(67, 156, 219, 0.12), transparent 34%),
-        linear-gradient(180deg, rgba(31, 31, 31, 0.78), rgba(31, 31, 31, 0.54));
-}
-
-body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-card {
-    border-color: rgba(255, 255, 255, 0.09);
-    background: rgba(36, 36, 36, 0.96);
-    box-shadow: 0 18px 54px rgba(0, 0, 0, 0.36);
-}
-
-body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-title {
-    color: #e8e8e8;
-}
-
-body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-desc {
-    color: #a8abb2;
-}
-
-body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-skip {
-    color: #d4d4d4;
-    border-color: #3a3a3a;
-    background: #2a2a2a;
-}
-
-body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-skip:hover,
-body[data-interface-style="default"] .json-tool-root.theme-dark .first-use-guide-skip:focus-visible {
-    color: #b9d7ff;
-    border-color: #4f6f94;
-    background: #26313d;
 }
 
 .monaco-editor-container {

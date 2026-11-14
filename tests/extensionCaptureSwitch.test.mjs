@@ -125,11 +125,29 @@ test('response capture stays available in browser integration while toolbar visi
         assert.ok(start !== -1, `missing ${name} settings section`);
         return template.slice(start, template.indexOf('</el-collapse-item>', start));
     };
+    const collapseItems = [];
+    const visit = node => {
+        if (node.type === 1 && node.tag === 'el-collapse-item') collapseItems.push(node);
+        for (const child of node.children ?? []) visit(child);
+    };
+    visit(dialog.template.ast);
+    const item = name => {
+        const matches = collapseItems.filter(node => node.props.some(prop => prop.type === 6 && prop.name === 'name' && prop.value?.content === name));
+        assert.equal(matches.length, 1, 'exactly one ' + name + ' settings section');
+        return matches[0];
+    };
+    const attribute = (node, name) => node.props.find(prop => prop.type === 6 && prop.name === name)?.value?.content;
+    const visibilityDirectives = node => node.props.filter(prop => prop.type === 7 && ['if', 'else-if', 'else', 'show'].includes(prop.name));
+    const browser = item('browser'), toolbar = item('settings');
+    assert.equal(attribute(browser, 'data-guide-section'), 'browser');
+    assert.deepEqual(visibilityDirectives(browser), [], 'browser integration is not conditional on Diff mode');
+    assert.equal(attribute(toolbar, 'data-guide-section'), 'settings');
+    assert.equal(visibilityDirectives(toolbar).length, 1);
+    assert.equal(visibilityDirectives(toolbar)[0].name, 'if');
+    assert.equal(visibilityDirectives(toolbar)[0].exp.content, '!isDiffMode');
     assert.equal((template.match(/<JsonResponseCaptureSwitch/g) ?? []).length, 1);
-    assert.match(template, /<el-collapse-item name="browser">/);
     assert.match(section('browser'), /<JsonResponseCaptureSwitch v-if="visible && activeName === 'browser'"/);
     assert.doesNotMatch(section('settings'), /JsonResponseCaptureSwitch|switchLocale/);
-    assert.match(template, /<el-collapse-item v-if="!isDiffMode" name="settings">/);
     assert.match(section('settings'), /v-model="buttonVisibilityModel.compress"/);
     assert.match(section('theme'), /@change="\$emit\('switchLocale'\)"/);
     assert.ok(section('theme').indexOf('switchLocale') < section('theme').indexOf('<AppearanceSettings'));

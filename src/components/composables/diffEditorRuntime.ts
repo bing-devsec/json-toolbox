@@ -162,7 +162,6 @@ export const createDiffEditorRuntime = (
         rightContainerRef,
         leftStatusRef,
         rightStatusRef,
-        tabId,
         onError,
         showMinimap,
         fontSize,

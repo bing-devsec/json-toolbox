@@ -10,6 +10,7 @@ import { loadJsonToolMessageBox } from '../utils/loadJsonToolMessageBox';
 import { createRetryableModuleLoader } from '../utils/jsonToolLoadController';
 import { onBeforeUnmount, type Ref } from 'vue';
 import { captureEditorSnapshot } from '../utils/editorSnapshot';
+import { runCancellableExtractionPrompt } from '../utils/cancellableExtractionPrompt';
 
 import type { SettingsTxt } from '../utils/i18n';
 import { sortJsonArrayByCanonicalKey } from '../utils/jsonDiffSort';
@@ -89,7 +90,13 @@ interface MonacoContextMenuContributionLike {
 export function useEditorContextMenu(ctx: EditorContextMenuCtx) {
     let disposed = false;
     let extractionRequest = 0;
-    onBeforeUnmount(() => { disposed = true; extractionRequest++; });
+    let activeExtraction: AbortController | null = null;
+    const cancelPendingExtraction = () => {
+        extractionRequest++;
+        activeExtraction?.abort();
+        activeExtraction = null;
+    };
+    onBeforeUnmount(() => { disposed = true; cancelPendingExtraction(); });
     const {
         settingsTxt,
         sortMethod,
@@ -399,75 +406,83 @@ export function useEditorContextMenu(ctx: EditorContextMenuCtx) {
             contextMenuGroupId: '4_array',
             contextMenuOrder: 4,
             run: async () => {
-                const request = ++extractionRequest;
-                const inputIsCurrent = captureEditorSnapshot(() => ctx.getInputEditor());
-                const outputIsCurrent = captureEditorSnapshot(() => ctx.getOutputEditor());
-                const isCurrent = () => !disposed && request === extractionRequest
-                    && ctx.getInputEditor() === editor && inputIsCurrent() && outputIsCurrent();
-                if (!isCurrent()) return;
-                const source = getEditorSelectedOrFullSource(editor);
-                if (!source) return;
-                if (!source.text.trim()) {
-                    showMessageError(settingsTxt.value.msgContextNoContent);
-                    return;
-                }
-
-                // 先解析 JSON：如果连解析都失败，没必要再让用户输入 key。
-                let parsed: any;
-                let escapeMap: Map<string, string>;
+                cancelPendingExtraction();
+                const request = extractionRequest;
+                const controller = new AbortController();
+                activeExtraction = controller;
                 try {
-                    const result = parseJsonActionSource(editor, (data) => data !== null && typeof data === 'object');
-                    parsed = result.data;
-                    escapeMap = result.escapeMap;
-                } catch (error: any) {
-                    showMessageError(error?.message || settingsTxt.value.msgUnknownError);
-                    return;
-                }
-
-                // 弹窗让用户输入要提取的 key 名。
-                let targetKey = '';
-                try {
-                    const messageBox = await loadJsonToolMessageBox();
+                    const inputIsCurrent = captureEditorSnapshot(() => ctx.getInputEditor());
+                    const outputIsCurrent = captureEditorSnapshot(() => ctx.getOutputEditor());
+                    const isCurrent = () => !disposed && !controller.signal.aborted && request === extractionRequest
+                        && ctx.getInputEditor() === editor && inputIsCurrent() && outputIsCurrent();
                     if (!isCurrent()) return;
-                    const { value } = (await messageBox.prompt(
-                        settingsTxt.value.promptExtractValuesByKeyMessage,
-                        settingsTxt.value.promptExtractValuesByKeyTitle,
-                        {
-                            confirmButtonText: settingsTxt.value.btnConfirm,
-                            cancelButtonText: settingsTxt.value.btnCancel,
-                            inputPlaceholder: settingsTxt.value.promptExtractValuesByKeyPlaceholder,
-                            inputValidator: (input: string) => (input && input.trim().length > 0 ? true : settingsTxt.value.promptExtractValuesByKeyEmpty),
-                        },
-                    )) as { value: string };
-                    if (!isCurrent()) return;
-                    targetKey = (value || '').trim();
-                } catch (error) {
-                    if (!isCurrent()) return;
-                    // Dialog cancellation is expected; failed imports should remain visible and retryable.
-                    if (error !== 'cancel' && error !== 'close') showMessageError(settingsTxt.value.msgUnknownError);
-                    return;
-                }
-                if (!targetKey) return;
-
-                try {
-                    const { values, skippedComplex } = extractValuesByKey(parsed, targetKey);
-                    if (values.length === 0 && skippedComplex === 0) {
-                        showMessageWarning(settingsTxt.value.msgExtractValuesByKeyNotFound(targetKey));
+                    const source = getEditorSelectedOrFullSource(editor);
+                    if (!source) return;
+                    if (!source.text.trim()) {
+                        showMessageError(settingsTxt.value.msgContextNoContent);
                         return;
                     }
-                    if (values.length === 0 && skippedComplex > 0) {
-                        showMessageWarning(settingsTxt.value.msgExtractValuesByKeyAllComplex(targetKey, skippedComplex));
+
+                    // 先解析 JSON：如果连解析都失败，没必要再让用户输入 key。
+                    let parsed: any;
+                    let escapeMap: Map<string, string>;
+                    try {
+                        const result = parseJsonActionSource(editor, (data) => data !== null && typeof data === 'object');
+                        parsed = result.data;
+                        escapeMap = result.escapeMap;
+                    } catch (error: any) {
+                        showMessageError(error?.message || settingsTxt.value.msgUnknownError);
                         return;
                     }
-                    const nextText = formatJsonValueForContextAction(values, escapeMap);
-                    if (!writeProcessingResultToOutput(nextText, 'json')) return;
-                    if (skippedComplex > 0) {
-                        showMessageSuccess(settingsTxt.value.msgExtractValuesByKeyPartial(values.length, skippedComplex));
-                    } else {
-                        showMessageSuccess(settingsTxt.value.msgExtractValuesByKeySuccess(values.length));
+
+                    // 弹窗让用户输入要提取的 key 名。
+                    let targetKey = '';
+                    try {
+                        const messageBox = await loadJsonToolMessageBox();
+                        if (!isCurrent()) return;
+                        const { value } = await runCancellableExtractionPrompt(hooks => messageBox.prompt(
+                            settingsTxt.value.promptExtractValuesByKeyMessage,
+                            settingsTxt.value.promptExtractValuesByKeyTitle,
+                            {
+                                ...hooks,
+                                confirmButtonText: settingsTxt.value.btnConfirm,
+                                cancelButtonText: settingsTxt.value.btnCancel,
+                                inputPlaceholder: settingsTxt.value.promptExtractValuesByKeyPlaceholder,
+                                inputValidator: (input: string) => (input && input.trim().length > 0 ? true : settingsTxt.value.promptExtractValuesByKeyEmpty),
+                            },
+                        ), controller.signal);
+                        if (!isCurrent()) return;
+                        targetKey = (value || '').trim();
+                    } catch (error) {
+                        if (!isCurrent()) return;
+                        // Dialog cancellation is expected; failed imports should remain visible and retryable.
+                        if (error !== 'cancel' && error !== 'close') showMessageError(settingsTxt.value.msgUnknownError);
+                        return;
                     }
-                } catch (error: any) {
-                    showMessageError(error?.message || settingsTxt.value.msgUnknownError);
+                    if (!targetKey) return;
+
+                    try {
+                        const { values, skippedComplex } = extractValuesByKey(parsed, targetKey);
+                        if (values.length === 0 && skippedComplex === 0) {
+                            showMessageWarning(settingsTxt.value.msgExtractValuesByKeyNotFound(targetKey));
+                            return;
+                        }
+                        if (values.length === 0 && skippedComplex > 0) {
+                            showMessageWarning(settingsTxt.value.msgExtractValuesByKeyAllComplex(targetKey, skippedComplex));
+                            return;
+                        }
+                        const nextText = formatJsonValueForContextAction(values, escapeMap);
+                        if (!writeProcessingResultToOutput(nextText, 'json')) return;
+                        if (skippedComplex > 0) {
+                            showMessageSuccess(settingsTxt.value.msgExtractValuesByKeyPartial(values.length, skippedComplex));
+                        } else {
+                            showMessageSuccess(settingsTxt.value.msgExtractValuesByKeySuccess(values.length));
+                        }
+                    } catch (error: any) {
+                        showMessageError(error?.message || settingsTxt.value.msgUnknownError);
+                    }
+                } finally {
+                    if (activeExtraction === controller) activeExtraction = null;
                 }
             },
         });
@@ -841,6 +856,7 @@ export function useEditorContextMenu(ctx: EditorContextMenuCtx) {
 
     return {
         registerProcessingActions,
+        cancelPendingExtraction,
         registerInputDiffTransferActions,
         registerOutputDiffTransferActions,
         registerClipboardActions,

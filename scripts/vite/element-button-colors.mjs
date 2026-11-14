@@ -9,7 +9,8 @@ const MODULE_SUFFIX = '/element-plus/es/components/button/src/button-custom.mjs'
 const CUSTOM_STYLE_SHA = '959a06f71dd274f3bdc624037d4e915d6038a49498608412db5c82d87e55192d';
 const INDEX_SHA = '396de6f92017b66b66449d34e0ab0a4732146dbdaa7eec996ab513e6b5578b3e';
 const CLOSURE_SHA = '6708afacd65153f218228f1533e1ac784c6fb4ae77830678165f70a56d205058';
-const SHELL_SHA = '551085b784515e3173c0241fbc1a782a6bba13a941f3dd6fa1727166ad9cb00b';
+// Reviewed capture-notice SVG close control and theme tokens; dynamic workbench binding is unchanged.
+const SHELL_SHA = 'a076ba5b1ac2fbd61809b7db9d4ba7e1e61f5f5e46087309e69a35ce63812e4d';
 const entries = [
     'alert', 'autocomplete', 'button', 'checkbox', 'collapse-transition', 'collapse', 'dialog',
     'dropdown', 'empty', 'icon', 'input-number', 'input', 'message-box', 'message', 'popover',
@@ -20,7 +21,8 @@ const reviewedExternalPackages = new Set([
     'diff', 'histogram-diff', 'js-base64', 'js-yaml',
     'json5', 'jsonc-parser', 'jsonrepair', 'monaco-editor',
 ]);
-const LOCK_SHA = 'ae12046f4bd0e2a30a6f44216113a20ce5479a87954690c532b50f12fd83d6b5';
+// Reviewed 1.2.5 release metadata only; dependency records match the reviewed 1.2.4 lockfile.
+const LOCK_SHA = '93d55ff475a61db6847098c84d8c0b8913a6cc9bbe2dddfd12f6ea3dd312e4fd';
 const allowedExports = new Set([
     'ElAlert', 'ElAutocomplete', 'ElButton', 'ElButtonGroup', 'ElCheckbox', 'ElCollapse', 'ElCollapseItem',
     'ElCollapseTransition', 'ElDialog', 'ElDropdown', 'ElDropdownItem', 'ElDropdownMenu', 'ElEmpty',
